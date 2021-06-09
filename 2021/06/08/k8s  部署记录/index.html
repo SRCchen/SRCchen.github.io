@@ -4,7 +4,7 @@
   <!-- 元数据 -->
   <meta charset="utf-8">
   <link rel="icon" href="">
-  <title>Hello World | C某人的备忘录</title>
+  <title>k8s 学习笔记（一） | C某人的备忘录</title>
   <meta name="author" content="SRCchen" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -13,20 +13,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="杂谈" />
+    <meta name="keywords" content="kubernetes" />
   
-  <meta name="description" content="我的第一篇博客从今天开始正式开始更新博客了各种备忘的以及乱七八糟的东西都放到这从rust,python 的学习笔记到linux,docker 等有机会大概都会在这更新      做个纪录顺便防止自己哪天忘了              hexo主题来源为https:&#x2F;&#x2F;github.com&#x2F;Candinya&#x2F;Kratos-Rebirth说明文档地址 https:&#x2F;&#x2F;candinya.com&#x2F;post">
+  <meta name="description" content="k8s 学习笔记（一）准备一台干净的服务器，系统版本： CentOS Linux release 7.9.2009 12345678910111213141516171819sudo sed -e &amp;#x27;s|^mirrorlist&#x3D;|#mirrorlist&#x3D;|g&amp;#x27; \         -e &amp;#x27;s|^#baseurl&#x3D;http:&#x2F;&#x2F;mirror.centos.org&#x2F;cen">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://srcchen.github.io/2021/06/05/firstblog/index.html">
+<meta property="og:title" content="k8s 学习笔记（一）">
+<meta property="og:url" content="http://srcchen.github.io/2021/06/08/k8s%20%20%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/index.html">
 <meta property="og:site_name" content="C某人的备忘录">
-<meta property="og:description" content="我的第一篇博客从今天开始正式开始更新博客了各种备忘的以及乱七八糟的东西都放到这从rust,python 的学习笔记到linux,docker 等有机会大概都会在这更新      做个纪录顺便防止自己哪天忘了              hexo主题来源为https:&#x2F;&#x2F;github.com&#x2F;Candinya&#x2F;Kratos-Rebirth说明文档地址 https:&#x2F;&#x2F;candinya.com&#x2F;post">
+<meta property="og:description" content="k8s 学习笔记（一）准备一台干净的服务器，系统版本： CentOS Linux release 7.9.2009 12345678910111213141516171819sudo sed -e &amp;#x27;s|^mirrorlist&#x3D;|#mirrorlist&#x3D;|g&amp;#x27; \         -e &amp;#x27;s|^#baseurl&#x3D;http:&#x2F;&#x2F;mirror.centos.org&#x2F;cen">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
-<meta property="article:published_time" content="2021-06-05T06:30:57.718Z">
-<meta property="article:modified_time" content="2021-06-06T09:04:14.069Z">
+<meta property="article:published_time" content="2021-06-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-09T10:41:01.243Z">
 <meta property="article:author" content="SRCchen">
-<meta property="article:tag" content="杂谈">
+<meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://srcchen.github.io/null">
 <meta name="twitter:site" content="@null">
@@ -119,17 +119,17 @@
         <div class="kratos-hentry kratos-post-inner clearfix">
             <header class="kratos-entry-header">
                 
-                    <h1 class="kratos-entry-title text-center">Hello World</h1>
+                    <h1 class="kratos-entry-title text-center">k8s 学习笔记（一）</h1>
                 
                 
                 <ul class="kratos-post-meta text-center">
-                    <li><i class="fa fa-calendar"></i> 2021-06-05</li>
+                    <li><i class="fa fa-calendar"></i> 2021-06-08</li>
                     <li><i class="fa fa-user"></i> 作者 SRCchen</li>
                     <li>
                         <i class="fa fa-edit"></i> 
                         
                         
-                            236
+                            ~2.88K
                         
                         字
                     </li>
@@ -138,18 +138,46 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1622970254069"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1623235261243"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                 <hr />
-                <h3 id="我的第一篇博客"><a href="#我的第一篇博客" class="headerlink" title="我的第一篇博客"></a>我的第一篇博客</h3><p>从今天开始正式开始更新博客了<br>各种备忘的以及乱七八糟的东西都放到这<br>从rust,python 的学习笔记到linux,docker 等有机会大概都会在这更新</p>
-<div class="xControl">
-    <div class="xHeading"><div class="xIcon"><i class="fa fa-plus"></i></div><span>做个纪录顺便防止自己哪天忘了</span></div>
-    <div class="xContent"><div class="inner">
-        <p>hexo主题来源为<a target="_blank" rel="noopener" href="https://github.com/Candinya/Kratos-Rebirth">https://github.com/Candinya/Kratos-Rebirth</a><br>说明文档地址 <a target="_blank" rel="noopener" href="https://candinya.com/posts/Kratos-Rebirth-Manual/">https://candinya.com/posts/Kratos-Rebirth-Manual/</a></p>
- 
-    </div></div>
-    </div>
+                <h1 id="k8s-学习笔记（一）"><a href="#k8s-学习笔记（一）" class="headerlink" title="k8s 学习笔记（一）"></a>k8s 学习笔记（一）</h1><p>准备一台干净的服务器，系统版本： CentOS Linux release 7.9.2009</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">sudo sed -e &#x27;s|^mirrorlist=|#mirrorlist=|g&#x27; \</span><br><span class="line">         -e &#x27;s|^#baseurl=http://mirror.centos.org/centos|baseurl=https://mirrors.ustc.edu.cn/centos|g&#x27; \</span><br><span class="line">         -i.bak \</span><br><span class="line">         /etc/yum.repos.d/CentOS-Base.repo</span><br><span class="line"><span class="meta">#</span><span class="bash"> 更换ustc软件源</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">yum -y install yum-utils device-mapper-persistent-data lvm2</span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 安装docker依赖</span></span></span><br><span class="line">yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span><br><span class="line"></span><br><span class="line">yum makecache fast</span><br><span class="line"><span class="meta">#</span><span class="bash">添加阿里云docker源</span></span><br><span class="line">yum -y install docker-ce python3 python3-pip lrzsz </span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装docker-ce</span></span><br><span class="line"></span><br><span class="line">systemctl disable firewalld --now  #关闭防火墙</span><br><span class="line"></span><br><span class="line"> sed -i &#x27;s/enforcing/disabled/&#x27; /etc/selinux/config  # 关闭selinux</span><br></pre></td></tr></table></figure>
+
+<p>添加hosts</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">172.16.8.10 k8s-master</span><br><span class="line">172.16.8.20 k8s-node1</span><br><span class="line">172.16.8.30 k8s-node2       </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cat &gt; /etc/sysctl.d/k8s.conf &lt;&lt; EOF</span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">EOF</span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 转发桥接的ipv4流量</span></span></span><br><span class="line"> sysctl --system  # 生效</span><br><span class="line"> </span><br><span class="line"> 时间同步：</span><br><span class="line">yum install ntpdate -y</span><br><span class="line">ntpdate time.windows.com</span><br></pre></td></tr></table></figure>
+
+
+
+<p>配置docker加速</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;  /etc/docker/daemon.json &lt;&lt;EOF</span><br><span class="line">&#123;</span><br><span class="line">&quot;registry-mirrors&quot;: [</span><br><span class="line">&quot;https://registry.docker-cn.com&quot;,</span><br><span class="line">&quot;https://reg-mirror.qiniu.com&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">添加软件源</span><br><span class="line">cat &gt; /etc/yum.repos.d/kubernetes.repo &lt;&lt; EOF</span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line">repo_gpgcheck=0</span><br><span class="line">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">yum install -y kubelet-1.19.0 kubeadm-1.19.0 kubectl-1.19.0</span><br><span class="line"> systemctl enable kubelet</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="部署master节点"><a href="#部署master节点" class="headerlink" title="部署master节点"></a>部署master节点</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">kubeadm init \</span><br><span class="line">      --apiserver-advertise-address=172.16.8.10 \</span><br><span class="line">      --image-repository registry.aliyuncs.com/google_containers \</span><br><span class="line">      --kubernetes-version v1.19.0 \</span><br><span class="line">      --service-cidr=10.96.0.0/12 \</span><br><span class="line">      --pod-network-cidr=10.244.0.0/16 \</span><br><span class="line">      --ignore-preflight-errors=all</span><br><span class="line">      </span><br><span class="line">      </span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 执行完这条命令将会生成一个token 后面需要使用这个token部署node</span></span></span><br><span class="line">mkdir -p $HOME/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) $HOME/.kube/config</span><br><span class="line">kubectl get nodes</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果token过期或者遗忘 可重新生成</span></span><br><span class="line">kubeadm token create </span><br><span class="line"></span><br><span class="line">openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2&gt;/dev/null | openssl dgst -sha256 -hex | sed &#x27;s/^.* //&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="部署node节点"><a href="#部署node节点" class="headerlink" title="部署node节点"></a>部署node节点</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kubeadm   join 172.16.8.10:6443 --token yu1d41.14sn0raj2f9upgwe  --discovery-token-ca-cert-hash sha256:f4a052579f60e2792f68629bd88d5eb32b2ce0a39228770377ebc880a44ba822</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 至此 kubectl get nodes 仍会显示not ready</span></span> </span><br><span class="line">需要安装cni</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="部署cni-容器网络"><a href="#部署cni-容器网络" class="headerlink" title="部署cni 容器网络"></a>部署cni 容器网络</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://docs.projectcalico.org/manifests/calico.yaml</span><br><span class="line">kubectl apply -f calico.yaml</span><br><span class="line">kubectl get pods -n kube-system</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="验证kubernetes"><a href="#验证kubernetes" class="headerlink" title="验证kubernetes"></a>验证kubernetes</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl create deployment nginx --image=nginx</span><br><span class="line">kubectl expose deployment nginx --port=80 --type=NodePort</span><br><span class="line">kubectl get pod,svc</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
             </div>
             
                 <div class="kratos-copyright text-center clearfix">
@@ -202,7 +230,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "http://srcchen.github.io/2021/06/05/firstblog/",
+                text: "http://srcchen.github.io/2021/06/08/k8s%20%20%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -214,13 +242,10 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "http://srcchen.github.io/2021/06/05/firstblog/";
-            const title         = "「Hello World」";
-            const excerpt       = `我的第一篇博客从今天开始正式开始更新博客了各种备忘的以及乱七八糟的东西都放到这从rust,python 的学习笔记到linux,docker 等有机会大概都会在这更新
-
-    做个纪录顺便防止自己哪天忘了
-    
-        ...`;
+            const hostUrl       = "http://srcchen.github.io/2021/06/08/k8s%20%20%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/";
+            const title         = "「k8s 学习笔记（一）」";
+            const excerpt       = `k8s 学习笔记（一）准备一台干净的服务器，系统版本： CentOS Linux release 7.9.2009
+12345678910111213141516171819sudo sed -e &#x27;s|^mirrorlis...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -239,10 +264,10 @@
                 <div class="footer-tag clearfix">
                     <div class="pull-left">
                     <i class="fa fa-tags"></i>
-                        <a class="tag-none-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag">杂谈</a>
+                        <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
                     </div>
                     <div class="pull-date">
-                    <span>最后编辑：2021-06-06</span>
+                    <span>最后编辑：2021-06-09</span>
                     </div>
                 </div>
             </footer>
@@ -250,9 +275,13 @@
         
             <nav class="navigation post-navigation clearfix" role="navigation">
                 
+                <div class="nav-previous clearfix">
+                    <a title=" rust 学习笔记 tide（一）" href="/2021/06/06/rust 学习笔记 tide（一）/">&lt; 上一篇</a>
+                </div>
+                
                 
                 <div class="nav-next clearfix">
-                    <a title=" rust 学习笔记 tide（一）" href="/2021/06/06/rust 学习笔记 tide（一）/">下一篇 &gt;</a>
+                    <a title=" k8s 学习笔记（2） ingress" href="/2021/06/09/k8s 部署记录（2） ingress/">下一篇 &gt;</a>
                 </div>
                 
             </nav>
