@@ -15,16 +15,16 @@
   
     <meta name="keywords" content="kubernetes" />
   
-  <meta name="description" content="k8s 学习笔记(3) pv、pvc、StorageClass相关概念pv： 持久化卷，可以使用ceph和nfs等pvc: 持久化卷声明,用于调度pv资源StorageClass： 定义存储类型，动态分配存储资源 环境准备首先建立一个nfs的server，此处不做多讲，kubernetes节点上也安装nfs服务 12systemctl enable --now rpcbindsystemctl e">
+  <meta name="description" content="存储相关概念pv： 持久化卷，可以使用ceph和nfs等pvc: 持久化卷声明,用于调度pv资源StorageClass： 定义存储类型，动态分配存储资源 环境准备首先建立一个nfs的server，此处不做多讲，kubernetes节点上也安装nfs服务 12systemctl enable --now rpcbindsystemctl enable --now nfs pv相关属性： pv相关属">
 <meta property="og:type" content="article">
 <meta property="og:title" content="kubernetes学习笔记(3)">
 <meta property="og:url" content="http://srcchen.github.io/2021/06/23/k8s%20%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95(3)%20pv&pvc&StorageClass/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="k8s 学习笔记(3) pv、pvc、StorageClass相关概念pv： 持久化卷，可以使用ceph和nfs等pvc: 持久化卷声明,用于调度pv资源StorageClass： 定义存储类型，动态分配存储资源 环境准备首先建立一个nfs的server，此处不做多讲，kubernetes节点上也安装nfs服务 12systemctl enable --now rpcbindsystemctl e">
+<meta property="og:description" content="存储相关概念pv： 持久化卷，可以使用ceph和nfs等pvc: 持久化卷声明,用于调度pv资源StorageClass： 定义存储类型，动态分配存储资源 环境准备首先建立一个nfs的server，此处不做多讲，kubernetes节点上也安装nfs服务 12systemctl enable --now rpcbindsystemctl enable --now nfs pv相关属性： pv相关属">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
 <meta property="article:published_time" content="2021-06-23T10:39:52.444Z">
-<meta property="article:modified_time" content="2021-06-23T10:42:09.429Z">
+<meta property="article:modified_time" content="2021-06-23T10:46:45.293Z">
 <meta property="article:author" content="SRCchen">
 <meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary">
@@ -129,7 +129,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~5.94K
+                            ~5.91K
                         
                         字
                     </li>
@@ -138,11 +138,11 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1624444929429"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1624445205293"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                 <hr />
-                <h1 id="k8s-学习笔记-3-pv、pvc、StorageClass"><a href="#k8s-学习笔记-3-pv、pvc、StorageClass" class="headerlink" title="k8s 学习笔记(3) pv、pvc、StorageClass"></a>k8s 学习笔记(3) pv、pvc、StorageClass</h1><h2 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h2><p>pv： 持久化卷，可以使用ceph和nfs等<br>pvc: 持久化卷声明,用于调度pv资源<br>StorageClass： 定义存储类型，动态分配存储资源</p>
+                <h2 id="存储相关概念"><a href="#存储相关概念" class="headerlink" title="存储相关概念"></a>存储相关概念</h2><p>pv： 持久化卷，可以使用ceph和nfs等<br>pvc: 持久化卷声明,用于调度pv资源<br>StorageClass： 定义存储类型，动态分配存储资源</p>
 <h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>首先建立一个nfs的server，此处不做多讲，kubernetes节点上也安装nfs服务</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable --now rpcbind</span><br><span class="line">systemctl enable --now nfs</span><br></pre></td></tr></table></figure>
 <h2 id="pv相关属性："><a href="#pv相关属性：" class="headerlink" title="pv相关属性："></a>pv相关属性：</h2><p> pv相关属性包括了Capacity(存储能力)、AccessModes(访问模式)、ReclaimPolicy(回收策略)。</p>
@@ -249,8 +249,8 @@
             const twitterBase   = "https://twitter.com/intent/tweet?";
             const hostUrl       = "http://srcchen.github.io/2021/06/23/k8s%20%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95(3)%20pv&pvc&StorageClass/";
             const title         = "「kubernetes学习笔记(3)」";
-            const excerpt       = `k8s 学习笔记(3) pv、pvc、StorageClass相关概念pv： 持久化卷，可以使用ceph和nfs等pvc: 持久化卷声明,用于调度pv资源StorageClass： 定义存储类型，动态分配存储资源
-环境准备首先建立一个...`;
+            const excerpt       = `存储相关概念pv： 持久化卷，可以使用ceph和nfs等pvc: 持久化卷声明,用于调度pv资源StorageClass： 定义存储类型，动态分配存储资源
+环境准备首先建立一个nfs的server，此处不做多讲，kubernetes节...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
