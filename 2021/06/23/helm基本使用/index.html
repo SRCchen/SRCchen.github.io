@@ -4,7 +4,7 @@
   <!-- 元数据 -->
   <meta charset="utf-8">
   <link rel="icon" href="">
-  <title>rust学习笔记(泛型) | </title>
+  <title>kubernetes学习笔记(helm) | </title>
   <meta name="author" content="SRCchen" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -13,20 +13,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="rust" />
+    <meta name="keywords" content="helm, kubernetes" />
   
-  <meta name="description" content="rust学习笔记(泛型)学习内容来自B站：原子之音   泛型结构体12345678910111213141516171819#[derive(Debug)]struct Rectangle&lt;T,V&gt; &amp;#123;    width: T,    height: V&amp;#125;fn main() &amp;#123;    let res &#x3D; Rectangle &amp;#123;        wi">
+  <meta name="description" content="Kubernetes的包管理工具:helm安装helm我们可以使用以下命令安装helm 123$ curl -fsSL -o get_helm.sh https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;helm&#x2F;helm&#x2F;master&#x2F;scripts&#x2F;get-helm-3$ chmod 700 get_helm.sh$ .&#x2F;get_helm.sh  直接执行： 1curl http">
 <meta property="og:type" content="article">
-<meta property="og:title" content="rust学习笔记(泛型)">
-<meta property="og:url" content="http://srcchen.github.io/2021/06/14/rust%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E6%B3%9B%E5%9E%8B)/index.html">
+<meta property="og:title" content="kubernetes学习笔记(helm)">
+<meta property="og:url" content="http://srcchen.github.io/2021/06/23/helm%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="rust学习笔记(泛型)学习内容来自B站：原子之音   泛型结构体12345678910111213141516171819#[derive(Debug)]struct Rectangle&lt;T,V&gt; &amp;#123;    width: T,    height: V&amp;#125;fn main() &amp;#123;    let res &#x3D; Rectangle &amp;#123;        wi">
+<meta property="og:description" content="Kubernetes的包管理工具:helm安装helm我们可以使用以下命令安装helm 123$ curl -fsSL -o get_helm.sh https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;helm&#x2F;helm&#x2F;master&#x2F;scripts&#x2F;get-helm-3$ chmod 700 get_helm.sh$ .&#x2F;get_helm.sh  直接执行： 1curl http">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
-<meta property="article:published_time" content="2021-06-14T06:46:44.743Z">
-<meta property="article:modified_time" content="2021-06-14T07:20:36.378Z">
+<meta property="article:published_time" content="2021-06-23T10:40:28.357Z">
+<meta property="article:modified_time" content="2021-06-23T10:43:00.053Z">
 <meta property="article:author" content="SRCchen">
-<meta property="article:tag" content="rust">
+<meta property="article:tag" content="kubernetes">
+<meta property="article:tag" content="helm">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://srcchen.github.io/null">
 <meta name="twitter:site" content="@null">
@@ -119,17 +120,17 @@
         <div class="kratos-hentry kratos-post-inner clearfix">
             <header class="kratos-entry-header">
                 
-                    <h1 class="kratos-entry-title text-center">rust学习笔记(泛型)</h1>
+                    <h1 class="kratos-entry-title text-center">kubernetes学习笔记(helm)</h1>
                 
                 
                 <ul class="kratos-post-meta text-center">
-                    <li><i class="fa fa-calendar"></i> 2021-06-14</li>
+                    <li><i class="fa fa-calendar"></i> 2021-06-23</li>
                     <li><i class="fa fa-user"></i> 作者 SRCchen</li>
                     <li>
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~2.26K
+                            ~2.42K
                         
                         字
                     </li>
@@ -138,28 +139,26 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1623655236378"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1624444980053"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                 <hr />
-                <h1 id="rust学习笔记-泛型"><a href="#rust学习笔记-泛型" class="headerlink" title="rust学习笔记(泛型)"></a>rust学习笔记(泛型)</h1><div class="alert alert-info"><p>学习内容来自B站：原子之音</p>
-</div>
+                <h1 id="Kubernetes的包管理工具-helm"><a href="#Kubernetes的包管理工具-helm" class="headerlink" title="Kubernetes的包管理工具:helm"></a>Kubernetes的包管理工具:helm</h1><h2 id="安装helm"><a href="#安装helm" class="headerlink" title="安装helm"></a>安装helm</h2><p>我们可以使用以下命令安装helm</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> chmod 700 get_helm.sh</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./get_helm.sh</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="泛型结构体"><a href="#泛型结构体" class="headerlink" title="泛型结构体"></a>泛型结构体</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Rectangle</span></span>&lt;T,V&gt; &#123;</span><br><span class="line">    width: T,</span><br><span class="line">    height: V</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> res = Rectangle &#123;</span><br><span class="line">        width: <span class="number">7.9f64</span>,</span><br><span class="line">        height: <span class="number">6.7f64</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,res);</span><br><span class="line">    <span class="keyword">let</span> res1 = Rectangle &#123;</span><br><span class="line">        width: <span class="number">7u64</span>,</span><br><span class="line">        height: <span class="number">6i64</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,res1)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>直接执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.00s</span><br><span class="line">     Running `target\debug\exercise.exe`</span><br><span class="line">Rectangle &#123; width: 7.9, height: 6.7 &#125;</span><br><span class="line">Rectangle &#123; width: 7, height: 6 &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>备注: 虽然存在包管理器安装，但官方并不建议使用</p>
+<h2 id="helm-基本功能"><a href="#helm-基本功能" class="headerlink" title="helm 基本功能"></a>helm 基本功能</h2><p>1.创建新的 chart<br>2.chart 打包成 tgz 格式<br>3.上传 chart 到 chart 仓库或从仓库中下载 chart<br>4.在Kubernetes集群中安装或卸载 chart<br>5.管理用Helm安装的 chart 的发布周期</p>
+<h2 id="helm基本构成"><a href="#helm基本构成" class="headerlink" title="helm基本构成"></a>helm基本构成</h2><p>helm三大概念：<br>Chart 代表着 Helm 包。它包含在 Kubernetes 集群内部运行应用程序，工具或服务所需的所有资源定义。你可以把它看作是 Homebrew formula，Apt dpkg，或 Yum RPM 在Kubernetes 中的等价物。</p>
+<p>Repository（仓库）是用来存放和共享 charts 的地方。它就像 Perl 的CPAN 档案库网络或是 Fedora 的软件包仓库,只不过它是供 Kubernetes 包所使用的。</p>
+<p>Release是运行在 Kubernetes集群中的 chart 的实例。一个chart通常可以在同一个集群中安装多次。每一次安装都会创建一个新的Release。以 MySQL chart为例，如果你想在你的集群中运行两个数据库，你可以安装该chart两次。每一个数据库都会拥有它自己的release和 release name。</p>
+<p>在了解了上述这些概念以后，我们就可以这样来解释 Helm：</p>
+<p>Helm 安装charts到 Kubernetes 集群中，每次安装都会创建一个新的release。你可以在Helm的 chart repositories中寻找新的 chart。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">helm install my-release bitnami/mysql</span><br><span class="line">NAME: my-release</span><br><span class="line">LAST DEPLOYED: Wed Jun 23 17:29:16 2021</span><br><span class="line">NAMESPACE: default</span><br><span class="line">STATUS: deployed</span><br><span class="line">REVISION: 1</span><br><span class="line">TEST SUITE: None</span><br><span class="line">NOTES:</span><br><span class="line">** Please be patient while the chart is being deployed **</span><br><span class="line"></span><br><span class="line">Tip:</span><br><span class="line"></span><br><span class="line">  Watch the deployment status using the command: kubectl get pods -w --namespace default</span><br><span class="line"></span><br><span class="line">Services:</span><br><span class="line"></span><br><span class="line">  echo Primary: my-release-mysql.default.svc.cluster.local:3306</span><br><span class="line"></span><br><span class="line">Administrator credentials:</span><br><span class="line"></span><br><span class="line">  echo Username: root</span><br><span class="line">  echo Password : $(kubectl get secret --namespace default my-release-mysql -o jsonpath=&quot;&#123;.data.mysql-root-password&#125;&quot; | base64 --decode)</span><br><span class="line"></span><br><span class="line">To connect to your database:</span><br><span class="line"></span><br><span class="line">  1. Run a pod that you can use as a client:</span><br><span class="line"></span><br><span class="line">      kubectl run my-release-mysql-client --rm --tty -i --restart=&#x27;Never&#x27; --image  docker.io/bitnami/mysql:8.0.25-debian-10-r16 --namespace default --command -- bash</span><br><span class="line"></span><br><span class="line">  2. To connect to primary service (read/write):</span><br><span class="line"></span><br><span class="line">      mysql -h my-release-mysql.default.svc.cluster.local -uroot -p my_database</span><br><span class="line"></span><br><span class="line">To upgrade this helm chart:</span><br><span class="line"></span><br><span class="line">  1. Obtain the password as described on the &#x27;Administrator credentials&#x27; section and set the &#x27;root.password&#x27; parameter as shown below:</span><br><span class="line"></span><br><span class="line">      ROOT_PASSWORD=$(kubectl get secret --namespace default my-release-mysql -o jsonpath=&quot;&#123;.data.mysql-root-password&#125;&quot; | base64 --decode)</span><br><span class="line">      helm upgrade --namespace default my-release bitnami/mysql --set auth.rootPassword=$ROOT_PASSWORD</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<h2 id="结构体方法中的泛型"><a href="#结构体方法中的泛型" class="headerlink" title="结构体方法中的泛型"></a>结构体方法中的泛型</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Rectangle</span></span>&lt;T,V&gt; &#123;</span><br><span class="line">    width: T,</span><br><span class="line">    height: V</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">impl</span> &lt;T,V&gt; Rectangle&lt;T,V&gt; &#123;</span><br><span class="line">    <span class="comment">// 两个位置都需要标明泛型</span></span><br><span class="line">    <span class="function"><span class="keyword">fn</span> <span class="title">get_w</span></span>(&amp;<span class="keyword">self</span>) -&gt; &amp;T &#123;</span><br><span class="line">        &amp;<span class="keyword">self</span>.width</span><br><span class="line">        <span class="comment">// 注意引用</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> res = Rectangle &#123;</span><br><span class="line">        width: <span class="number">7u64</span>,</span><br><span class="line">        height: <span class="number">6.7f64</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,res.get_w())</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br><span class="line">   Compiling exercise v0.1.0 (F:\mypro\exercise)</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.32s</span><br><span class="line">     Running `target\debug\exercise.exe`</span><br><span class="line">7</span><br></pre></td></tr></table></figure>
-
-<h2 id="为泛型结构体中特定的类型实现方法"><a href="#为泛型结构体中特定的类型实现方法" class="headerlink" title="为泛型结构体中特定的类型实现方法"></a>为泛型结构体中特定的类型实现方法</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Rectangle</span></span>&lt;T,V&gt; &#123;</span><br><span class="line">    width: T,</span><br><span class="line">    height: V</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">impl</span>  Rectangle&lt;<span class="built_in">u16</span>,<span class="built_in">u16</span>&gt; &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fn</span> <span class="title">perimeter</span></span>(&amp;<span class="keyword">self</span>) -&gt; <span class="built_in">u16</span> &#123;</span><br><span class="line">        <span class="number">2</span>*<span class="keyword">self</span>.width + <span class="number">2</span>*<span class="keyword">self</span>.height</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> res = Rectangle &#123;</span><br><span class="line">        width: <span class="number">7u16</span>,</span><br><span class="line">        height: <span class="number">6u16</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,res.perimeter())</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br><span class="line">   Compiling exercise v0.1.0 (F:\mypro\exercise)</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.29s</span><br><span class="line">     Running `target\debug\exercise.exe`</span><br><span class="line">26</span><br></pre></td></tr></table></figure>
-
-<h2 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">get_max</span></span>&lt;T: <span class="built_in">PartialOrd</span>&gt;(a:T,b:T) -&gt; T &#123;</span><br><span class="line">    <span class="comment">//此处函数内有比较，故泛型需实现PartialOrd(比较)特质</span></span><br><span class="line">    <span class="keyword">if</span> a &gt;b &#123;</span><br><span class="line">        a</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        b</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,get_max(<span class="number">12</span>,<span class="number">20</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br><span class="line">   Compiling exercise v0.1.0 (F:\mypro\exercise)</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.31s</span><br><span class="line">     Running `target\debug\exercise.exe`</span><br><span class="line">20</span><br></pre></td></tr></table></figure>
 
 
             </div>
@@ -214,7 +213,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "http://srcchen.github.io/2021/06/14/rust%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E6%B3%9B%E5%9E%8B)/",
+                text: "http://srcchen.github.io/2021/06/23/helm%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -226,12 +225,10 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "http://srcchen.github.io/2021/06/14/rust%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E6%B3%9B%E5%9E%8B)/";
-            const title         = "「rust学习笔记(泛型)」";
-            const excerpt       = `rust学习笔记(泛型)学习内容来自B站：原子之音
-
-
-泛型结构体12345678910111213141516171819#[derive(Debug)]struct Rectangle&lt;T,V&gt; &#123;    w...`;
+            const hostUrl       = "http://srcchen.github.io/2021/06/23/helm%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/";
+            const title         = "「kubernetes学习笔记(helm)」";
+            const excerpt       = `Kubernetes的包管理工具:helm安装helm我们可以使用以下命令安装helm
+123$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/hel...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -250,10 +247,10 @@
                 <div class="footer-tag clearfix">
                     <div class="pull-left">
                     <i class="fa fa-tags"></i>
-                        <a class="tag-none-link" href="/tags/rust/" rel="tag">rust</a>
+                        <a class="tag-none-link" href="/tags/helm/" rel="tag">helm</a>, <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
                     </div>
                     <div class="pull-date">
-                    <span>最后编辑：2021-06-14</span>
+                    <span>最后编辑：2021-06-23</span>
                     </div>
                 </div>
             </footer>
@@ -262,13 +259,9 @@
             <nav class="navigation post-navigation clearfix" role="navigation">
                 
                 <div class="nav-previous clearfix">
-                    <a title=" k8s 学习笔记（二） ingress" href="/2021/06/09/k8s 部署记录（2） ingress/">&lt; 上一篇</a>
+                    <a title=" kubernetes学习笔记(3)" href="/2021/06/23/k8s 部署记录(3) pv&pvc&StorageClass/">&lt; 上一篇</a>
                 </div>
                 
-                
-                <div class="nav-next clearfix">
-                    <a title=" 通过例子学rust(端口嗅探器)" href="/2021/06/19/rust学习-笔记——通过例子学rust(端口嗅探器)/">下一篇 &gt;</a>
-                </div>
                 
             </nav>
         
