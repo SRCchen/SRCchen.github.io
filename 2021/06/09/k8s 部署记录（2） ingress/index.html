@@ -24,7 +24,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
 <meta property="article:published_time" content="2021-06-09T10:34:58.207Z">
-<meta property="article:modified_time" content="2021-06-23T10:54:28.258Z">
+<meta property="article:modified_time" content="2021-06-24T15:50:37.892Z">
 <meta property="article:author" content="SRCchen">
 <meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary">
@@ -138,8 +138,12 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1624445668258"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1624549837892"></time> 前，其中的内容可能需要更新。
                 </div>
+                
+                    <div class="kratos-post-inner-toc">
+                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAtraefik%E7%9A%84crd%E8%B5%84%E6%BA%90"><span class="toc-number">1.</span> <span class="toc-text">创建traefik的crd资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BArbac-yaml"><span class="toc-number">2.</span> <span class="toc-text">创建rbac.yaml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAcokfigmap"><span class="toc-number">3.</span> <span class="toc-text">创建cokfigmap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#traefik-%E5%AE%89%E8%A3%85%E5%89%8D%E5%87%86%E5%A4%87"><span class="toc-number">4.</span> <span class="toc-text">traefik 安装前准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAdeploy-yaml-%E6%96%87%E4%BB%B6"><span class="toc-number">5.</span> <span class="toc-text">创建deploy.yaml 文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2dashboard"><span class="toc-number">6.</span> <span class="toc-text">部署dashboard</span></a></li></ol>
+                    </div>
                 
                 <hr />
                 <p>上次部署完成了k8s的基本框架，现在开始部署ingress，ingress其实就是从 kuberenets 集群外部访问集群的一个入口，将外部的请求转发到集群内不同的 Service 上，其实就相当于 nginx、haproxy 等负载均衡代理服务器。</p>
@@ -267,7 +271,7 @@
                         <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
                     </div>
                     <div class="pull-date">
-                    <span>最后编辑：2021-06-23</span>
+                    <span>最后编辑：2021-06-24</span>
                     </div>
                 </div>
             </footer>
@@ -311,6 +315,18 @@
             
                     <div class="sticky-area">
                 
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar"></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAtraefik%E7%9A%84crd%E8%B5%84%E6%BA%90"><span class="toc-text">创建traefik的crd资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BArbac-yaml"><span class="toc-text">创建rbac.yaml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAcokfigmap"><span class="toc-text">创建cokfigmap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#traefik-%E5%AE%89%E8%A3%85%E5%89%8D%E5%87%86%E5%A4%87"><span class="toc-text">traefik 安装前准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAdeploy-yaml-%E6%96%87%E4%BB%B6"><span class="toc-text">创建deploy.yaml 文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2dashboard"><span class="toc-text">部署dashboard</span></a></li></ol>
+    </div>
+</aside>
+                
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
     <h4 class="widget-title"><i class="fa fa-folder"></i>分类目录</h4>
@@ -334,6 +350,9 @@
   <div class="tab-content">
       <ul class="list-group">
         
+        
+          
+          
         
           
           
