@@ -4,7 +4,7 @@
   <!-- 元数据 -->
   <meta charset="utf-8">
   <link rel="icon" href="">
-  <title>rust 学习笔记 tide（一） | </title>
+  <title>定时任务(cron与at) | </title>
   <meta name="author" content="SRCchen" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -13,20 +13,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="rust" />
+    <meta name="keywords" content="Linux" />
   
-  <meta name="description" content="tide 简介tide 是rust官方推出的异步web框架，相对actix-web 等缺少路由宏定义(e.g: #[get(“&#x2F;helloworld”)])，相对来说用的人较少，目前的版本为0.16.0 最简单的tide程序cargo.toml文件内容 123[dependencies]async-std &#x3D; &amp;#123;version&#x3D;&quot;1.9.0&quot;,features&#x3D;[&amp;q">
+  <meta name="description" content="cron(定时任务)cron是最常用的定时任务类型,用于执行周期性计划 对应的服务为crond，使用前请确保此服务已运行 12345678910111213141516$ systemctl status crond● crond.service - Command Scheduler   Loaded: loaded (&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;crond.service;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="rust 学习笔记 tide（一）">
-<meta property="og:url" content="http://srcchen.github.io/2021/06/06/rust%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%20tide%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:title" content="定时任务(cron与at)">
+<meta property="og:url" content="http://srcchen.github.io/2021/06/29/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1(cron%E4%B8%8Eat)/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="tide 简介tide 是rust官方推出的异步web框架，相对actix-web 等缺少路由宏定义(e.g: #[get(“&#x2F;helloworld”)])，相对来说用的人较少，目前的版本为0.16.0 最简单的tide程序cargo.toml文件内容 123[dependencies]async-std &#x3D; &amp;#123;version&#x3D;&quot;1.9.0&quot;,features&#x3D;[&amp;q">
+<meta property="og:description" content="cron(定时任务)cron是最常用的定时任务类型,用于执行周期性计划 对应的服务为crond，使用前请确保此服务已运行 12345678910111213141516$ systemctl status crond● crond.service - Command Scheduler   Loaded: loaded (&#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;crond.service;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
-<meta property="article:published_time" content="2021-06-06T08:22:27.177Z">
-<meta property="article:modified_time" content="2021-06-24T15:51:11.769Z">
+<meta property="article:published_time" content="2021-06-29T11:51:20.181Z">
+<meta property="article:modified_time" content="2021-06-29T12:49:36.816Z">
 <meta property="article:author" content="SRCchen">
-<meta property="article:tag" content="rust">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://srcchen.github.io/null">
 <meta name="twitter:site" content="@null">
@@ -119,17 +119,17 @@
         <div class="kratos-hentry kratos-post-inner clearfix">
             <header class="kratos-entry-header">
                 
-                    <h1 class="kratos-entry-title text-center">rust 学习笔记 tide（一）</h1>
+                    <h1 class="kratos-entry-title text-center">定时任务(cron与at)</h1>
                 
                 
                 <ul class="kratos-post-meta text-center">
-                    <li><i class="fa fa-calendar"></i> 2021-06-06</li>
+                    <li><i class="fa fa-calendar"></i> 2021-06-29</li>
                     <li><i class="fa fa-user"></i> 作者 SRCchen</li>
                     <li>
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~1.74K
+                            ~2.22K
                         
                         字
                     </li>
@@ -138,31 +138,61 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1624549871769"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1624970976816"></time> 前，其中的内容可能需要更新。
                 </div>
                 
-                    <div class="kratos-post-inner-toc">
-                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#tide-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">tide 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84tide%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.</span> <span class="toc-text">最简单的tide程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tide%E5%AE%98%E7%BD%91%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-number">3.</span> <span class="toc-text">tide官网的例子</span></a></li></ol>
-                    </div>
-                
                 <hr />
-                <h2 id="tide-简介"><a href="#tide-简介" class="headerlink" title="tide 简介"></a>tide 简介</h2><p>tide 是rust官方推出的异步web框架，相对actix-web 等缺少路由宏定义(e.g: #[get(“/helloworld”)])，相对来说用的人较少，目前的版本为0.16.0</p>
-<h2 id="最简单的tide程序"><a href="#最简单的tide程序" class="headerlink" title="最简单的tide程序"></a>最简单的tide程序</h2><p>cargo.toml文件内容</p>
-<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">async-std</span> = &#123;version=<span class="string">&quot;1.9.0&quot;</span>,features=[<span class="string">&quot;attributes&quot;</span>]&#125;</span><br><span class="line"><span class="attr">tide</span> = <span class="string">&quot;0.16.0&quot;</span></span><br></pre></td></tr></table></figure>
+                <h2 id="cron-定时任务"><a href="#cron-定时任务" class="headerlink" title="cron(定时任务)"></a>cron(定时任务)</h2><p>cron是最常用的定时任务类型,用于执行周期性计划</p>
+<p>对应的服务为<code>crond</code>，使用前请确保此服务已运行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> systemctl status crond</span></span><br><span class="line">● crond.service - Command Scheduler</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/crond.service; enabled; vendor preset: enabled)</span><br><span class="line">   Active: active (running) since Fri 2021-05-21 14:24:24 CST; 1 months 8 days ago</span><br><span class="line"> Main PID: 19808 (crond)</span><br><span class="line">    Tasks: 1</span><br><span class="line">   Memory: 1.4M</span><br><span class="line">   CGroup: /system.slice/crond.service</span><br><span class="line">           └─19808 /usr/sbin/crond -n</span><br><span class="line"></span><br><span class="line">May 21 14:24:24 VM-0-9-centos systemd[1]: Stopped Command Scheduler.</span><br><span class="line">May 21 14:24:24 VM-0-9-centos systemd[1]: Started Command Scheduler.</span><br><span class="line">May 21 14:24:24 VM-0-9-centos crond[19808]: (CRON) INFO (RANDOM_DELAY will be scaled with factor 24% if used.)</span><br><span class="line">May 21 14:24:24 VM-0-9-centos crond[19808]: (CRON) INFO (running with inotify support)</span><br><span class="line">May 21 14:24:24 VM-0-9-centos crond[19808]: (CRON) INFO (@reboot jobs will be run at computer&#x27;s startup.)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>main.rs 内容：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[async_std::main]</span></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() -&gt; tide::<span class="built_in">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> server = tide::new();</span><br><span class="line">    <span class="comment">// 构建基本的服务</span></span><br><span class="line">    app.listen(<span class="string">&quot;127.0.0.1:8080&quot;</span>).<span class="keyword">await</span>?;</span><br><span class="line">  	<span class="comment">// 监使用异步listen方法启动服务器</span></span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><p><code>crontab -e</code> 使用<code>vi</code>文本编辑器编辑cronjob，可通过<code>-u</code>指定用户执行。</p>
+<p><code>crontab -l</code> 列出所有cronjob:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> crontab -l</span><br><span class="line">*/5 * * * * flock -xn /tmp/stargate.lock -c &#x27;/usr/local/qcloud/stargate/admin/start.sh &gt; /dev/null 2&gt;&amp;1 &amp;&#x27;</span><br></pre></td></tr></table></figure>
 
-<p>这样一个最简单的web服务就完成了，只不过对他发送任何请求都返回404响应，并没有什么实际作用；</p>
-<h2 id="tide官网的例子"><a href="#tide官网的例子" class="headerlink" title="tide官网的例子"></a>tide官网的例子</h2><p>以下为官网的例子：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> tide::Request;</span><br><span class="line"><span class="keyword">use</span> tide::prelude::*;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Debug, Deserialize)]</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Animal</span></span> &#123;</span><br><span class="line">    name: <span class="built_in">String</span>,</span><br><span class="line">    legs: <span class="built_in">u8</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[async_std::main]</span></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() -&gt; tide::<span class="built_in">Result</span>&lt;()&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut</span> app = tide::new();</span><br><span class="line">    app.at(<span class="string">&quot;/orders/shoes&quot;</span>).post(order_shoes);</span><br><span class="line">    <span class="comment">// 添加路由</span></span><br><span class="line">    app.listen(<span class="string">&quot;127.0.0.1:8080&quot;</span>).<span class="keyword">await</span>?;</span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">fn</span> <span class="title">order_shoes</span></span>(<span class="keyword">mut</span> req: Request&lt;()&gt;) -&gt; tide::<span class="built_in">Result</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> Animal &#123; name, legs &#125; = req.body_json().<span class="keyword">await</span>?;</span><br><span class="line">    <span class="comment">//取出请求中的参数</span></span><br><span class="line">    <span class="literal">Ok</span>(<span class="built_in">format!</span>(<span class="string">&quot;Hello, &#123;&#125;! I&#x27;ve put in an order for &#123;&#125; shoes&quot;</span>, name, legs).into())</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><code>crontab -r </code> 删除用户的cronjob</p>
+<h3 id="cronjob-格式"><a href="#cronjob-格式" class="headerlink" title="cronjob 格式"></a>cronjob 格式</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * *  expr</span><br></pre></td></tr></table></figure>
 
-<p>运行这个程序，对其发送一个包含name 和legs的json，它将返回Hello, {name}! I’ve put in an order for {legs} shoes, 注意 leg 为u8 类型，发送过大的数字将导致报错：number too large to fit in target type。</p>
-<p>对其发送请求得到的结果如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl localhost:8080/orders/shoes -d <span class="string">&#x27;&#123; &quot;name&quot;: &quot;Chashu&quot;, &quot;legs&quot;: 4 &#125;&#x27;</span></span></span><br><span class="line">Hello, Chashu! I&#x27;ve put in an order for 4 shoes</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> curl localhost:8080/orders/shoes -d <span class="string">&#x27;&#123; &quot;name&quot;: &quot;Mary Millipede&quot;, &quot;legs&quot;: 750 &#125;&#x27;</span></span></span><br><span class="line">number too large to fit in target type</span><br></pre></td></tr></table></figure>
+<p>前五个<code>*</code>分别代表 分、时、日、月、周，最后一列是需要执行的命令。</p>
+<p>使用L 可代表本月最后一天/本周最后一天：</p>
+<p>e.g:</p>
+<p>在天（月）子表达式中，“L”表示一个月的最后一天<br>在天（星期）自表达式中，“L”表示一个星期的最后一天，也就是SAT<br>6L”表示这个月的倒数第６天，“FRIL”表示这个月的最一个星期五<br>在使用“L”参数时，不要指定列表或范围，因为这会导致问题</p>
+<h4 id="例1："><a href="#例1：" class="headerlink" title="例1："></a>例1：</h4><p>需要在每周五晚上三点钟执行 <code>/root/dump.sh</code> 脚本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 3 0 0 5 /root/dump.sh</span><br></pre></td></tr></table></figure>
+
+<h4 id="例2："><a href="#例2：" class="headerlink" title="例2："></a>例2：</h4><p>需要在每月10号执行 <code>/root/dump.sh</code>脚本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 0 0 10 0 /root/dump.sh</span><br></pre></td></tr></table></figure>
+
+<h4 id="例3："><a href="#例3：" class="headerlink" title="例3："></a>例3：</h4><p>在每月月底最后一天执行 <code>/root/dump.sh</code>脚本</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 0 L * * /root/dump.sh</span><br></pre></td></tr></table></figure>
+
+<h3 id="cron的权限管理"><a href="#cron的权限管理" class="headerlink" title="cron的权限管理"></a>cron的权限管理</h3><p><code>/etc/cron.deny</code>文件为cron的黑名单，在此名单中的用户无法执行cron</p>
+<p>另外<code>/etc/cron.allow</code>默认不存在，为白名单，若手动创建，则黑名单失效，除白名单外的用户无法执行cron</p>
+<h2 id="at命令"><a href="#at命令" class="headerlink" title="at命令"></a>at命令</h2><p>与周期性任务cron不同，at命令用于执行在某一时间只执行一次的一次性任务。</p>
+<p>使用方法：</p>
+<p>at + 选项 + 时间参数</p>
+<h3 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">at -f  $FILE_NAME     #指定执行的脚本文件</span><br><span class="line">at -l                 #列出当前延时任务</span><br><span class="line">at -r  $JOB_ID        #删除指定延时任务</span><br><span class="line">at -c  $JOB_ID        #列出任务详细信息</span><br></pre></td></tr></table></figure>
+
+<h3 id="常用的时间格式："><a href="#常用的时间格式：" class="headerlink" title="常用的时间格式："></a>常用的时间格式：</h3><p><code>&lt;时&gt;:&lt;分&gt; &lt;年&gt;-&lt;月&gt;-&lt;日&gt;</code> </p>
+<p><code>&lt;时&gt;:&lt;分&gt;</code></p>
+<p><code>MMDDYY</code> </p>
+<p><code>MM/DD/YY</code></p>
+<p><code>MM.DD.YY</code></p>
+<p><code>英文月名 日期 年份</code></p>
+<p>各种简写：</p>
+<p><code>Midnight</code>(00:00)</p>
+<p><code>Noon</code>(12:00)</p>
+<p><code>Teatime</code>(16:00),</p>
+<p><code>now+time</code>(从现在起的某段时间后执行)</p>
+<h4 id="例1"><a href="#例1" class="headerlink" title="例1:"></a>例1:</h4><p>五分钟后执行<code>a.sh</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">at -f a.sh  now+5min</span><br><span class="line">job 3 at Tue Jun 29 20:51:00 2021</span><br></pre></td></tr></table></figure>
+
+<p>写法2：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> at now+5min</span><br><span class="line"><span class="meta">at&gt;</span><span class="bash"> /root/a.sh</span></span><br><span class="line"><span class="meta">at&gt;</span><span class="bash"> &lt;EOT&gt;</span></span><br><span class="line">job 4 at Tue Jun 29 20:52:00 2021 # 使用Ctrl + D 结束</span><br></pre></td></tr></table></figure>
 
 
 
+<h3 id="权限控制"><a href="#权限控制" class="headerlink" title="权限控制"></a>权限控制</h3><p>同cron， 文件名<code>/etc/at.deny</code>、<code>/etc/at.allow</code></p>
 
             </div>
             
@@ -216,7 +246,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "http://srcchen.github.io/2021/06/06/rust%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%20tide%EF%BC%88%E4%B8%80%EF%BC%89/",
+                text: "http://srcchen.github.io/2021/06/29/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1(cron%E4%B8%8Eat)/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -228,10 +258,11 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "http://srcchen.github.io/2021/06/06/rust%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%20tide%EF%BC%88%E4%B8%80%EF%BC%89/";
-            const title         = "「rust 学习笔记 tide（一）」";
-            const excerpt       = `tide 简介tide 是rust官方推出的异步web框架，相对actix-web 等缺少路由宏定义(e.g: #[get(“/helloworld”)])，相对来说用的人较少，目前的版本为0.16.0
-最简单的tide程序cargo...`;
+            const hostUrl       = "http://srcchen.github.io/2021/06/29/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1(cron%E4%B8%8Eat)/";
+            const title         = "「定时任务(cron与at)」";
+            const excerpt       = `cron(定时任务)cron是最常用的定时任务类型,用于执行周期性计划
+对应的服务为crond，使用前请确保此服务已运行
+12345678910111213141516$ systemctl status crond● crond.s...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -250,10 +281,10 @@
                 <div class="footer-tag clearfix">
                     <div class="pull-left">
                     <i class="fa fa-tags"></i>
-                        <a class="tag-none-link" href="/tags/rust/" rel="tag">rust</a>
+                        <a class="tag-none-link" href="/tags/Linux/" rel="tag">Linux</a>
                     </div>
                     <div class="pull-date">
-                    <span>最后编辑：2021-06-24</span>
+                    <span>最后编辑：2021-06-29</span>
                     </div>
                 </div>
             </footer>
@@ -262,13 +293,9 @@
             <nav class="navigation post-navigation clearfix" role="navigation">
                 
                 <div class="nav-previous clearfix">
-                    <a title=" Hello World" href="/2021/06/05/firstblog/">&lt; 上一篇</a>
+                    <a title=" kubernetes学习笔记(prometheus)" href="/2021/06/28/kubernetes学习笔记(prometheus)/">&lt; 上一篇</a>
                 </div>
                 
-                
-                <div class="nav-next clearfix">
-                    <a title=" kubernetes学习笔记（部署）" href="/2021/06/08/k8s  部署记录/">下一篇 &gt;</a>
-                </div>
                 
             </nav>
         
@@ -296,18 +323,6 @@
 </aside>
             
                     <div class="sticky-area">
-                
-                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
-    <div class="photo-background"></div>
-    <h4 class="widget-title no-after">
-        <i class="fa fa-compass"></i>
-        文章目录
-        <span class="toc-progress-bar"></span>
-    </h4>
-    <div class="textwidget">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#tide-%E7%AE%80%E4%BB%8B"><span class="toc-text">tide 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84tide%E7%A8%8B%E5%BA%8F"><span class="toc-text">最简单的tide程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tide%E5%AE%98%E7%BD%91%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-text">tide官网的例子</span></a></li></ol>
-    </div>
-</aside>
                 
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
