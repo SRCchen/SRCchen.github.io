@@ -24,7 +24,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
 <meta property="article:published_time" content="2021-06-07T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-06-28T12:20:16.269Z">
+<meta property="article:modified_time" content="2021-07-02T10:39:46.843Z">
 <meta property="article:author" content="SRCchen">
 <meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary">
@@ -129,7 +129,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~2.87K
+                            ~3.02K
                         
                         字
                     </li>
@@ -138,7 +138,7 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1624882816269"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1625222386843"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                     <div class="kratos-post-inner-toc">
@@ -168,8 +168,10 @@
 
 
 <h2 id="部署cni-容器网络"><a href="#部署cni-容器网络" class="headerlink" title="部署cni 容器网络"></a>部署cni 容器网络</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://docs.projectcalico.org/manifests/calico.yaml</span><br><span class="line">kubectl apply -f calico.yaml</span><br><span class="line">kubectl get pods -n kube-system</span><br></pre></td></tr></table></figure>
-
-
+<p>也可使用flannel</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</span><br></pre></td></tr></table></figure>
+<div class="alert alert-info"><p>如果要切换cni插件，需要先把所有节点的<code>/etc/cni/net.d/</code>文件清空</p>
+</div>
 
 <h2 id="验证kubernetes"><a href="#验证kubernetes" class="headerlink" title="验证kubernetes"></a>验证kubernetes</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl create deployment nginx --image=nginx</span><br><span class="line">kubectl expose deployment nginx --port=80 --type=NodePort</span><br><span class="line">kubectl get pod,svc</span><br></pre></td></tr></table></figure>
 
@@ -271,7 +273,7 @@
                         <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
                     </div>
                     <div class="pull-date">
-                    <span>最后编辑：2021-06-28</span>
+                    <span>最后编辑：2021-07-02</span>
                     </div>
                 </div>
             </footer>
