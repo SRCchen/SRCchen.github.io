@@ -18,17 +18,17 @@
   <meta name="description" content="Earthly工具尝试最近发现一个比较有意思的镜像构建工具Earthly,文档地址 根据Earthly工具的介绍,它相当于Dockerfile+MAkefile+Bash 简单部署根据官网文档简单试用一下： 因为各种原因，个人选择在docker:dind的容器环境中尝试使用。 启动docker:dind容器： 1docker run -d --privileged  docker:dind  在容">
 <meta property="og:type" content="article">
 <meta property="og:title" content="利用Earthly工具进行CI&#x2F;CD">
-<meta property="og:url" content="http://srcchen.github.io/2021/07/22/earthly/index.html">
+<meta property="og:url" content="http://example.com/2021/07/22/earthly/index.html">
 <meta property="og:site_name">
 <meta property="og:description" content="Earthly工具尝试最近发现一个比较有意思的镜像构建工具Earthly,文档地址 根据Earthly工具的介绍,它相当于Dockerfile+MAkefile+Bash 简单部署根据官网文档简单试用一下： 因为各种原因，个人选择在docker:dind的容器环境中尝试使用。 启动docker:dind容器： 1docker run -d --privileged  docker:dind  在容">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://srcchen.github.io/null">
+<meta property="og:image" content="http://example.com/null">
 <meta property="article:published_time" content="2021-07-22T11:00:45.025Z">
-<meta property="article:modified_time" content="2021-07-22T11:20:38.000Z">
+<meta property="article:modified_time" content="2021-07-22T12:04:12.520Z">
 <meta property="article:author" content="SRCchen">
 <meta property="article:tag" content="DevOps">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://srcchen.github.io/null">
+<meta name="twitter:image" content="http://example.com/null">
 <meta name="twitter:site" content="@null">
   
   <!-- 站点验证相关 -->
@@ -129,7 +129,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~4.40K
+                            ~4.41K
                         
                         字
                     </li>
@@ -138,7 +138,7 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1626952838000"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1626955452520"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                     <div class="kratos-post-inner-toc">
@@ -179,10 +179,8 @@
 
 <h3 id="gitlab-ci-yml"><a href="#gitlab-ci-yml" class="headerlink" title=".gitlab-ci.yml"></a>.gitlab-ci.yml</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">stages:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">build</span></span><br><span class="line"></span><br><span class="line"><span class="attr">variables:</span></span><br><span class="line">  <span class="attr">DOCKER_HOST:</span> <span class="string">tcp://localhost:2375</span></span><br><span class="line">  <span class="attr">DOCKER_TLS_CERTDIR:</span> <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">build-project:</span></span><br><span class="line">  <span class="attr">stage:</span> <span class="string">build</span></span><br><span class="line">  <span class="attr">image:</span> <span class="string">docker:19.03.1</span></span><br><span class="line">  <span class="attr">services:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">docker:19.03.1-dind</span></span><br><span class="line">  <span class="attr">retry:</span> <span class="number">2</span></span><br><span class="line">  <span class="attr">before_script:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">docker</span> <span class="string">login</span> <span class="string">-u</span> <span class="string">&quot;$CI_REGISTRY_USER&quot;</span> <span class="string">-p</span> <span class="string">&quot;$CI_REGISTRY_PASSWORD&quot;</span> <span class="string">$CI_REGISTRY</span></span><br><span class="line">    <span class="comment"># 登陆gitlab私有仓库</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/bin/sh</span> <span class="string">-c</span> <span class="string">&#x27;wget https://github.com/earthly/earthly/releases/download/v0.5.19/earthly-linux-amd64 -O /usr/local/bin/earthly &amp;&amp; chmod +x /usr/local/bin/earthly&#x27;</span></span><br><span class="line">    <span class="comment"># 下载earthly</span></span><br><span class="line">  <span class="attr">script:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">earthly</span> <span class="string">+build</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">earthly</span> <span class="string">--build-arg</span> <span class="string">IMAGE=$CI_REGISTRY_IMAGE</span>  <span class="string">--build-arg</span> <span class="string">TAG=$CI_COMMIT_SHORT_SHA</span> <span class="string">--push</span> <span class="string">+docker</span></span><br></pre></td></tr></table></figure>
 
-<p>看看效果</p>
-<img src="/.io//07/22/earthly/1.png" class title="gitlab-ci">
-<p>看起来已经通过了，<br>再看看镜像库</p>
-<img src="/.io//07/22/earthly/2.png" class title="镜像库">
+<p>等待执行完毕即可,生产环境清使用专有earthly镜像</p>
+
             </div>
             
                 <div class="kratos-copyright text-center clearfix">
@@ -235,7 +233,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "http://srcchen.github.io/2021/07/22/earthly/",
+                text: "http://example.com/2021/07/22/earthly/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -247,7 +245,7 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "http://srcchen.github.io/2021/07/22/earthly/";
+            const hostUrl       = "http://example.com/2021/07/22/earthly/";
             const title         = "「利用Earthly工具进行CI/CD」";
             const excerpt       = `Earthly工具尝试最近发现一个比较有意思的镜像构建工具Earthly,文档地址
 根据Earthly工具的介绍,它相当于Dockerfile+MAkefile+Bash
