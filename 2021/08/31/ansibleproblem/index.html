@@ -4,7 +4,7 @@
   <!-- 元数据 -->
   <meta charset="utf-8">
   <link rel="icon" href="">
-  <title>Hello World | </title>
+  <title>ansible中遇上的一个小问题 | </title>
   <meta name="author" content="SRCchen" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -13,20 +13,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="杂谈" />
+    <meta name="keywords" content="ansible, 故障处理" />
   
-  <meta name="description" content="各种备忘的以及乱七八糟的东西都放到这从rust,python 的学习笔记到linux,docker 等有机会大概都会在这更新      做个纪录顺便防止自己哪天忘了              hexo主题来源为https:&#x2F;&#x2F;github.com&#x2F;Candinya&#x2F;Kratos-Rebirth说明文档地址 https:&#x2F;&#x2F;candinya.com&#x2F;posts&#x2F;Kratos-Rebirth-Manu">
+  <meta name="description" content="今天在新工作的地方研究了一下自动化的playbook,刚好遇上一个很奇怪的问题,来自ansible(version&#x3D;2.10.1) 问题描述由于需要利用ansible调用zabbix的JMX监控,而监控的触发器在不同环境又是不一样的，因此需要利用ansible的set_fact 模块,为不同的环境添加不同的模板。 同时ansible 需要支持自定义传参添加额外监控模板功能。以下是实现： 举个例子:">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://example.com/2021/06/05/firstblog/index.html">
+<meta property="og:title" content="ansible中遇上的一个小问题">
+<meta property="og:url" content="http://example.com/2021/08/31/ansibleproblem/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="各种备忘的以及乱七八糟的东西都放到这从rust,python 的学习笔记到linux,docker 等有机会大概都会在这更新      做个纪录顺便防止自己哪天忘了              hexo主题来源为https:&#x2F;&#x2F;github.com&#x2F;Candinya&#x2F;Kratos-Rebirth说明文档地址 https:&#x2F;&#x2F;candinya.com&#x2F;posts&#x2F;Kratos-Rebirth-Manu">
+<meta property="og:description" content="今天在新工作的地方研究了一下自动化的playbook,刚好遇上一个很奇怪的问题,来自ansible(version&#x3D;2.10.1) 问题描述由于需要利用ansible调用zabbix的JMX监控,而监控的触发器在不同环境又是不一样的，因此需要利用ansible的set_fact 模块,为不同的环境添加不同的模板。 同时ansible 需要支持自定义传参添加额外监控模板功能。以下是实现： 举个例子:">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/null">
-<meta property="article:published_time" content="2021-06-05T06:30:57.718Z">
-<meta property="article:modified_time" content="2021-06-28T13:06:20.814Z">
+<meta property="article:published_time" content="2021-08-31T10:42:34.000Z">
+<meta property="article:modified_time" content="2021-08-31T11:05:43.992Z">
 <meta property="article:author" content="SRCchen">
-<meta property="article:tag" content="杂谈">
+<meta property="article:tag" content="故障处理">
+<meta property="article:tag" content="ansible">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/null">
 <meta name="twitter:site" content="@null">
@@ -119,17 +120,17 @@
         <div class="kratos-hentry kratos-post-inner clearfix">
             <header class="kratos-entry-header">
                 
-                    <h1 class="kratos-entry-title text-center">Hello World</h1>
+                    <h1 class="kratos-entry-title text-center">ansible中遇上的一个小问题</h1>
                 
                 
                 <ul class="kratos-post-meta text-center">
-                    <li><i class="fa fa-calendar"></i> 2021-06-05</li>
+                    <li><i class="fa fa-calendar"></i> 2021-08-31</li>
                     <li><i class="fa fa-user"></i> 作者 SRCchen</li>
                     <li>
                         <i class="fa fa-edit"></i> 
                         
                         
-                            215
+                            1175
                         
                         字
                     </li>
@@ -138,18 +139,30 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1624885580814"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1630407943992"></time> 前，其中的内容可能需要更新。
                 </div>
                 
+                    <div class="kratos-post-inner-toc">
+                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9B%A0%E6%8E%92%E6%9F%A5"><span class="toc-number">2.</span> <span class="toc-text">原因排查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">解决办法</span></a></li></ol>
+                    </div>
+                
                 <hr />
-                <p>各种备忘的以及乱七八糟的东西都放到这<br>从rust,python 的学习笔记到linux,docker 等<br>有机会大概都会在这更新</p>
-<div class="xControl">
-    <div class="xHeading"><div class="xIcon"><i class="fa fa-plus"></i></div><span>做个纪录顺便防止自己哪天忘了</span></div>
-    <div class="xContent"><div class="inner">
-        <p>hexo主题来源为<a target="_blank" rel="noopener" href="https://github.com/Candinya/Kratos-Rebirth">https://github.com/Candinya/Kratos-Rebirth</a><br>说明文档地址 <a target="_blank" rel="noopener" href="https://candinya.com/posts/Kratos-Rebirth-Manual/">https://candinya.com/posts/Kratos-Rebirth-Manual/</a></p>
- 
-    </div></div>
-    </div>
+                <p>今天在新工作的地方研究了一下自动化的playbook,刚好遇上一个很奇怪的问题,来自ansible(version=2.10.1)</p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>由于需要利用ansible调用zabbix的JMX监控,而监控的触发器在不同环境又是不一样的，因此需要利用ansible的<code>set_fact</code> 模块,为不同的环境添加不同的模板。 同时ansible 需要支持自定义传参添加额外监控模板功能。以下是实现：</p>
+<p>举个例子:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Set</span> <span class="string">jmx</span> <span class="string">template</span> <span class="string">for</span> <span class="string">dev</span> </span><br><span class="line">  <span class="attr">set_fact:</span> </span><br><span class="line">    <span class="attr">zabbixJmxTemplate:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123;devZabbixTemplate&#125;&#125;</span>&quot;</span> <span class="string">+</span> [<span class="string">&#x27;<span class="template-variable">&#123;&#123;item&#125;&#125;</span>&#x27;</span>]</span><br><span class="line">  <span class="attr">with_items:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&quot;<span class="template-variable">&#123;&#123;inputParamZabbixTemplate&#125;&#125;</span>&quot;</span></span><br><span class="line">  <span class="attr">when:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">(</span> <span class="string">env|</span> <span class="string">string</span> <span class="string">==</span> <span class="string">&quot;dev&quot;</span> <span class="string">)</span></span><br></pre></td></tr></table></figure>
+
+<p>看起来很美好对吧</p>
+<p>那就大错特错了。</p>
+<p>实际执行起来这段playbook会被跳过</p>
+<h2 id="原因排查"><a href="#原因排查" class="headerlink" title="原因排查"></a>原因排查</h2><p>查来查去发现是因为加了<code>with_item</code>的原因, 由于item的默认值是一个空的列表<code>inputParamZabbixTemplate: []</code></p>
+<p>实际上就不会对他进行操作。</p>
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>解决办法其实比较简单，就是在这一步之前执行一个变量初始化操作，这样如果有item的话原有逻辑也能继续执行，同样的如果没有的话跳过，也能依照初始变量运行</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">init</span> <span class="string">vars</span></span><br><span class="line">  <span class="attr">set_fact:</span></span><br><span class="line">  	<span class="attr">zabbixJmxTemplate:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123;devZabbixTemplate&#125;&#125;</span>&quot;</span></span><br><span class="line">  <span class="attr">when:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">(</span> <span class="string">env|</span> <span class="string">string</span> <span class="string">==</span> <span class="string">&quot;dev&quot;</span> <span class="string">)</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Set</span> <span class="string">jmx</span> <span class="string">template</span> <span class="string">for</span> <span class="string">dev</span> </span><br><span class="line">  <span class="attr">set_fact:</span> </span><br><span class="line">    <span class="attr">zabbixJmxTemplate:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123;devZabbixTemplate&#125;&#125;</span>&quot;</span> <span class="string">+</span> [<span class="string">&#x27;<span class="template-variable">&#123;&#123;item&#125;&#125;</span>&#x27;</span>]</span><br><span class="line">  <span class="attr">with_items:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&quot;<span class="template-variable">&#123;&#123;inputParamZabbixTemplate&#125;&#125;</span>&quot;</span>    </span><br><span class="line">  <span class="attr">when:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">(</span> <span class="string">env|</span> <span class="string">string</span> <span class="string">==</span> <span class="string">&quot;dev&quot;</span> <span class="string">)</span></span><br></pre></td></tr></table></figure>
+
+
+
+
             </div>
             
                 <div class="kratos-copyright text-center clearfix">
@@ -202,7 +215,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "http://example.com/2021/06/05/firstblog/",
+                text: "http://example.com/2021/08/31/ansibleproblem/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -214,13 +227,10 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "http://example.com/2021/06/05/firstblog/";
-            const title         = "「Hello World」";
-            const excerpt       = `各种备忘的以及乱七八糟的东西都放到这从rust,python 的学习笔记到linux,docker 等有机会大概都会在这更新
-
-    做个纪录顺便防止自己哪天忘了
-    
-        hexo主题来源为https://gith...`;
+            const hostUrl       = "http://example.com/2021/08/31/ansibleproblem/";
+            const title         = "「ansible中遇上的一个小问题」";
+            const excerpt       = `今天在新工作的地方研究了一下自动化的playbook,刚好遇上一个很奇怪的问题,来自ansible(version=2.10.1)
+问题描述由于需要利用ansible调用zabbix的JMX监控,而监控的触发器在不同环境又是不一样的，...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -239,10 +249,10 @@
                 <div class="footer-tag clearfix">
                     <div class="pull-left">
                     <i class="fa fa-tags"></i>
-                        <a class="tag-none-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag">杂谈</a>
+                        <a class="tag-none-link" href="/tags/ansible/" rel="tag">ansible</a>, <a class="tag-none-link" href="/tags/%E6%95%85%E9%9A%9C%E5%A4%84%E7%90%86/" rel="tag">故障处理</a>
                     </div>
                     <div class="pull-date">
-                    <span>最后编辑：2021-06-28</span>
+                    <span>最后编辑：2021-08-31</span>
                     </div>
                 </div>
             </footer>
@@ -250,10 +260,10 @@
         
             <nav class="navigation post-navigation clearfix" role="navigation">
                 
-                
-                <div class="nav-next clearfix">
-                    <a title=" kubernetes学习笔记（部署）" href="/2021/06/08/k8s  部署记录/">下一篇 &gt;</a>
+                <div class="nav-previous clearfix">
+                    <a title=" 利用Earthly工具进行CI/CD" href="/2021/07/22/earthly/">&lt; 上一篇</a>
                 </div>
+                
                 
             </nav>
         
@@ -281,6 +291,18 @@
 </aside>
             
                     <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar"></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9B%A0%E6%8E%92%E6%9F%A5"><span class="toc-text">原因排查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">解决办法</span></a></li></ol>
+    </div>
+</aside>
                 
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
