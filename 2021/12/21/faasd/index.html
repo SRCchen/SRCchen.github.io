@@ -24,7 +24,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/null">
 <meta property="article:published_time" content="2021-12-20T16:25:26.478Z">
-<meta property="article:modified_time" content="2021-12-22T16:59:14.172Z">
+<meta property="article:modified_time" content="2021-12-23T12:39:35.418Z">
 <meta property="article:author" content="SRCchen">
 <meta property="article:tag" content="FaaS">
 <meta property="article:tag" content="Kubernetes">
@@ -130,7 +130,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~8.29K
+                            ~8.32K
                         
                         字
                     </li>
@@ -139,7 +139,7 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1640192354172"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1640263175418"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                     <div class="kratos-post-inner-toc">
@@ -199,7 +199,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">faas-cli build --shrinkwrap -f test.yml #生成构建上下文</span><br><span class="line">[0] &gt; Building test.</span><br><span class="line">Clearing temporary build folder: ./build/test/</span><br><span class="line">Preparing: ./test/ build/test/function</span><br><span class="line">Building: registry.cn-hangzhou.aliyuncs.com/scc-image/test:latest with rust template. Please wait..</span><br><span class="line">test shrink-wrapped to ./build/test/</span><br><span class="line">[0] &lt; Building test done in 0.00s.</span><br><span class="line">[0] Worker done.</span><br><span class="line"></span><br><span class="line">Total build time: 0.00s</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">##########################################</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此处使用官方的kaniko镜像,如果网络有一些问题的话docker hub也有很多同步的镜像,可以使用dockerhub提供的镜像。如果想要定制镜像可以修改build下的<span class="built_in">test</span>/Dockerfile</span></span><br><span class="line">nerdctl  run -v $PWD/build/test:/workspace -v ~/.docker/config.json:/kaniko/config.json --env DOCKER_CONFIG=/kaniko gcr.io/kaniko-project/executor:latest  -d $YOUR_REGISTRY_URL/test:latest  --force</span><br></pre></td></tr></table></figure>
 
 <p>推送完成后手动部署    </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">faas-cli deploy -f test.yml</span><br><span class="line">Deploying: test.</span><br><span class="line">Function test already exists, attempting rolling-update.</span><br><span class="line"></span><br><span class="line">Deployed. 200 OK.</span><br><span class="line">URL: http://127.0.0.1:8080/function/test</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cp  -r ~/.docker  /var/lib/faasd </span><br><span class="line"></span><br><span class="line">faas-cli deploy -f test.yml</span><br><span class="line">Deploying: test.</span><br><span class="line">Function test already exists, attempting rolling-update.</span><br><span class="line"></span><br><span class="line">Deployed. 200 OK.</span><br><span class="line">URL: http://127.0.0.1:8080/function/test</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>简单测试:</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl http://192.168.188.128:8080/function/test -d 123123</span><br><span class="line">hello 123123</span><br></pre></td></tr></table></figure>
