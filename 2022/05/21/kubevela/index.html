@@ -4,7 +4,7 @@
   <!-- 元数据 -->
   <meta charset="utf-8">
   <link rel="icon" href="">
-  <title></title>
+  <title>在kind中部署kubevela目前最新版本(v1.3.0)l | </title>
   <meta name="author" content="SRCchen" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -13,19 +13,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="" />
+    <meta name="keywords" content="DevOps, kubernetes" />
   
-  <meta name="description" content="在kind中部署kubevela目前最新版本(v1.3.0)准备集群下载kind123curl -Lo .&#x2F;kind https:&#x2F;&#x2F;kind.sigs.k8s.io&#x2F;dl&#x2F;v0.12.0&#x2F;kind-linux-amd64chmod +x .&#x2F;kindmv .&#x2F;kind &#x2F;usr&#x2F;local&#x2F;bin&#x2F;kind  创建kind集群旧版本的node安装ingress-nginx时会找不到network">
+  <meta name="description" content="准备集群下载kind123curl -Lo .&#x2F;kind https:&#x2F;&#x2F;kind.sigs.k8s.io&#x2F;dl&#x2F;v0.12.0&#x2F;kind-linux-amd64chmod +x .&#x2F;kindmv .&#x2F;kind &#x2F;usr&#x2F;local&#x2F;bin&#x2F;kind  创建kind集群旧版本的node安装ingress-nginx时会找不到networking.k8s.io&#x2F;v1 ,选择node版本为1.22.7">
 <meta property="og:type" content="article">
-<meta property="og:title">
+<meta property="og:title" content="在kind中部署kubevela目前最新版本(v1.3.0)l">
 <meta property="og:url" content="http://example.com/2022/05/21/kubevela/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="在kind中部署kubevela目前最新版本(v1.3.0)准备集群下载kind123curl -Lo .&#x2F;kind https:&#x2F;&#x2F;kind.sigs.k8s.io&#x2F;dl&#x2F;v0.12.0&#x2F;kind-linux-amd64chmod +x .&#x2F;kindmv .&#x2F;kind &#x2F;usr&#x2F;local&#x2F;bin&#x2F;kind  创建kind集群旧版本的node安装ingress-nginx时会找不到network">
+<meta property="og:description" content="准备集群下载kind123curl -Lo .&#x2F;kind https:&#x2F;&#x2F;kind.sigs.k8s.io&#x2F;dl&#x2F;v0.12.0&#x2F;kind-linux-amd64chmod +x .&#x2F;kindmv .&#x2F;kind &#x2F;usr&#x2F;local&#x2F;bin&#x2F;kind  创建kind集群旧版本的node安装ingress-nginx时会找不到networking.k8s.io&#x2F;v1 ,选择node版本为1.22.7">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/null">
 <meta property="article:published_time" content="2022-05-21T09:42:52.497Z">
-<meta property="article:modified_time" content="2022-05-21T09:39:58.783Z">
+<meta property="article:modified_time" content="2022-05-21T09:47:48.033Z">
 <meta property="article:author" content="SRCchen">
+<meta property="article:tag" content="kubernetes">
+<meta property="article:tag" content="DevOps">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/null">
 <meta name="twitter:site" content="@null">
@@ -118,6 +120,8 @@
         <div class="kratos-hentry kratos-post-inner clearfix">
             <header class="kratos-entry-header">
                 
+                    <h1 class="kratos-entry-title text-center">在kind中部署kubevela目前最新版本(v1.3.0)l</h1>
+                
                 
                 <ul class="kratos-post-meta text-center">
                     <li><i class="fa fa-calendar"></i> 2022-05-21</li>
@@ -126,7 +130,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~2.70K
+                            ~2.67K
                         
                         字
                     </li>
@@ -135,11 +139,15 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1653125998783"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1653126468033"></time> 前，其中的内容可能需要更新。
                 </div>
                 
+                    <div class="kratos-post-inner-toc">
+                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E9%9B%86%E7%BE%A4"><span class="toc-number">1.</span> <span class="toc-text">准备集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDkind"><span class="toc-number">1.1.</span> <span class="toc-text">下载kind</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAkind%E9%9B%86%E7%BE%A4"><span class="toc-number">1.2.</span> <span class="toc-text">创建kind集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85ingress-nginx"><span class="toc-number">1.3.</span> <span class="toc-text">安装ingress-nginx</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%9B%BD%E5%86%85%E6%97%A0%E6%B3%95%E4%B8%8B%E8%BD%BD%E9%95%9C%E5%83%8F%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.0.1.</span> <span class="toc-text">解决国内无法下载镜像问题</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85kubevela"><span class="toc-number">2.</span> <span class="toc-text">安装kubevela</span></a></li></ol>
+                    </div>
+                
                 <hr />
-                <h1 id="在kind中部署kubevela目前最新版本-v1-3-0"><a href="#在kind中部署kubevela目前最新版本-v1-3-0" class="headerlink" title="在kind中部署kubevela目前最新版本(v1.3.0)"></a>在kind中部署kubevela目前最新版本(v1.3.0)</h1><h2 id="准备集群"><a href="#准备集群" class="headerlink" title="准备集群"></a>准备集群</h2><h3 id="下载kind"><a href="#下载kind" class="headerlink" title="下载kind"></a>下载kind</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.12.0/kind-linux-amd64</span><br><span class="line">chmod +x ./kind</span><br><span class="line">mv ./kind /usr/local/bin/kind</span><br></pre></td></tr></table></figure>
+                <h2 id="准备集群"><a href="#准备集群" class="headerlink" title="准备集群"></a>准备集群</h2><h3 id="下载kind"><a href="#下载kind" class="headerlink" title="下载kind"></a>下载kind</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.12.0/kind-linux-amd64</span><br><span class="line">chmod +x ./kind</span><br><span class="line">mv ./kind /usr/local/bin/kind</span><br></pre></td></tr></table></figure>
 
 <h3 id="创建kind集群"><a href="#创建kind集群" class="headerlink" title="创建kind集群"></a>创建kind集群</h3><p>旧版本的node安装ingress-nginx时会找不到<code>networking.k8s.io/v1</code> ,选择node版本为1.22.7,也可使用旧版<code>nginx-ingress</code>。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt;EOF | kind create cluster --image=kindest/node:v1.22.7 --config=-</span><br><span class="line">kind: Cluster</span><br><span class="line">apiVersion: kind.x-k8s.io/v1alpha4</span><br><span class="line">nodes:</span><br><span class="line">- role: control-plane</span><br><span class="line">  kubeadmConfigPatches:</span><br><span class="line">  - |</span><br><span class="line">    kind: InitConfiguration</span><br><span class="line">    nodeRegistration:</span><br><span class="line">      kubeletExtraArgs:</span><br><span class="line">        node-labels: &quot;ingress-ready=true&quot;</span><br><span class="line">  extraPortMappings:</span><br><span class="line">  - containerPort: 80</span><br><span class="line">    hostPort: 80</span><br><span class="line">    protocol: TCP</span><br><span class="line">  - containerPort: 443</span><br><span class="line">    hostPort: 443</span><br><span class="line">    protocol: TCP</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
@@ -243,8 +251,8 @@
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
             const hostUrl       = "http://example.com/2022/05/21/kubevela/";
-            const title         = "「」";
-            const excerpt       = `在kind中部署kubevela目前最新版本(v1.3.0)准备集群下载kind123curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.12.0/kind-linux-amd64chmod ...`;
+            const title         = "「在kind中部署kubevela目前最新版本(v1.3.0)l」";
+            const excerpt       = `准备集群下载kind123curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.12.0/kind-linux-amd64chmod +x ./kindmv ./kind /usr/local/...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -263,7 +271,7 @@
                 <div class="footer-tag clearfix">
                     <div class="pull-left">
                     <i class="fa fa-tags"></i>
-                        
+                        <a class="tag-none-link" href="/tags/DevOps/" rel="tag">DevOps</a>, <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
                     </div>
                     <div class="pull-date">
                     <span>最后编辑：2022-05-21</span>
@@ -306,10 +314,22 @@
             
                     <div class="sticky-area">
                 
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar"></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E9%9B%86%E7%BE%A4"><span class="toc-text">准备集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDkind"><span class="toc-text">下载kind</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAkind%E9%9B%86%E7%BE%A4"><span class="toc-text">创建kind集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85ingress-nginx"><span class="toc-text">安装ingress-nginx</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%9B%BD%E5%86%85%E6%97%A0%E6%B3%95%E4%B8%8B%E8%BD%BD%E9%95%9C%E5%83%8F%E9%97%AE%E9%A2%98"><span class="toc-text">解决国内无法下载镜像问题</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85kubevela"><span class="toc-text">安装kubevela</span></a></li></ol>
+    </div>
+</aside>
+                
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
     <h4 class="widget-title"><i class="fa fa-folder"></i>分类目录</h4>
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
   </aside>
 
 
@@ -331,6 +351,9 @@
         
         
           
+          
+            <a class="list-group-item" href="/2022/05/21/kubevela/"><i class="fa  fa-book"></i> 在kind中部署kubevela目前最新版本(v1.3.0)l</a>
+            
           
         
           
@@ -358,11 +381,7 @@
           
         
           
-          
-            <a class="list-group-item" href="/2021/10/26/Promethues/"><i class="fa  fa-book"></i> 部署一个比较靠谱的prometheus监控</a>
             
-          
-        
           
             
           
