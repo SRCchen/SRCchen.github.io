@@ -18,7 +18,7 @@
   <meta name="description" content="半吊子经济学毕业生">
 <meta property="og:type" content="website">
 <meta property="og:title">
-<meta property="og:url" content="http://example.com/tags/Linux/index.html">
+<meta property="og:url" content="http://example.com/tags/envoy/index.html">
 <meta property="og:site_name">
 <meta property="og:description" content="半吊子经济学毕业生">
 <meta property="og:locale" content="zh_CN">
@@ -119,7 +119,7 @@
                 <div class="kratos-entry-border-new clearfix">
                     
                     <div class="kratos-entry-thumb-new">
-                        <a href="/2021/07/01/Docker%E8%BF%9E%E6%8E%A5harbor%E5%87%BA%E7%8E%B0x509%E7%9A%84%E5%A4%84%E7%90%86%E5%8A%9E%E6%B3%95/">
+                        <a href="/2022/05/21/%E4%BD%BF%E7%94%A8rust%20%E7%BC%96%E5%86%99PROXY_WASM%E6%8F%92%E4%BB%B6/">
                             
                                 <img class="kratos-entry-thumb-new-img">
                             
@@ -127,15 +127,14 @@
                     </div>
                     <div class="kratos-post-inner-new">
                         <header class="kratos-entry-header-new">
-                                <a class="label-link" href="/categories/docker/">docker</a>
-                            <h2 class="kratos-entry-title-new"><a href="/2021/07/01/Docker%E8%BF%9E%E6%8E%A5harbor%E5%87%BA%E7%8E%B0x509%E7%9A%84%E5%A4%84%E7%90%86%E5%8A%9E%E6%B3%95/">Docker连接harbor出现x509的处理办法</a>
+                                <a class="label-link" href="/categories/gateway/">gateway</a>
+                            <h2 class="kratos-entry-title-new"><a href="/2022/05/21/%E4%BD%BF%E7%94%A8rust%20%E7%BC%96%E5%86%99PROXY_WASM%E6%8F%92%E4%BB%B6/">使用rust 编写PROXY_WASM插件</a>
                         </header>
                         <div class="kratos-entry-content-new">
                             <p>
                                 
-                                    今天在使用tekton做gitops时出现了x509的错误，kubernetes中的pod无法访问本地的harbor，出现这个问题的原因是本地的harbor用的是自签证书，导致docker访问时不信任。
-原先的解决办法：
-在/etc/...
+                                    proxy_wasm 是一套相对通用的标准,他允许实现了这套标准的wasm插件在envoy或者apisix网关中对请求进行一些操作。
+proxy_wasm目前支持多个语言的sdk,支持的sdk参考此处Proxy-Wasm · GitH...
                                 
                             </p>
                         </div>
@@ -144,12 +143,12 @@
                         <span class="pull-left">
                             <a>
                                 <i class="fa fa-calendar"></i>
-                                2021-07-01
+                                2022-05-21
                             </a>
                             <a>
                                 
                                     <i class="fa fa-tags"></i>
-                                    <a class="tag-none-link" href="/tags/Linux/" rel="tag">Linux</a>, <a class="tag-none-link" href="/tags/docker/" rel="tag">docker</a>, <a class="tag-none-link" href="/tags/harbor/" rel="tag">harbor</a>
+                                    <a class="tag-none-link" href="/tags/DevOps/" rel="tag">DevOps</a>, <a class="tag-none-link" href="/tags/envoy/" rel="tag">envoy</a>
                                 
                             </a>
                             
@@ -162,63 +161,7 @@
                             
                         </span>
                         <span class="pull-right">
-                            <a class="read-more" href="/2021/07/01/Docker%E8%BF%9E%E6%8E%A5harbor%E5%87%BA%E7%8E%B0x509%E7%9A%84%E5%A4%84%E7%90%86%E5%8A%9E%E6%B3%95/" title="阅读全文">阅读全文<i class="fa fa-chevron-circle-right"></i></a>
-                        </span>
-                    </footer>
-                </div>
-            </article>
-        
-    
-        
-        
-            <article class="kratos-hentry clearfix">
-                <div class="kratos-entry-border-new clearfix">
-                    
-                    <div class="kratos-entry-thumb-new">
-                        <a href="/2021/06/29/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1(cron%E4%B8%8Eat)/">
-                            
-                                <img class="kratos-entry-thumb-new-img">
-                            
-                        </a>
-                    </div>
-                    <div class="kratos-post-inner-new">
-                        <header class="kratos-entry-header-new">
-                                <a class="label-link" href="/categories/Linux/">Linux</a>
-                            <h2 class="kratos-entry-title-new"><a href="/2021/06/29/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1(cron%E4%B8%8Eat)/">定时任务(cron与at)</a>
-                        </header>
-                        <div class="kratos-entry-content-new">
-                            <p>
-                                
-                                    cron(定时任务)cron是最常用的定时任务类型,用于执行周期性计划
-对应的服务为crond，使用前请确保此服务已运行
-12345678910111213141516$ systemctl status crond● crond.s...
-                                
-                            </p>
-                        </div>
-                    </div>
-                    <footer class="kratos-post-meta-new">
-                        <span class="pull-left">
-                            <a>
-                                <i class="fa fa-calendar"></i>
-                                2021-06-29
-                            </a>
-                            <a>
-                                
-                                    <i class="fa fa-tags"></i>
-                                    <a class="tag-none-link" href="/tags/Linux/" rel="tag">Linux</a>
-                                
-                            </a>
-                            
-                                <!-- 当前仅支持valine/waline自带的统计功能 -->
-                                
-                            
-                            
-                                <!-- 当前仅支持waline自带的统计功能 -->
-                                
-                            
-                        </span>
-                        <span class="pull-right">
-                            <a class="read-more" href="/2021/06/29/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1(cron%E4%B8%8Eat)/" title="阅读全文">阅读全文<i class="fa fa-chevron-circle-right"></i></a>
+                            <a class="read-more" href="/2022/05/21/%E4%BD%BF%E7%94%A8rust%20%E7%BC%96%E5%86%99PROXY_WASM%E6%8F%92%E4%BB%B6/" title="阅读全文">阅读全文<i class="fa fa-chevron-circle-right"></i></a>
                         </span>
                     </footer>
                 </div>
