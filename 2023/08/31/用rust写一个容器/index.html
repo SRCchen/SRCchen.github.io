@@ -15,16 +15,16 @@
   
     <meta name="keywords" content="Docker, rust" />
   
-  <meta name="description" content="译者注              本文章来源 Litchi Pi的个人博客             关于这个系列这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rust 从零开始创建和管理容器。我们会再Linux containers in 500 lines of code系列的基础上,通过rust语言来重新实现自己的container容器  。 首先，为了让我们">
+  <meta name="description" content="注              本文章来源 Litchi Pi的个人博客，个人翻译能力有限，如有疑问可查看原文。             关于这个系列这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rust 从零开始创建和管理容器。我们会在Linux containers in 500 lines of code系列的基础上,通过rust语言来重新实现自己的conta">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【译】使用rust来写一个容器(一)">
 <meta property="og:url" content="http://srcchen.github.io/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="译者注              本文章来源 Litchi Pi的个人博客             关于这个系列这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rust 从零开始创建和管理容器。我们会再Linux containers in 500 lines of code系列的基础上,通过rust语言来重新实现自己的container容器  。 首先，为了让我们">
+<meta property="og:description" content="注              本文章来源 Litchi Pi的个人博客，个人翻译能力有限，如有疑问可查看原文。             关于这个系列这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rust 从零开始创建和管理容器。我们会在Linux containers in 500 lines of code系列的基础上,通过rust语言来重新实现自己的conta">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
 <meta property="article:published_time" content="2023-08-31T11:27:56.000Z">
-<meta property="article:modified_time" content="2023-08-31T17:38:23.882Z">
+<meta property="article:modified_time" content="2023-08-31T18:06:29.526Z">
 <meta property="article:author" content="SRCchen">
 <meta property="article:tag" content="rust">
 <meta property="article:tag" content="Docker">
@@ -130,7 +130,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            249
+                            733
                         
                         字
                     </li>
@@ -139,24 +139,31 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1693503503882"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1693505189526"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                     <div class="kratos-post-inner-toc">
-                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%BF%99%E4%B8%AA%E7%B3%BB%E5%88%97"><span class="toc-number">1.</span> <span class="toc-text">关于这个系列</span></a></li></ol>
+                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%BF%99%E4%B8%AA%E7%B3%BB%E5%88%97"><span class="toc-number">1.</span> <span class="toc-text">关于这个系列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%BF%99%E4%B8%AA%E6%95%99%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">关于这个教程</span></a></li></ol>
                     </div>
                 
                 <hr />
                 <div class="panel panel-info">
-    <div class="panel-title">译者注</div>
+    <div class="panel-title">注</div>
     <div class="panel-body">
-        <p>本文章来源 <code>Litchi Pi</code>的<a target="_blank" rel="noopener" href="https://litchipi.site/">个人博客</a></p>
+        <p>本文章来源 <code>Litchi Pi</code>的<a target="_blank" rel="noopener" href="https://litchipi.site/">个人博客</a>，个人翻译能力有限，如有疑问可查看原文。</p>
 
     </div>
     </div>
 
-<h2 id="关于这个系列"><a href="#关于这个系列" class="headerlink" title="关于这个系列"></a>关于这个系列</h2><p>这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rust 从零开始创建和管理容器。<br>我们会再<a target="_blank" rel="noopener" href="https://blog.lizzie.io/linux-containers-in-500-loc.html">Linux containers in 500 lines of code</a>系列的基础上,通过rust语言来重新实现自己的container容器  。</p>
-<p>首先，为了让我们理解如何构建容器。我们先了解什么是容器以及为什么我们需要容器，然后我们再了解一下一些常见的容器。</p>
+<h2 id="关于这个系列"><a href="#关于这个系列" class="headerlink" title="关于这个系列"></a>关于这个系列</h2><p>这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rust 从零开始创建和管理容器。<br>我们会在<a target="_blank" rel="noopener" href="https://blog.lizzie.io/linux-containers-in-500-loc.html">Linux containers in 500 lines of code</a>系列的基础上,通过rust语言来重新实现自己的container容器  。<br>首先，为了让我们理解如何构建容器。我们先了解什么是容器以及为什么我们需要容器，然后我们再了解一下一些常见的容器。</p>
+<h2 id="关于这个教程"><a href="#关于这个教程" class="headerlink" title="关于这个教程"></a>关于这个教程</h2><p>这个教程可以用以下形式选择性阅读:</p>
+<ul>
+<li>作为在构建有趣项目的同时熟练掌握 Rust 的编程指南。<br> 你不需要有任何经验就可以跟随这个指南来进行编程。请将这本书添加到您浏览器的书签中，在后续过程中，它可能对您理解正在进行的事情起到重要的辅助作用。</li>
+<li>作为如何使用 Linux 内核功能在容器中实现高级别安全性和隔离性的详细示例。<br> 如果你的目的是了解这些信息,那么你可以直接跳过代码部分,因为在代码部分之前我就会对这些内容做出解释。<div class="alert alert-info"><p>请记住，在创建这个项目时我(作者)也正在学习中，所以如果文章有错误的部分也是在所难免的,如果你对文章内容存在疑问,可以通过互联网以及我在文章中提供的参考链接地址来找到答案。</p>
+</div></li>
+</ul>
+<p>这个系列主要是是我用于了解 Linux 安全措施、虚拟化功能、容器化工作原理以及使用 Rust 翻译用 C 语言编写的程序并与 Linux 内核交互的能力的一种方式。 对我来说幸运的是，有很多文档、视频、文章等可以供我参考。</p>
+<p>我建议我的读者把我的文章和<a target="_blank" rel="noopener" href="https://blog.lizzie.io/linux-containers-in-500-loc.html">原始文章</a>来回对照,以获取更加精确的解释，以及各种外链(请 检查脚注)</p>
 <img src="/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8/system_virtualmachine_container.png" class="" title="system_virtualmachine_container">
             </div>
             
@@ -225,14 +232,14 @@
             const hostUrl       = "http://srcchen.github.io/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8/";
             const title         = "「【译】使用rust来写一个容器(一)」";
             const excerpt       = `
-    译者注
+    注
     
-        本文章来源 Litchi Pi的个人博客
+        本文章来源 Litchi Pi的个人博客，个人翻译能力有限，如有疑问可查看原文。
 
     
     
 
-关于这个系列这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rust 从零开始创建和管理容器。我们会再...`;
+关于这个系列这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rus...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -302,7 +309,7 @@
         <span class="toc-progress-bar"></span>
     </h4>
     <div class="textwidget">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%BF%99%E4%B8%AA%E7%B3%BB%E5%88%97"><span class="toc-text">关于这个系列</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%BF%99%E4%B8%AA%E7%B3%BB%E5%88%97"><span class="toc-text">关于这个系列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%BF%99%E4%B8%AA%E6%95%99%E7%A8%8B"><span class="toc-text">关于这个教程</span></a></li></ol>
     </div>
 </aside>
                 
