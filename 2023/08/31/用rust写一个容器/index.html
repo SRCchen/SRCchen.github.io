@@ -24,7 +24,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
 <meta property="article:published_time" content="2023-08-31T11:27:56.000Z">
-<meta property="article:modified_time" content="2023-09-01T18:17:37.370Z">
+<meta property="article:modified_time" content="2023-09-01T18:21:54.489Z">
 <meta property="article:author" content="SRCchen">
 <meta property="article:tag" content="rust">
 <meta property="article:tag" content="Docker">
@@ -139,7 +139,7 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1693592257370"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1693592514489"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                     <div class="kratos-post-inner-toc">
@@ -182,11 +182,10 @@
 <p> 因此，我们可以以管理员权限运行软件,并且可以在不会损害我们的系统的情况下执行任何操作。尽管理论上来说这是安全的，但实际上安全将取决于很多因素。包括为了避免容器逃逸（就像我们希望避免虚拟机逃逸一样）做的实现。如果想深入了解这部分内容,有一篇很好的文章<a target="_blank" rel="noopener" href="https://blog.trailofbits.com/2019/07/19/understanding-docker-container-escapes/">《理解 Docker 容器逃逸》</a>可供参考。</p>
 <h3 id="容器化的直观展示"><a href="#容器化的直观展示" class="headerlink" title="容器化的直观展示"></a>容器化的直观展示</h3><img src="/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8/system_virtualmachine_container.png" class="" title="system_virtualmachine_container">
 
-<p>OK，其实这个图在很多方面都存在错误。但是直观的看，一个系统可以通过不同的方式实现可移植性和隔离功能。实际上，CPU/SoC 硬件具有简化虚拟化的功能，并且Linux 内核下以及内部的软件栈也有相应的功能，但这里我就不再详细讨论这些细节了。</p>
-<p>值得注意的一点是，有一系列Linux的库和内核服务允许我们使用虚拟化功能，在我们这个系列的文章中也将广泛使用这些功能进行实现。</p>
+<p>OK，其实这个图在很多方面都存在错误。但是我们也能直观的看出，一个系统可以通过不同的方式实现可移植性和隔离功能。实际上，CPU/SoC 硬件具有简化虚拟化的功能，Linux 内核下以及内部的软件栈也有相应的功能，这里我就不再详细讨论这些细节了。</p>
+<p>另外有一点值得注意,我们可以通过一系列Linux的库和内核服务使用虚拟化功能，在我们这个系列的文章中也将广泛使用这些功能来进行实现。</p>
 <p>不同的容器一般使用他们各自的不同的容器化类型,例如LXC能够执行<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/OS-level_virtualization">系统级虚拟化</a>，而Docker则实现应用程序级别的虚拟化。</p>
-<h3 id="容器-隔离的软件"><a href="#容器-隔离的软件" class="headerlink" title="容器=隔离的软件"></a>容器=隔离的软件</h3><p>我们所说的“软件隔离”，是指一系列让软件在系统内部运行，但不允许它改变那个系统的方法。因此，我们希望可以制定规则，禁止该软件访问未经授权的文件、使用未获许可的系统功能、修改系统配置、阻碍或改变性能等。<br>这个目的能通过很多种方式进行实现,不过总的来讲，都是通过在软件的环境中采取各种强安全措施来屏蔽软件对底层系统的感知来实现的。</p>
-<p>所以笼统的讲，容器本质上只是通过一组安全措施与系统隔离的应用程序而已。</p>
+<h3 id="容器-隔离的软件"><a href="#容器-隔离的软件" class="headerlink" title="容器=隔离的软件"></a>容器=隔离的软件</h3><p>我们所说的“软件隔离”，是指一系列让软件在系统内部运行，但不允许它改变那个系统的措施。因此，我们希望可以制定规则来禁止该软件访问未经授权的文件、使用未获许可的系统功能、修改系统配置、阻碍或改变性能等。<br>这个目的能通过很多种方式进行实现,不过总的来讲，都是通过在软件的环境中采取各种强安全措施来屏蔽软件对底层系统的感知来实现的。<br>所以容器本质上只是通过一组安全措施与系统隔离的应用程序而已。</p>
 <h2 id="常见容器"><a href="#常见容器" class="headerlink" title="常见容器"></a>常见容器</h2><p>事实上，对于容器业界存在许多种不同的解决方案，用以创建、执行以及管理容器，我们这边只讨论最著名的两个软件：<code>Docker</code> 和 <code>LXC</code>。 你也可以去<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/List_of_Linux_containers">维基百科</a>查阅更多其他容器解决方案。</p>
 <h3 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h3><p>Docker是最流行的的容器技术,于 2013 年作为开源发布，一直是 DevOps 在微服务和云计算方面不可或缺的基础工具之一。<br>其关键特性之一是能够以单个镜像的形式创建容器，并且可以将其存储或发布在 DockerHub 等平台上。它的使用方式和API非常高级，添加特殊配置和外围设备访问相当简单,是一个专注于运行应用程序的容器。<br>如果你想了解更多信息，请访问其<a target="_blank" rel="noopener" href="https://www.docker.com/">官方网站</a>或查阅<a target="_blank" rel="noopener" href="https://docs.docker.com/">文档</a>。</p>
 <h3 id="Linux-Containers-LXC"><a href="#Linux-Containers-LXC" class="headerlink" title="Linux Containers (LXC)"></a>Linux Containers (LXC)</h3><p>LXC 曾经是Docker的骨干部分，它使用内核特性来隔离和容器化一个应用程序，并且它在不需要另一个Linux内核的情况下尽可能创建接近标准Linux发行版的运行环境。</p>
