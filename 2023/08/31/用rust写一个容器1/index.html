@@ -18,7 +18,7 @@
   <meta name="description" content="注              本文章来源 Litchi Pi的个人博客，个人翻译能力有限，如有疑问可查看原文。             关于这个系列这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rust 从零开始创建和管理容器。我们会在Linux containers in 500 lines of code系列的基础上,通过rust语言来重新实现自己的conta">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【译】使用rust来写一个容器(一)">
-<meta property="og:url" content="http://srcchen.github.io/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8/index.html">
+<meta property="og:url" content="http://srcchen.github.io/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A81/index.html">
 <meta property="og:site_name">
 <meta property="og:description" content="注              本文章来源 Litchi Pi的个人博客，个人翻译能力有限，如有疑问可查看原文。             关于这个系列这个系列的博客文章的目标是理解什么是容器、它是如何工作的，我们将使用 Rust 从零开始创建和管理容器。我们会在Linux containers in 500 lines of code系列的基础上,通过rust语言来重新实现自己的conta">
 <meta property="og:locale" content="zh_CN">
@@ -180,7 +180,7 @@
 <p>Containers and virtual machines have similar resource isolation and allocation benefits, but function differently because containers virtualize the operating system instead of hardware.<br>容器和虚拟机具有类似的资源隔离和分配作用，但它们的功能不同，因为容器对操作系统而非硬件做了虚拟化。</p>
 </blockquote>
 <p> 因此，我们可以以管理员权限运行软件,并且可以在不会损害我们的系统的情况下执行任何操作。尽管理论上来说这是安全的，但实际上安全将取决于很多因素。包括为了避免容器逃逸（就像我们希望避免虚拟机逃逸一样）做的实现。如果想深入了解这部分内容,有一篇很好的文章<a target="_blank" rel="noopener" href="https://blog.trailofbits.com/2019/07/19/understanding-docker-container-escapes/">《理解 Docker 容器逃逸》</a>可供参考。</p>
-<h3 id="容器化的直观展示"><a href="#容器化的直观展示" class="headerlink" title="容器化的直观展示"></a>容器化的直观展示</h3><img src="/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8/system_virtualmachine_container.png" class="" title="system_virtualmachine_container">
+<h3 id="容器化的直观展示"><a href="#容器化的直观展示" class="headerlink" title="容器化的直观展示"></a>容器化的直观展示</h3><img src="/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A81/system_virtualmachine_container.png" class="" title="system_virtualmachine_container">
 
 <p>OK，其实这个图在很多方面都存在错误。但是我们也能直观的看出，一个系统可以通过不同的方式实现可移植性和隔离功能。实际上，CPU/SoC 硬件具有简化虚拟化的功能，Linux 内核下以及内部的软件栈也有相应的功能，这里我就不再详细讨论这些细节了。</p>
 <p>另外有一点值得注意,我们可以通过一系列Linux的库和内核服务使用虚拟化功能，在我们这个系列的文章中也将广泛使用这些功能来进行实现。</p>
@@ -243,7 +243,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "http://srcchen.github.io/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8/",
+                text: "http://srcchen.github.io/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A81/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -255,7 +255,7 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "http://srcchen.github.io/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8/";
+            const hostUrl       = "http://srcchen.github.io/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A81/";
             const title         = "「【译】使用rust来写一个容器(一)」";
             const excerpt       = `
     注
@@ -365,7 +365,7 @@
         
           
           
-            <a class="list-group-item" href="/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(一)</a>
+            <a class="list-group-item" href="/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A81/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(一)</a>
             
           
         
