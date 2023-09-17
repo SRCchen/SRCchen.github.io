@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  <link rel="icon" href="">
+  <title>【译】使用rust来写一个容器(四) | </title>
+  <meta name="author" content="SRCchen" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="Docker, rust" />
+  
+  <meta name="description" content="注              本文章为对 Litchi Pi的《Writing a container in Rust》的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转载行为负责。一切权利均由原作者 Litchi Pi 保有。个人翻译能力有限，如有疑问可查看原文。             子进程的诞生在这篇文章中，我们将把我们容器的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【译】使用rust来写一个容器(四)">
+<meta property="og:url" content="http://srcchen.github.io/2023/09/17/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A84/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="注              本文章为对 Litchi Pi的《Writing a container in Rust》的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转载行为负责。一切权利均由原作者 Litchi Pi 保有。个人翻译能力有限，如有疑问可查看原文。             子进程的诞生在这篇文章中，我们将把我们容器的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://srcchen.github.io/null">
+<meta property="article:published_time" content="2023-09-17T04:18:16.000Z">
+<meta property="article:modified_time" content="2023-09-17T07:09:46.302Z">
+<meta property="article:author" content="SRCchen">
+<meta property="article:tag" content="rust">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://srcchen.github.io/null">
+<meta name="twitter:site" content="@null">
+  
+  <!-- 站点验证相关 -->
+  
+    
+    
+    
+  
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kratosr.min.css" type="text/css" media="all">
+  
+    <link rel="stylesheet" id="highlight-css" href="/css/highlight/night-eighties.min.css" type="text/css" media="all">
+  
+  
+  <link rel="stylesheet" id="fontawe-css" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" type="text/css" media="all">
+  <link rel="stylesheet" id="nprogress-css" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" type="text/css" media="all">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+  
+  
+    <link rel="stylesheet" id="darkmode-css" href="/css/kr-dark.min.css" type="text/css" media="all">
+  
+  <!-- 不得不预先加载的一些JS文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/qrcode_js@1.0.0/qrcode.min.js"></script>
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    
+                                        <li><a href="/"><i class="fa fa-home"></i>首页</a></li>
+                                    
+                                
+                                    
+                                        <li><a href="/archives/"><i class="fa fa-file"></i>档案馆</a></li>
+                                    
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/"></a></div>
+                    <div class="nav-toggle">
+                        <a class="kratos-nav-toggle js-kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2></h2> <br />
+                        <span>srcchen的学习笔记</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+                    
+
+        <section class="col-md-8">
+    <article>
+        <div class="kratos-hentry kratos-post-inner clearfix">
+            <header class="kratos-entry-header">
+                
+                    <h1 class="kratos-entry-title text-center">【译】使用rust来写一个容器(四)</h1>
+                
+                
+                <ul class="kratos-post-meta text-center">
+                    <li><i class="fa fa-calendar"></i> 2023-09-17</li>
+                    <li><i class="fa fa-user"></i> 作者 SRCchen</li>
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~11.28K
+                        
+                        字
+                    </li>
+                    
+                </ul>
+            </header>
+            <div class="kratos-post-content">
+                <div id="expire-alert" class="alert alert-warning hidden" role="alert">
+                    本文最后编辑于 <time datetime="1694934586302"></time> 前，其中的内容可能需要更新。
+                </div>
+                
+                    <div class="kratos-post-inner-toc">
+                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%90%E8%BF%9B%E7%A8%8B%E7%9A%84%E8%AF%9E%E7%94%9F"><span class="toc-number">1.</span> <span class="toc-text">子进程的诞生</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87sockets%E8%BF%9B%E8%A1%8C%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1-IPC"><span class="toc-number">1.1.</span> <span class="toc-text">通过sockets进行进程间通信(IPC)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IPC-%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.1.</span> <span class="toc-text">IPC 介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAsocketpair"><span class="toc-number">1.1.2.</span> <span class="toc-text">创建socketpair</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86sockets%E6%B7%BB%E5%8A%A0%E5%88%B0%E5%AE%B9%E5%99%A8%E9%85%8D%E7%BD%AE%E4%B8%AD"><span class="toc-number">1.1.3.</span> <span class="toc-text">将sockets添加到容器配置中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E5%88%B0%E5%AE%B9%E5%99%A8%E5%AE%9E%E7%8E%B0%E4%B8%AD-%E6%B7%BB%E5%8A%A0%E6%B8%85%E7%90%86%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.1.4.</span> <span class="toc-text">添加到容器实现中,添加清理设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAIPC%E5%B0%81%E8%A3%85"><span class="toc-number">1.1.5.</span> <span class="toc-text">创建IPC封装</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step"><span class="toc-number">1.1.5.1.</span> <span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%8B%E9%9A%86%E8%BF%9B%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">克隆进程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AD%90%E8%BF%9B%E7%A8%8B"><span class="toc-number">1.2.1.</span> <span class="toc-text">创建子进程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">关于命名空间的说明</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AEflags%E6%8E%A9%E7%A0%81"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">设置flags掩码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E5%AE%B9%E5%99%A8%E4%B8%AD%E7%94%9F%E6%88%90%E5%AD%90%E8%BF%9B%E7%A8%8B"><span class="toc-number">1.2.2.</span> <span class="toc-text">从容器中生成子进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%89%E5%BE%85%E5%AD%90%E8%BF%9B%E7%A8%8B%E7%BB%93%E6%9D%9F"><span class="toc-number">1.2.3.</span> <span class="toc-text">等待子进程结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">1.2.4.</span> <span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step-1"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li></ol></li></ol>
+                    </div>
+                
+                <hr />
+                <div class="panel panel-info">
+    <div class="panel-title">注</div>
+    <div class="panel-body">
+        <p>本文章为对 <code>Litchi Pi</code>的<a target="_blank" rel="noopener" href="https://litchipi.site/">《Writing a container in Rust》</a>的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转载行为负责。一切权利均由原作者 Litchi Pi 保有。个人翻译能力有限，如有疑问可查看原文。</p>
+
+    </div>
+    </div>
+
+<h1 id="子进程的诞生"><a href="#子进程的诞生" class="headerlink" title="子进程的诞生"></a>子进程的诞生</h1><p>在这篇文章中，我们将把我们容器的父进程克隆成一个子进程。<br>在这之前，我们将通过准备一些进程间通信IPC（inter-process communication）通道来做好基础准备，这样就可以与后续创建的子进程进行交互了。</p>
+<h2 id="通过sockets进行进程间通信-IPC"><a href="#通过sockets进行进程间通信-IPC" class="headerlink" title="通过sockets进行进程间通信(IPC)"></a>通过sockets进行进程间通信(IPC)</h2><h3 id="IPC-介绍"><a href="#IPC-介绍" class="headerlink" title="IPC 介绍"></a>IPC 介绍</h3><p>Unix domain sockets 或者叫同主机socket通信是进程间通信（简称IPC）的解决方案，它们与用于与远程主机进行网络操作的”网络socket通信”类型的套接字有所不同。</p>
+<p>关于套接字和IPC的的内容你可以在<a target="_blank" rel="noopener" href="https://opensource.com/article/19/4/interprocess-communication-linux-networking">这篇文章</a>中查阅。在实际操作中，它就是一个文件（Unix哲学：一切皆文件）。我们将在这个文件中进行读取或写入，以便将信息从一个进程传输到另一个进程。</p>
+<p>对于我们的工具而言。我们并不需要任何复杂的IPC，只希望它能够简单的将布尔值从我们的子进程传入传出即可。</p>
+<h3 id="创建socketpair"><a href="#创建socketpair" class="headerlink" title="创建socketpair"></a>创建socketpair</h3><p>创建一对sockets，一端交给子进程而另一端留给父进程。</p>
+<img src="/2023/09/17/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A84/sockets.png" class="" title="sockets">
+
+<p>这样我们就能够将原始二进制数据从一个进程传输到另一个进程，就像我们将二进制数据写入存储在文件系统中的文件一样。</p>
+<p>让我们创建一个包含了所有进程间通信相关内容的新文件<code>src/cli.rs</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::errors::Errcode;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> std::os::unix::io::RawFd;</span><br><span class="line"><span class="keyword">use</span> nix::sys::socket::&#123;socketpair, AddressFamily, SockType, SockFlag, send, MsgFlags, recv&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">generate_socketpair</span></span>() -&gt; <span class="built_in">Result</span>&lt;(RawFd, RawFd), Errcode&gt; &#123;</span><br><span class="line">    <span class="keyword">match</span> socketpair(</span><br><span class="line">        AddressFamily::Unix,</span><br><span class="line">        SockType::SeqPacket,</span><br><span class="line">        <span class="literal">None</span>,</span><br><span class="line">        SockFlag::SOCK_CLOEXEC)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="literal">Ok</span>(res) =&gt; <span class="literal">Ok</span>(res),</span><br><span class="line">            <span class="literal">Err</span>(_) =&gt; <span class="literal">Err</span>(Errcode::SocketError(<span class="number">0</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们创建了一个<code>generate_socketpair</code>函数，在这个函数中我们调用了<code>socketpair</code>函数，这是在<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man2/socketpair.2.html">Unix中创建socket pair的标准方式</a>，只不过我们是通过Rust进行调用的。</p>
+<ul>
+<li><p><code>AddressFamily::Unix</code>：指定我们使用的是协议族类型为Unix domain socket（详见<a target="_blank" rel="noopener" href="https://docs.rs/nix/0.22.1/nix/sys/socket/enum.AddressFamily.html">all AddressFamily variants for details</a>）</p>
+</li>
+<li><p><code>SockType::SeqPacket</code>：socket将使用具有包和固定长度数据报文的语义通信（Semantic Communication）。（详见<a target="_blank" rel="noopener" href="https://docs.rs/nix/0.22.1/nix/sys/socket/enum.SockType.html">all SockType variants for details</a>）</p>
+</li>
+<li><p><code>None</code>：socket将使用与socket类型相关的默认协议。</p>
+</li>
+<li><p><code>SockFlag::SOCK_CLOEXEC</code>：在执行任何<code>exec</code>家族的系统调用后，socket将自动关闭。（详见<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man3/exec.3.html">Linux manual for <code>exec</code> syscalls</a>）</p>
+</li>
+</ul>
+<p>我们使用了新的错误<code>Errcode::SocketError</code>,让我们把它加到<code>src/errors.rs</code>中:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">enum</span> <span class="title">Errcode</span></span>&#123;</span><br><span class="line">   <span class="comment">// ...</span></span><br><span class="line">   SocketError(<span class="built_in">u8</span>),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="将sockets添加到容器配置中"><a href="#将sockets添加到容器配置中" class="headerlink" title="将sockets添加到容器配置中"></a>将sockets添加到容器配置中</h3><p>在创建配置时，让我们生成socket pair，将其添加到<code>ContainerOpts</code>数据中，让子进程可以轻松地访问它。修改<code>src/config.rs</code>文件：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::ipc::generate_socketpair;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">use</span> std::os::unix::io::RawFd;</span><br><span class="line"><span class="meta">#[derive(Clone)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">struct</span> <span class="title">ContainerOpts</span></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">pub</span> fd:         RawFd,</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同时我们还要修改<code>ContainerOpts::new</code>函数，让它返回构造的<code>ContainerOpts</code>结构体以及sockets，因为父容器需要访问它。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> ContainerOpts&#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">new</span></span>(command: <span class="built_in">String</span>, uid: <span class="built_in">u32</span>, mount_dir: PathBuf) -&gt; <span class="built_in">Result</span>&lt;(ContainerOpts, (RawFd, RawFd)), Errcode&gt; &#123;</span><br><span class="line">        <span class="keyword">let</span> sockets = generate_socketpair()?;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="literal">Ok</span>((</span><br><span class="line">            ContainerOpts &#123;</span><br><span class="line">                <span class="comment">// ...</span></span><br><span class="line">                fd: sockets.<span class="number">1</span>.clone(),</span><br><span class="line">            &#125;,</span><br><span class="line">            sockets</span><br><span class="line">        ))</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="添加到容器实现中-添加清理设置"><a href="#添加到容器实现中-添加清理设置" class="headerlink" title="添加到容器实现中,添加清理设置"></a>添加到容器实现中,添加清理设置</h3><p>在我们的容器实现中，在<code>Container</code>结构体中添加一个字段来更容易的访问sockets。修改<code>src/container.rs</code>文件：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> nix::unistd::close;</span><br><span class="line"><span class="keyword">use</span> std::os::unix::io::RawFd;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">struct</span> <span class="title">Container</span></span>&#123;</span><br><span class="line">    sockets: (RawFd, RawFd),</span><br><span class="line">    config: ContainerOpts,</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> Container &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">new</span></span>(args: Args) -&gt; <span class="built_in">Result</span>&lt;Container, Errcode&gt; &#123;</span><br><span class="line">        <span class="keyword">let</span> (config, sockets) = ContainerOpts::new(</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">            )?;</span><br><span class="line">        <span class="literal">Ok</span>(Container &#123;</span><br><span class="line">            sockets,</span><br><span class="line">            config,</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>sockets 在进程退出前需要进行清理处理,我们在<code>clean_exit</code>函数中进行关闭sockets相关处理</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">clean_exit</span></span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(e) = close(<span class="keyword">self</span>.sockets.<span class="number">0</span>)&#123;</span><br><span class="line">        log::error!(<span class="string">&quot;Unable to close write socket: &#123;:?&#125;&quot;</span>, e);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::SocketError(<span class="number">3</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(e) = close(<span class="keyword">self</span>.sockets.<span class="number">1</span>)&#123;</span><br><span class="line">        log::error!(<span class="string">&quot;Unable to close read socket: &#123;:?&#125;&quot;</span>, e);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::SocketError(<span class="number">4</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="创建IPC封装"><a href="#创建IPC封装" class="headerlink" title="创建IPC封装"></a>创建IPC封装</h3><p>为了简化sockets的使用，我们先创建两个封装。由于我们只传输布尔值，所以只需要在<code>src/ipc.rs</code>中创建一个<code>send_boolean</code>和<code>recv_boolean</code>函数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">send_boolean</span></span>(fd: RawFd, boolean: <span class="built_in">bool</span>) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> data: [<span class="built_in">u8</span>; <span class="number">1</span>] = [boolean.into()];</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(e) = send(fd, &amp;data, MsgFlags::empty()) &#123;</span><br><span class="line">        log::error!(<span class="string">&quot;Cannot send boolean through socket: &#123;:?&#125;&quot;</span>, e);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::SocketError(<span class="number">1</span>));</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">recv_boolean</span></span>(fd: RawFd) -&gt; <span class="built_in">Result</span>&lt;<span class="built_in">bool</span>, Errcode&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut</span> data: [<span class="built_in">u8</span>; <span class="number">1</span>] = [<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(e) = recv(fd, &amp;<span class="keyword">mut</span> data, MsgFlags::empty()) &#123;</span><br><span class="line">        log::error!(<span class="string">&quot;Cannot receive boolean from socket: &#123;:?&#125;&quot;</span>, e);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::SocketError(<span class="number">2</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="literal">Ok</span>(data[<span class="number">0</span>] == <span class="number">1</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里只是与<code>nix</code>库的<code>send</code>和<code>recv</code>函数进行一些交互，处理数据类型转换等…没有太多可说的，但是我们从Rust调用具有低级C后端的函数仍然很有趣。</p>
+<p>我们现在暂时不会使用这些封装，但在后面这些它们会很方便。</p>
+<h4 id="Patch-for-this-step"><a href="#Patch-for-this-step" class="headerlink" title="Patch for this step"></a>Patch for this step</h4><p>这一步的代码可以在github <a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/tree/step7/">litchipi/crabcan branch “step7”</a>中找到.<br>前一步到这一步的原始补丁可以在<a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/compare/step6..step7.diff">此处</a>找到</p>
+<h2 id="克隆进程"><a href="#克隆进程" class="headerlink" title="克隆进程"></a>克隆进程</h2><p>为了将所有与克隆和管理子进程相关的内容放在一起，让我们在<code>src/child.rs</code>文件中创建一个新的<code>child</code>模块。首先，在<code>src/main.rs</code>中定义模块：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">mod</span> config;</span><br><span class="line"><span class="keyword">mod</span> child;</span><br></pre></td></tr></table></figure>
+<p>我们需要创建新的错误类型，用于处理在生成子进程或在容器内部准备过程中出现的问题，接下来将它们添加到<code>src/errors.rs</code>中：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">enum</span> <span class="title">Errcode</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    ContainerError(<span class="built_in">u8</span>),</span><br><span class="line">    ChildProcessError(<span class="built_in">u8</span>),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="创建子进程"><a href="#创建子进程" class="headerlink" title="创建子进程"></a>创建子进程</h3><p>现在，我们创建一个虚拟的child函数，简单地打印传入的参数。在<code>src/child.rs</code>中创建这个函数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">child</span></span>(config: ContainerOpts) -&gt; <span class="built_in">isize</span> &#123;</span><br><span class="line">    log::info!(<span class="string">&quot;Starting container with command &#123;&#125; and args &#123;:?&#125;&quot;</span>, config.path.to_str().unwrap(), config.argv);</span><br><span class="line">    <span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个子进程只会简单打印一些内容到标准输出中，并返回0表示一切正常。我们将希望子进程处理的配置信息全都传入</p>
+<p>接下来我们在<code>src/child.rs</code>中创建一个函数，用于克隆父进程并调用子进程：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::errors::Errcode;</span><br><span class="line"><span class="keyword">use</span> crate::config::ContainerOpts;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> nix::unistd::Pid;</span><br><span class="line"><span class="keyword">use</span> nix::sched::clone;</span><br><span class="line"><span class="keyword">use</span> nix::sys::signal::Signal;</span><br><span class="line"><span class="keyword">use</span> nix::sched::CloneFlags;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> STACK_SIZE: <span class="built_in">usize</span> = <span class="number">1024</span> * <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">generate_child_process</span></span>(config: ContainerOpts) -&gt; <span class="built_in">Result</span>&lt;Pid, Errcode&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut</span> tmp_stack: [<span class="built_in">u8</span>; STACK_SIZE] = [<span class="number">0</span>; STACK_SIZE];</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut</span> flags = CloneFlags::empty();</span><br><span class="line">    <span class="comment">// Flags definition</span></span><br><span class="line">    <span class="keyword">match</span> clone(</span><br><span class="line">        <span class="built_in">Box</span>::new(|| child(config.clone())),</span><br><span class="line">        &amp;<span class="keyword">mut</span> tmp_stack,</span><br><span class="line">        flags,</span><br><span class="line">        <span class="literal">Some</span>(Signal::SIGCHLD <span class="keyword">as</span> <span class="built_in">i32</span>)</span><br><span class="line">    )</span><br><span class="line">    &#123;</span><br><span class="line">         <span class="literal">Ok</span>(pid) =&gt; <span class="literal">Ok</span>(pid),</span><br><span class="line">         <span class="literal">Err</span>(_) =&gt; <span class="literal">Err</span>(Errcode::ChildProcessError(<span class="number">0</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了更便于理解, 我们拆分一下这段代码</p>
+<ul>
+<li><p>我们首先分配一个原始数组(缓冲区)，大小为我们定义的STACK_SIZE,也就是1KiB。这个缓冲区用于保存子进程的<a target="_blank" rel="noopener" href="http://www.c-jump.com/CIS77/ASM/Stack/lecture.html">栈(stack)</a>，请注意，这和C语言中的<code>clone</code>函数不同(细节详见<a target="_blank" rel="noopener" href="https://docs.rs/nix/0.23.0/nix/sched/fn.clone.html">nix::sched::clone文档</a>)</p>
+</li>
+<li><p>其次，我们将设置需要激活的flags掩码，完整的flags列表及其简单描述可以在<a target="_blank" rel="noopener" href="https://docs.rs/nix/0.23.0/nix/sched/struct.CloneFlags.html">nix::sched::CloneFlags文档</a>中找到，或者直接在<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man2/clone.2.html">Linux的clone(2)手册</a>中查看。此处我们跳过flags掩码单独定义，因为它们各自都需要一些适当的解释。</p>
+</li>
+<li><p>接着，我们调用<code>clone</code>系统调用，将其重定向到我们的<code>child</code>函数，同时带上我们的<code>config</code>结构体，以及进程的临时堆栈和我们设置的flags掩码作为参数。此外，我们还附带了一个指令，要求在子进程退出时向父进程发送<code>SIGCHLD</code>信号。</p>
+</li>
+<li><p>如果一切顺利，我们将得到一个进程ID，简称<code>PID</code>，这是一个独一无二的数字，用于在Linux内核中唯一标识我们的进程。我们将返回这个PID，将它存储在我们的container结构体中。</p>
+</li>
+</ul>
+<h4 id="关于命名空间的说明"><a href="#关于命名空间的说明" class="headerlink" title="关于命名空间的说明"></a>关于命名空间的说明</h4><p>如果你不了解什么是linux命名空间,我建议你阅读<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Namespace">Wikipedia相关文章</a>来获取快速又全面的介绍。</p>
+<p>简单来说，命名空间是Linux内核提供的一种隔离机制，它允许在这个命名空间中的进程拥有与全局不一样的独立系统资源。</p>
+<ul>
+<li>Network namespace: 拥有与整个系统不同的网络配置</li>
+<li>Host namespace：拥有与整个系统不同的主机名</li>
+<li>PID：在命名空间内使用任何PID号，包括<code>init</code>（PID = 1）</li>
+<li>其他</li>
+</ul>
+<p>你可以查阅<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/namespaces.7.html">linux手册中的namespace部分</a>获取更多信息</p>
+<div class="panel panel-info">
+    <div class="panel-title">译者注</div>
+    <div class="panel-body">
+        <p>目前Linux的命名空间有：</p>
+<ul>
+<li>mount：挂载命名空间，使进程有一个独立的挂载文件系统，始于Linux 2.4.19</li>
+<li>ipc：ipc命名空间，使进程有一个独立的ipc，包括消息队列，共享内存和信号量，始于Linux 2.6.19</li>
+<li>uts：uts命名空间，使进程有一个独立的hostname和domainname，始于Linux 2.6.19</li>
+<li>net：network命令空间，使进程有一个独立的网络栈，始于Linux 2.6.24</li>
+<li>pid：pid命名空间，使进程有一个独立的pid空间，始于Linux 2.6.24</li>
+<li>user：user命名空间，是进程有一个独立的user空间，始于Linux 2.6.23，结束于Linux 3.8</li>
+<li>cgroup：cgroup命名空间，使进程有一个独立的cgroup控制组，始于Linux 4.6</li>
+</ul>
+<p>容器中通常通过namespace和cgroup进行资源隔离以及分配,所以在部分情况下通过<code>nsenter</code>命令(在util-linux包中)来对容器进行调试查看是一个很好的选择</p>
+<p>如果想详细关于容器和命名空间相关的内容可以参考这两篇博文</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://moelove.info/2021/12/10/%E6%90%9E%E6%87%82%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E7%9A%84%E5%9F%BA%E7%9F%B3-namespace-%E4%B8%8A/">搞懂容器技术的基石： namespace （上）</a></li>
+<li><a target="_blank" rel="noopener" href="https://moelove.info/2021/12/13/%E6%90%9E%E6%87%82%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E7%9A%84%E5%9F%BA%E7%9F%B3-namespace-%E4%B8%8B/">搞懂容器技术的基石： namespace （下）</a></li>
+</ul>
+
+    </div>
+    </div>
+
+<h4 id="设置flags掩码"><a href="#设置flags掩码" class="headerlink" title="设置flags掩码"></a>设置flags掩码</h4><p>让我们回到克隆子进程的准备工作，每个flags掩码将为子进程<strong>创建一个新的给定的命名空间</strong>。如果没有设置flag，通常子进程将成为父进程所在的命名空间的一部分。</p>
+<p>以下是完整代码:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut</span> flags = CloneFlags::empty();</span><br><span class="line">flags.insert(CloneFlags::CLONE_NEWNS);</span><br><span class="line">flags.insert(CloneFlags::CLONE_NEWCGROUP);</span><br><span class="line">flags.insert(CloneFlags::CLONE_NEWPID);</span><br><span class="line">flags.insert(CloneFlags::CLONE_NEWIPC);</span><br><span class="line">flags.insert(CloneFlags::CLONE_NEWNET);</span><br><span class="line">flags.insert(CloneFlags::CLONE_NEWUTS);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>CLONE_NEWNS</code>将在<code>Mount</code>命名空间中启动克隆的子进程，挂载列表从父进程命名空间进行拷贝。<br>查阅<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/mount_namespaces.7.html">mount命名空间手册</a>以获取更多信息。</p>
+</li>
+<li><p><code>CLONE_NEWCGROUP</code>将在新的<code>cgroup</code>命名空间中启动克隆的子进程。<br>稍后在教程中我们将解释cgroups，因为我们将使用它们来限制子进程的资源分配。<br>查阅<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/cgroup_namespaces.7.html">cgroup命名空间手册</a>以获取更多信息。</p>
+</li>
+<li><p><code>CLONE_NEWPID</code>将在新的<code>pid</code>命名空间中启动克隆的子进程。<br>这意味着我们的子进程会认为它有一个PID = X，但实际上在Linux内核中它的PID为另一个。<br>查阅<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/pid_namespaces.7.html">pid命名空间手册</a>以获取更多信息。</p>
+</li>
+<li><p><code>CLONE_NEWIPC</code>将在新的<code>ipc</code>命名空间中启动克隆的子进程。<br>在此命名空间内的进程可以相互交互，而在命名空间外的进程不能通过正常的<code>IPC</code>方法交互。<br>查阅<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/ipc_namespaces.7.html">ipc命名空间手册</a>以获取更多信息。</p>
+</li>
+<li><p><code>CLONE_NEWNET</code>将在新的<code>nerwork</code>命名空间中启动克隆的子进程。<br>它不会共享来自其他命名空间的接口和网络配置。<br>查阅<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/network_namespaces.7.html">nerwork命名空间手册</a>以获取更多信息。</p>
+</li>
+<li><p><code>CLONE_NEWUTS</code>将在新的<code>uts</code>命名空间中启动克隆的子进程。<br>我无法解释为什么叫UTS（UTS代表UNIX时间共享系统），但它将允许被包含的进程在命名空间中设置自己的主机名和NIS域名。<br>查阅<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/uts_namespaces.7.html">uts命名空间手册</a>以获取更多信息。</p>
+</li>
+</ul>
+<p>所以，在创建我们的子进程时，我们会它的环境与系统环境隔离，允许它修改任何它想要修改的内容（至少对于使用的命名空间来说），而不会对我们的系统造成任何影响。</p>
+<h3 id="从容器中生成子进程"><a href="#从容器中生成子进程" class="headerlink" title="从容器中生成子进程"></a>从容器中生成子进程</h3><p>现在我们已经有了<code>generate_child_process</code>函数，我们可以在我们的容器的<code>create</code>函数中调用它，并将它返回的的<code>pid</code>存储在结构体字段中。</p>
+<p>在<code>src/container.rs</code>中，添加以下内容：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::child::generate_child_process;</span><br><span class="line"><span class="keyword">use</span> nix::unistd::Pid;</span><br><span class="line"><span class="keyword">use</span> nix::sys::wait::waitpid;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">struct</span> <span class="title">Container</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    child_pid: <span class="built_in">Option</span>&lt;Pid&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> Container &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">new</span></span>(args: Args) -&gt; <span class="built_in">Result</span>&lt;Container, Errcode&gt; &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="literal">Ok</span>(Container &#123;</span><br><span class="line">            sockets,</span><br><span class="line">            config,</span><br><span class="line">            child_pid: <span class="literal">None</span>,</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">create</span></span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">        <span class="keyword">let</span> pid = generate_child_process(<span class="keyword">self</span>.config.clone())?;</span><br><span class="line">        <span class="keyword">self</span>.child_pid = <span class="literal">Some</span>(pid);</span><br><span class="line">        log::debug!(<span class="string">&quot;Creation finished&quot;</span>);</span><br><span class="line">        <span class="literal">Ok</span>(())</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="等待子进程结束"><a href="#等待子进程结束" class="headerlink" title="等待子进程结束"></a>等待子进程结束</h3><p>现在我们的容器包含了生成新的干净的子进程所需的一切，接下来我们修改主函数以等待子进程完成。<br>修改<code>src/container.rs</code>文件：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">start</span></span>(args: Args) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(e) = container.create()&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">    log::debug!(<span class="string">&quot;Container child PID: &#123;:?&#125;&quot;</span>, container.child_pid);</span><br><span class="line">    wait_child(container.child_pid)?;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>容器使用我们给予的参数生成子进程，然后hold并等待子进程结束后才退出。</p>
+<p><code>wait_child</code>函数在<code>src/container.rs</code>中的定义如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">wait_child</span></span>(pid: <span class="built_in">Option</span>&lt;Pid&gt;) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Some</span>(child_pid) = pid &#123;</span><br><span class="line">        log::debug!(<span class="string">&quot;Waiting for child (pid &#123;&#125;) to finish&quot;</span>, child_pid);</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(e) = waitpid(child_pid, <span class="literal">None</span>)&#123;</span><br><span class="line">            log::error!(<span class="string">&quot;Error while waiting for pid to finish: &#123;:?&#125;&quot;</span>, e);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::ContainerError(<span class="number">1</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数使用了<code>waitpid</code>这个系统调用,以下是来自<a target="_blank" rel="noopener" href="https://linux.die.net/man/2/waitpid">手册</a>的解释</p>
+<blockquote>
+<p>waitpid()系统调用会暂停调用进程的执行，直到由pid参数指定的子进程改变状态。默认情况下，waitpid()只等待已终止的子进程，但是可以通过下面描述的options参数修改这种行为。</p>
+</blockquote>
+<p>由于我们正在等待终止，所以我们只会传递<code>None</code>，并且如果系统调用没有成功完成，我们会返回一个<code>Errcode::ContainerError</code>错误。</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>也许从一开始你就在想，为什么我们需要使用<code>sudo</code>来运行我们的测试。在前七步中，这并不是必要的。但是从现在开始，由于我们为子进程创建了新的命名空间，所以需要<code>CAP_SYS_ADMIN</code>权限（参见<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/capabilities.7.html">权限手册</a>或者LWN的<a target="_blank" rel="noopener" href="https://lwn.net/Articles/486306/">这篇文章</a>）。</p>
+<p>下面是我们在测试这一步时可能得到的输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[2021-11-12T08:52:17Z INFO  crabcan] Args &#123; debug: true, command: &quot;/bin/bash&quot;, uid: 0, mount_dir: &quot;./mountdir/&quot; &#125;</span><br><span class="line">[2021-11-12T08:52:17Z DEBUG crabcan::container] Linux release: 5.11.0-38-generic</span><br><span class="line">[2021-11-12T08:52:17Z DEBUG crabcan::container] Container sockets: (3, 4)</span><br><span class="line">[2021-11-12T08:52:17Z DEBUG crabcan::container] Creation finished</span><br><span class="line">[2021-11-12T08:52:17Z DEBUG crabcan::container] Container child PID: Some(Pid(134400))</span><br><span class="line">[2021-11-12T08:52:17Z DEBUG crabcan::container] Waiting for child (pid 134400) to finish</span><br><span class="line">[2021-11-12T08:52:17Z INFO  crabcan::child] Starting container with command /bin/bash and args [&quot;/bin/bash&quot;]</span><br><span class="line">[2021-11-12T08:52:17Z DEBUG crabcan::container] Finished, cleaning &amp; exit</span><br><span class="line">[2021-11-12T08:52:17Z DEBUG crabcan::container] Cleaning container</span><br><span class="line">[2021-11-12T08:52:17Z DEBUG crabcan::errors] Exit without any error, returning 0</span><br></pre></td></tr></table></figure>
+<h4 id="Patch-for-this-step-1"><a href="#Patch-for-this-step-1" class="headerlink" title="Patch for this step"></a>Patch for this step</h4><p>这一步的代码可以在github [litchipi/crabcan branch “step8”](<a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/tree/step8/%E4%B8%AD%E6%89%BE%E5%88%B0">https://github.com/litchipi/crabcan/tree/step8/中找到</a>.<br>前一步到这一步的原始补丁可以在<a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/compare/step7..step8.diff">此处</a>找到</p>
+
+            </div>
+            
+                <div class="kratos-copyright text-center clearfix">
+                    <h5>本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</h5>
+                </div>
+            
+            <footer class="kratos-entry-footer clearfix">
+                
+                    <div class="post-like-donate text-center clearfix" id="post-like-donate">
+                    
+                    
+                        <a class="share" href="javascript:;"><i class="fa fa-share-alt"></i> 分享</a>
+                        <div class="share-wrap" style="display: none;">
+    <div class="share-group">
+        <a href="javascript:;" class="share-plain qq" onclick="share('qq');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-qq"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain qzone" onclick="share('qzone');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-star"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weixin pop style-plain" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weixin"></i>
+            </div>
+            <div class="share-int">
+                <div class="qrcode" id="wechat-qr"></div>
+                <p>打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮</p>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weibo" onclick="share('weibo');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weibo"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain facebook style-plain" onclick="share('facebook');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-facebook"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain twitter style-plain" onclick="share('twitter');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-twitter"></i>
+            </div>
+        </a>
+    </div>
+    <script type="text/javascript">
+        $(()=>{
+            new QRCode("wechat-qr", {
+                text: "http://srcchen.github.io/2023/09/17/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A84/",
+                width: 150,
+                height: 150,
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+        function share(dest) {
+            const qqBase        = "https://connect.qq.com/widget/shareqq/index.html?";
+            const weiboBase     = "https://service.weibo.com/share/share.php?";
+            const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
+            const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
+            const twitterBase   = "https://twitter.com/intent/tweet?";
+            const hostUrl       = "http://srcchen.github.io/2023/09/17/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A84/";
+            const title         = "「【译】使用rust来写一个容器(四)」";
+            const excerpt       = `
+    注
+    
+        本文章为对 Litchi Pi的《Writing a container in Rust》的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转...`;
+            let _URL;
+            switch (dest) {
+                case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
+                case "weibo"    : _URL = weiboBase+"url="+hostUrl+"&title="+title+excerpt;                                 break;
+                case "qzone"    : _URL = qzoneBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";  break;
+                case "facebook" : _URL = facebookBase+"u="+hostUrl;                                                        break;
+                case "twitter"  : _URL = twitterBase+"text="+title+excerpt+"&url="+hostUrl;                                break;
+            }
+            window.open(_URL);
+        };
+    </script>
+</div>
+                    
+                    </div>
+                
+                <div class="footer-tag clearfix">
+                    <div class="pull-left">
+                    <i class="fa fa-tags"></i>
+                        <a class="tag-none-link" href="/tags/Docker/" rel="tag">Docker</a>, <a class="tag-none-link" href="/tags/rust/" rel="tag">rust</a>
+                    </div>
+                    <div class="pull-date">
+                    <span>最后编辑：2023-09-17</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+            <nav class="navigation post-navigation clearfix" role="navigation">
+                
+                <div class="nav-previous clearfix">
+                    <a title=" 【译】使用rust来写一个容器(三)" href="/2023/09/10/用rust写一个容器3/">&lt; 上一篇</a>
+                </div>
+                
+                
+            </nav>
+        
+        
+    </article>
+</section>
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/main.webp" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">半吊子经济学毕业生</p>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar"></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%90%E8%BF%9B%E7%A8%8B%E7%9A%84%E8%AF%9E%E7%94%9F"><span class="toc-text">子进程的诞生</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87sockets%E8%BF%9B%E8%A1%8C%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1-IPC"><span class="toc-text">通过sockets进行进程间通信(IPC)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IPC-%E4%BB%8B%E7%BB%8D"><span class="toc-text">IPC 介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAsocketpair"><span class="toc-text">创建socketpair</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86sockets%E6%B7%BB%E5%8A%A0%E5%88%B0%E5%AE%B9%E5%99%A8%E9%85%8D%E7%BD%AE%E4%B8%AD"><span class="toc-text">将sockets添加到容器配置中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E5%88%B0%E5%AE%B9%E5%99%A8%E5%AE%9E%E7%8E%B0%E4%B8%AD-%E6%B7%BB%E5%8A%A0%E6%B8%85%E7%90%86%E8%AE%BE%E7%BD%AE"><span class="toc-text">添加到容器实现中,添加清理设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAIPC%E5%B0%81%E8%A3%85"><span class="toc-text">创建IPC封装</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step"><span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%8B%E9%9A%86%E8%BF%9B%E7%A8%8B"><span class="toc-text">克隆进程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AD%90%E8%BF%9B%E7%A8%8B"><span class="toc-text">创建子进程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="toc-text">关于命名空间的说明</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AEflags%E6%8E%A9%E7%A0%81"><span class="toc-text">设置flags掩码</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E5%AE%B9%E5%99%A8%E4%B8%AD%E7%94%9F%E6%88%90%E5%AD%90%E8%BF%9B%E7%A8%8B"><span class="toc-text">从容器中生成子进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%89%E5%BE%85%E5%AD%90%E8%BF%9B%E7%A8%8B%E7%BB%93%E6%9D%9F"><span class="toc-text">等待子进程结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step-1"><span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+</aside>
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类目录</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/tags/DevOps/" style="font-size: 0.73em;">DevOps</a> <a href="/tags/Docker/" style="font-size: 0.7em;">Docker</a> <a href="/tags/FaaS/" style="font-size: 0.6em;">FaaS</a> <a href="/tags/Kubernetes/" style="font-size: 0.6em;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 0.63em;">Linux</a> <a href="/tags/ansible/" style="font-size: 0.6em;">ansible</a> <a href="/tags/docker/" style="font-size: 0.67em;">docker</a> <a href="/tags/envoy/" style="font-size: 0.6em;">envoy</a> <a href="/tags/harbor/" style="font-size: 0.6em;">harbor</a> <a href="/tags/helm/" style="font-size: 0.6em;">helm</a> <a href="/tags/ingress/" style="font-size: 0.6em;">ingress</a> <a href="/tags/kubernetes/" style="font-size: 0.8em;">kubernetes</a> <a href="/tags/prometheus/" style="font-size: 0.63em;">prometheus</a> <a href="/tags/pv/" style="font-size: 0.63em;">pv</a> <a href="/tags/pvc/" style="font-size: 0.63em;">pvc</a> <a href="/tags/rust/" style="font-size: 0.77em;">rust</a> <a href="/tags/storageclass/" style="font-size: 0.63em;">storageclass</a> <a href="/tags/tekton/" style="font-size: 0.6em;">tekton</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/17/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A84/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(四)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/10/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A83/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(三)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/02/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A82/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(二)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A81/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(一)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2022/05/21/kubevela/"><i class="fa  fa-book"></i> 在kind中部署kubevela目前最新版本(v1.3.0)</a>
+            
+          
+        
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  class="ap-lrc"  >
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        <li><a href="mailto:cg0616@hotmail.com"><i class="fa fa-envelope"></i></a></li>
+                        
+                        
+                        
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/SRCchen"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2023 SRCchen 版权所有.</li>
+                            <li>本站已运行<span id="span_dt">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>Theme <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a></li>
+                            <li>Site built with&nbsp;<i class="fa fa-heart throb" style="color:#d43f57"></i>&nbsp;by SRCchen.</li>
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="http://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
+<script>const notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));</script>
+
+<script async src="/js/candy.min.js"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+    <meting-js
+        server="netease"
+        type="playlist"
+        id="6600958231"
+        order="random"
+        fixed="true"
+    >
+    </meting-js>
+
+
+
+    <script defer src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+    <script defer src="/js/kr-dark.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>
