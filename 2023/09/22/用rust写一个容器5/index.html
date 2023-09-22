@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  <link rel="icon" href="">
+  <title>【译】使用rust来写一个容器(五) | </title>
+  <meta name="author" content="SRCchen" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="Docker, rust" />
+  
+  <meta name="description" content="注              本文章为对 Litchi Pi的《Writing a container in Rust》的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转载行为负责。一切权利均由原作者 Litchi Pi 保有。个人翻译能力有限，如有疑问可查看原文。            定义容器环境设置容器的主机名称主机名是我们的机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【译】使用rust来写一个容器(五)">
+<meta property="og:url" content="http://srcchen.github.io/2023/09/22/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A85/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="注              本文章为对 Litchi Pi的《Writing a container in Rust》的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转载行为负责。一切权利均由原作者 Litchi Pi 保有。个人翻译能力有限，如有疑问可查看原文。            定义容器环境设置容器的主机名称主机名是我们的机">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://srcchen.github.io/null">
+<meta property="article:published_time" content="2023-09-22T15:41:47.000Z">
+<meta property="article:modified_time" content="2023-09-22T17:18:05.023Z">
+<meta property="article:author" content="SRCchen">
+<meta property="article:tag" content="rust">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://srcchen.github.io/null">
+<meta name="twitter:site" content="@null">
+  
+  <!-- 站点验证相关 -->
+  
+    
+    
+    
+  
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kratosr.min.css" type="text/css" media="all">
+  
+    <link rel="stylesheet" id="highlight-css" href="/css/highlight/night-eighties.min.css" type="text/css" media="all">
+  
+  
+  <link rel="stylesheet" id="fontawe-css" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" type="text/css" media="all">
+  <link rel="stylesheet" id="nprogress-css" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" type="text/css" media="all">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+  
+  
+    <link rel="stylesheet" id="darkmode-css" href="/css/kr-dark.min.css" type="text/css" media="all">
+  
+  <!-- 不得不预先加载的一些JS文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/qrcode_js@1.0.0/qrcode.min.js"></script>
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    
+                                        <li><a href="/"><i class="fa fa-home"></i>首页</a></li>
+                                    
+                                
+                                    
+                                        <li><a href="/archives/"><i class="fa fa-file"></i>档案馆</a></li>
+                                    
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/"></a></div>
+                    <div class="nav-toggle">
+                        <a class="kratos-nav-toggle js-kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2></h2> <br />
+                        <span>srcchen的学习笔记</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+                    
+
+        <section class="col-md-8">
+    <article>
+        <div class="kratos-hentry kratos-post-inner clearfix">
+            <header class="kratos-entry-header">
+                
+                    <h1 class="kratos-entry-title text-center">【译】使用rust来写一个容器(五)</h1>
+                
+                
+                <ul class="kratos-post-meta text-center">
+                    <li><i class="fa fa-calendar"></i> 2023-09-22</li>
+                    <li><i class="fa fa-user"></i> 作者 SRCchen</li>
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~14.97K
+                        
+                        字
+                    </li>
+                    
+                </ul>
+            </header>
+            <div class="kratos-post-content">
+                <div id="expire-alert" class="alert alert-warning hidden" role="alert">
+                    本文最后编辑于 <time datetime="1695403085023"></time> 前，其中的内容可能需要更新。
+                </div>
+                
+                    <div class="kratos-post-inner-toc">
+                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E5%AE%B9%E5%99%A8%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">定义容器环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%BB%E6%9C%BA%E5%90%8D%E7%A7%B0"><span class="toc-number">1.1.</span> <span class="toc-text">设置容器的主机名称</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E4%B8%BB%E6%9C%BA%E5%90%8D"><span class="toc-number">1.1.1.</span> <span class="toc-text">生成主机名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%91%E5%AE%B9%E5%99%A8%E7%9A%84%E9%85%8D%E7%BD%AE%E4%B8%AD%E6%B7%BB%E5%8A%A0%E4%BF%A1%E6%81%AF"><span class="toc-number">1.1.2.</span> <span class="toc-text">向容器的配置中添加信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86%E9%85%8D%E7%BD%AE%E5%BA%94%E7%94%A8%E5%88%B0%E5%AD%90%E8%BF%9B%E7%A8%8B"><span class="toc-number">1.1.3.</span> <span class="toc-text">将配置应用到子进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">1.1.4.</span> <span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step"><span class="toc-number">1.1.4.1.</span> <span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E5%AE%B9%E5%99%A8%E6%8C%82%E8%BD%BD%E7%82%B9"><span class="toc-number">1.2.</span> <span class="toc-text">修改容器挂载点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.2.1.</span> <span class="toc-text">准备实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E6%96%B0%E4%BB%A5private%E5%BD%A2%E5%BC%8F%E6%8C%82%E8%BD%BD%E6%A0%B9%E7%9B%AE%E5%BD%95"><span class="toc-number">1.2.2.</span> <span class="toc-text">重新以private形式挂载根目录&#x2F;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%82%E8%BD%BD%E6%96%B0%E7%9A%84%E6%A0%B9%E7%9B%AE%E5%BD%95"><span class="toc-number">1.2.3.</span> <span class="toc-text">挂载新的根目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pivot-the-root"><span class="toc-number">1.2.4.</span> <span class="toc-text">Pivot the root</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%B8%E8%BD%BD%E6%97%A7%E6%A0%B9%E7%9B%AE%E5%BD%95"><span class="toc-number">1.2.5.</span> <span class="toc-text">卸载旧根目录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E7%9A%84%E6%B8%85%E7%90%86%E5%87%BD%E6%95%B0"><span class="toc-number">1.2.5.1.</span> <span class="toc-text">空的清理函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95-1"><span class="toc-number">1.2.6.</span> <span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step-1"><span class="toc-number">1.2.6.1.</span> <span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li></ol></li></ol>
+                    </div>
+                
+                <hr />
+                <div class="panel panel-info">
+    <div class="panel-title">注</div>
+    <div class="panel-body">
+        <p>本文章为对 <code>Litchi Pi</code>的<a target="_blank" rel="noopener" href="https://litchipi.site/">《Writing a container in Rust》</a>的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转载行为负责。一切权利均由原作者 Litchi Pi 保有。个人翻译能力有限，如有疑问可查看原文。</p>
+
+    </div>
+    </div>
+<h1 id="定义容器环境"><a href="#定义容器环境" class="headerlink" title="定义容器环境"></a>定义容器环境</h1><h2 id="设置容器的主机名称"><a href="#设置容器的主机名称" class="headerlink" title="设置容器的主机名称"></a>设置容器的主机名称</h2><p>主机名是我们的机器在同一网络中与其他机器相区别的标识。<br>许多不同的网络软件都会使用主机名，例如<code>avahi</code>这个软件就会在本地网络中广播我们的主机名，使得命令<code>ssh crab@192.168.0.42</code>可以变为<code>ssh crab@crabcan.local</code>，网站<code>http://localhost:80</code>可以变为<code>http://crabcan.local</code>等等…</p>
+<blockquote>
+<p>如果想了解更多信息可以访问<a target="_blank" rel="noopener" href="http://avahi.org/">avahi官方网站</a></p>
+</blockquote>
+<p>为了区分我们的容器软件执行的操作和宿主机系统执行的操作，我们接下来要修改容器的主机名。</p>
+<h3 id="生成主机名"><a href="#生成主机名" class="headerlink" title="生成主机名"></a>生成主机名</h3><p>首先，我们创建一个新文件<code>src/hostname.rs</code>，所有与主机名相关的代码都会在这完成。<br>在文件内部，设置两个预定义的名字和形容词数组，我们将联合使用这两个数组来生成一个滑稽的随机主机名。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> HOSTNAME_NAMES: [&amp;<span class="symbol">&#x27;static</span> <span class="built_in">str</span>; <span class="number">8</span>] = [</span><br><span class="line">    <span class="string">&quot;cat&quot;</span>, <span class="string">&quot;world&quot;</span>, <span class="string">&quot;coffee&quot;</span>, <span class="string">&quot;girl&quot;</span>,</span><br><span class="line">    <span class="string">&quot;man&quot;</span>, <span class="string">&quot;book&quot;</span>, <span class="string">&quot;pinguin&quot;</span>, <span class="string">&quot;moon&quot;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> HOSTNAME_ADJ: [&amp;<span class="symbol">&#x27;static</span> <span class="built_in">str</span>; <span class="number">16</span>] = [</span><br><span class="line">    <span class="string">&quot;blue&quot;</span>, <span class="string">&quot;red&quot;</span>, <span class="string">&quot;green&quot;</span>, <span class="string">&quot;yellow&quot;</span>,</span><br><span class="line">    <span class="string">&quot;big&quot;</span>, <span class="string">&quot;small&quot;</span>, <span class="string">&quot;tall&quot;</span>, <span class="string">&quot;thin&quot;</span>,</span><br><span class="line">    <span class="string">&quot;round&quot;</span>, <span class="string">&quot;square&quot;</span>, <span class="string">&quot;triangular&quot;</span>, <span class="string">&quot;weird&quot;</span>,</span><br><span class="line">    <span class="string">&quot;noisy&quot;</span>, <span class="string">&quot;silent&quot;</span>, <span class="string">&quot;soft&quot;</span>, <span class="string">&quot;irregular&quot;</span>];</span><br></pre></td></tr></table></figure>
+<p>接下来我们随机生成一些字符串</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> rand::Rng;</span><br><span class="line"><span class="keyword">use</span> rand::seq::SliceRandom;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">generate_hostname</span></span>() -&gt; <span class="built_in">Result</span>&lt;<span class="built_in">String</span>, Errcode&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut</span> rng = rand::thread_rng();</span><br><span class="line">    <span class="keyword">let</span> num = rng.gen::&lt;<span class="built_in">u8</span>&gt;();</span><br><span class="line">    <span class="keyword">let</span> name = HOSTNAME_NAMES.choose(&amp;<span class="keyword">mut</span> rng).ok_or(Errcode::RngError)?;</span><br><span class="line">    <span class="keyword">let</span> adj = HOSTNAME_ADJ.choose(&amp;<span class="keyword">mut</span> rng).ok_or(Errcode::RngError)?;</span><br><span class="line">    <span class="literal">Ok</span>(<span class="built_in">format!</span>(<span class="string">&quot;&#123;&#125;-&#123;&#125;-&#123;&#125;&quot;</span>, adj, name, num))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>我们会得到形如 square-moon-64、big-pinguin-2的主机名。</p>
+</blockquote>
+<p>由于我们使用了新的<code>Errcode::RngError</code>来处理与随机函数相关的错误，我们需要在<code>src/errors.rs</code>中的<code>Errcode</code>枚举中添加这个变体，以及另一个稍后会用到的变体 <code>Errcode::HostnameError(u8)</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">enum</span> <span class="title">Errcode</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    HostnameError(<span class="built_in">u8</span>),</span><br><span class="line">    RngError</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此外，我们使用<code>rand</code>包来随机生成主机名，所以我们需要将它添加到<code>Cargo.toml</code>的依赖中：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">rand</span> = <span class="string">&quot;0.8.4&quot;</span></span><br></pre></td></tr></table></figure>
+<div class="panel panel-info">
+    <div class="panel-title">译者注</div>
+    <div class="panel-body">
+        <p>关于Docker容器的名称,实际上名称的生成方式和这个rust容器差不多，由随机形容词+随机科学家/黑客的名字组成,不过这个名称也存在一个小彩蛋,在容器名称中不存在<br><code>boring_wozniak</code>这个名字,因为<code>Steve Wozniak is not boring</code>:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">name := left[rand.Intn(<span class="built_in">len</span>(left))] + <span class="string">&quot;_&quot;</span> + right[rand.Intn(<span class="built_in">len</span>(right))] <span class="comment">//nolint:gosec // G404: Use of weak random number generator (math/rand instead of crypto/rand)</span></span><br><span class="line"><span class="keyword">if</span> name == <span class="string">&quot;boring_wozniak&quot;</span> <span class="comment">/* Steve Wozniak is not boring */</span> &#123;</span><br><span class="line">	<span class="keyword">goto</span> begin</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>具体参见<a target="_blank" rel="noopener" href="https://github.com/moby/moby/blob/master/pkg/namesgenerator/names-generator.go">names-generator.go代码</a></p>
+
+    </div>
+    </div>
+
+<h3 id="向容器的配置中添加信息"><a href="#向容器的配置中添加信息" class="headerlink" title="向容器的配置中添加信息"></a>向容器的配置中添加信息</h3><p>现在，我们已经有了一种生成包含我们”随机”主机名的<code>String</code>的方法，我们可以用它来在<code>src/config.rs</code>中设置我们的容器配置：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::hostname::generate_hostname;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">struct</span> <span class="title">ContainerOpts</span></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">pub</span> hostname:   <span class="built_in">String</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> ContainerOpts&#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">new</span></span>(...) -&gt; ... &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">        <span class="literal">Ok</span>((</span><br><span class="line">            ContainerOpts &#123;</span><br><span class="line">                <span class="comment">// ...</span></span><br><span class="line">                hostname: generate_hostname()?,</span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        ))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后，我们在<code>src/hostname.rs</code>中创建一个函数，该函数将使用<code>sethostname</code>系统调用，用新的主机名修改我们host namespace的实际主机名：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::errors::Errcode;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> nix::unistd::sethostname;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">set_container_hostname</span></span>(hostname: &amp;<span class="built_in">String</span>) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="keyword">match</span> sethostname(hostname)&#123;</span><br><span class="line">        <span class="literal">Ok</span>(_) =&gt; &#123;</span><br><span class="line">            log::debug!(<span class="string">&quot;Container hostname is now &#123;&#125;&quot;</span>, hostname);</span><br><span class="line">            <span class="literal">Ok</span>(())</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="literal">Err</span>(_) =&gt; &#123;</span><br><span class="line">            log::error!(<span class="string">&quot;Cannot set hostname &#123;&#125; for container&quot;</span>, hostname);</span><br><span class="line">            <span class="literal">Err</span>(Errcode::HostnameError(<span class="number">0</span>))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>你可以查阅<a target="_blank" rel="noopener" href="https://linux.die.net/man/2/sethostname">linux手册</a>来获取更多有关<code>sethostname</code>系统调用的信息</p>
+</blockquote>
+<h3 id="将配置应用到子进程"><a href="#将配置应用到子进程" class="headerlink" title="将配置应用到子进程"></a>将配置应用到子进程</h3><p>对于将应用于子进程的配置，我们封装一个函数来进行所有内容的设置，并在其中添加<code>set_container_hostname</code>函数的调用，让我们先来修改<code>src/child.rs</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::hostname::set_container_hostname;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">setup_container_configurations</span></span>(config: &amp;ContainerOpts) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    set_container_hostname(&amp;config.hostname)?;</span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们只需在子进程开始时调用这个配置函数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">child</span></span>(config: ContainerOpts) -&gt; <span class="built_in">isize</span> &#123;</span><br><span class="line">    <span class="keyword">match</span> setup_container_configurations(&amp;config) &#123;</span><br><span class="line">        <span class="literal">Ok</span>(_) =&gt; log::info!(<span class="string">&quot;Container set up successfully&quot;</span>),</span><br><span class="line">        <span class="literal">Err</span>(e) =&gt; &#123;</span><br><span class="line">            log::error!(<span class="string">&quot;Error while configuring container: &#123;:?&#125;&quot;</span>, e);</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意，我们无法从“恢复”在子进程中发生的错误，如果出现问题，我们只以<code>retcode = -1</code>退出，并附带一个友好的错误消息。<br>这里要做的最后一件事是在<code>src/main.rs</code>中添加我们刚刚创建的<code>hostname</code>模块：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">mod</span> hostname;</span><br></pre></td></tr></table></figure>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>在测试时,我们能看见我们生成的容器名称出现在日志中:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z INFO  crabcan] Args &#123; debug: <span class="literal">true</span>, command: <span class="string">&quot;/bin/bash&quot;</span>, uid: <span class="number">0</span>, mount_dir: <span class="string">&quot;./mountdir/&quot;</span> &#125;</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z DEBUG crabcan::container] Linux release: <span class="number">5.13</span>.<span class="number">0</span>-<span class="number">21</span>-generic</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z DEBUG crabcan::container] Container sockets: (<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z DEBUG crabcan::container] Creation finished</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z DEBUG crabcan::container] Container child PID: <span class="literal">Some</span>(Pid(<span class="number">26003</span>))</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z DEBUG crabcan::container] Waiting <span class="keyword">for</span> child (pid <span class="number">26003</span>) to finish</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z DEBUG crabcan::hostname] Container hostname is now weird-moon-<span class="number">191</span></span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z INFO  crabcan::child] Container set up successfully</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z INFO  crabcan::child] Starting container with command /bin/bash and args [<span class="string">&quot;/bin/bash&quot;</span>]</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z DEBUG crabcan::container] Finished, cleaning &amp; exit</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z DEBUG crabcan::container] Cleaning container</span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">07</span>:<span class="number">38</span>Z DEBUG crabcan::errors] Exit without any error, returning <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>我们多运行几次这个程序，它会输出不同的有趣名字:D</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">08</span>:<span class="number">33</span>Z DEBUG crabcan::hostname] Container hostname is now round-cat-<span class="number">221</span></span><br><span class="line"></span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">08</span>:<span class="number">48</span>Z DEBUG crabcan::hostname] Container hostname is now silent-man-<span class="number">45</span></span><br><span class="line"></span><br><span class="line">[<span class="number">2021</span>-<span class="number">11</span>-<span class="number">15</span>T09:<span class="number">09</span>:<span class="number">01</span>Z DEBUG crabcan::hostname] Container hostname is now soft-cat-<span class="number">149</span></span><br></pre></td></tr></table></figure>
+<h4 id="Patch-for-this-step"><a href="#Patch-for-this-step" class="headerlink" title="Patch for this step"></a>Patch for this step</h4><p>这一步的代码可以在github <a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/tree/step9/">litchipi/crabcan branch “step9”</a>中找到.<br>前一步到这一步的原始补丁可以在<a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/compare/step8...step9.diff">此处</a>找到</p>
+<h2 id="修改容器挂载点"><a href="#修改容器挂载点" class="headerlink" title="修改容器挂载点"></a>修改容器挂载点</h2><p>挂载点是我们将作为容器根目录(即容器的<code>/</code>)挂载的某个容器目录，用户可以将一个目录作为参数传递，该目录将被用作容器的根目录。</p>
+<p>该过程分为以下几步：</p>
+<ul>
+<li>在容器内部挂载系统根目录 <code>/</code></li>
+<li>创建一个新的临时目录 <code>/tmp/crabcan.&lt;random_string&gt;</code></li>
+<li>将用户给定的目录挂载到临时目录</li>
+<li>在两个已挂载的目录之间执行root pivot</li>
+<li>卸载并删除不必要的目录</li>
+</ul>
+<p>请记住，我们在容器内部挂载/卸载的所有内容都通过mountnamespace从系统的其余部分隔离开来。<br>在实践中，这种隔离保持了 <code>/proc/&lt;pid&gt;/mountinfo</code>、<code>/proc/&lt;pid&gt;/mountstats </code>和 <code>/proc/&lt;pid&gt;/mounts/</code> 的独立，它们描述了什么在哪里挂载，如何挂载等信息。</p>
+<blockquote>
+<p>你可以查阅<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man5/proc.5.html">proc(5) linux manual</a>或者<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/mount_namespaces.7.html">mount_namespace linux manual</a>来获取更多精确信息</p>
+</blockquote>
+<div class="panel panel-info">
+    <div class="panel-title">译者注</div>
+    <div class="panel-body">
+        <p><code>pivot_root</code>是由 Linux 提供的一种系统调用，它能够将一个<code>mount namespace</code>中的所有进程的根目录和当前工作目录切换到一个新的目录。<br>与<code>chroot</code>不同的是,<code>chroot</code>只会改变当前进程的根目录。</p>
+
+    </div>
+    </div>
+
+<h3 id="准备实现"><a href="#准备实现" class="headerlink" title="准备实现"></a>准备实现</h3><p>接下来我们将创建一个包含<code>setmountpoint</code>函数的<code>src/mounts.rs</code>文件，让我们先完成所有的准备工作，以便稍后专注于完成我们的目录部分。</p>
+<p>让我们将<code>setmountpoint</code>函数作为容器配置过程的一部分添加到<code>src/child.rs</code>中：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::mounts::setmountpoint;</span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">setup_container_configurations</span></span>(config: &amp;ContainerOpts) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    setmountpoint(&amp;config.mount_dir)?;</span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后，在<code>src/container.rs</code>中的<code>clean_exit</code>函数中添加一个新的部分：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::mounts::clean_mounts;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> Container &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">clean_exit</span></span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        clean_mounts(&amp;<span class="keyword">self</span>.config.mount_dir)?;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着，我们在<code>src/errors.rs</code>中的<code>Errcode</code>枚举中添加一个新的错误类型：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">enum</span> <span class="title">Errcode</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    MountsError(<span class="built_in">u8</span>),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后，在<code>src/main.rs</code>中引用<code>src/mounts.rs</code>模块</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">mod</span> mounts;</span><br></pre></td></tr></table></figure>
+<h3 id="重新以private形式挂载根目录"><a href="#重新以private形式挂载根目录" class="headerlink" title="重新以private形式挂载根目录/"></a>重新以private形式挂载根目录<code>/</code></h3><p>现在真正的重头戏来了！让我们创建<code>src/mounts.rs</code>文件，并添加以下内容：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::errors::Errcode;</span><br><span class="line"><span class="keyword">use</span> std::path::PathBuf;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">setmountpoint</span></span>(mount_dir: &amp;PathBuf) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    log::debug!(<span class="string">&quot;Setting mount points ...&quot;</span>);</span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">clean_mounts</span></span>(_rootpath: &amp;PathBuf) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们使用<code>MS_PRIVATE</code>这个标志来重新挂载我们文件系统的根目录<code>/</code>，这将阻止任何挂载操作的传播。</p>
+<blockquote>
+<p>请参阅这篇<a target="_blank" rel="noopener" href="https://lwn.net/Articles/689856/">LWN 文章</a>，以获取更多关于<code>MS_PRIVATE</code>标志的解释，在另一篇<a target="_blank" rel="noopener" href="https://lwn.net/Articles/690679/">LWN 文章</a>中可以获得示例。</p>
+</blockquote>
+<p>为了实现这个目标，我们将创建一个名为<code>mount_directory</code>的函数，它本质上是对<a target="_blank" rel="noopener" href="https://docs.rs/nix/latest/nix/"><code>nix</code></a>库提供的<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man2/mount.2.html"><code>mount</code>系统调用</a>的封装。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> nix::mount::&#123;mount, MsFlags&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">mount_directory</span></span>(path: <span class="built_in">Option</span>&lt;&amp;PathBuf&gt;, mount_point: &amp;PathBuf, flags: <span class="built_in">Vec</span>&lt;MsFlags&gt;) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    <span class="comment">// Setting up the mount flags</span></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut</span> ms_flags = MsFlags::empty();</span><br><span class="line">    <span class="keyword">for</span> f <span class="keyword">in</span> flags.iter()&#123;</span><br><span class="line">        ms_flags.insert(*f);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Calling the syscall, handling errors</span></span><br><span class="line">    <span class="keyword">match</span> mount::&lt;PathBuf, PathBuf, PathBuf, PathBuf&gt;(path, mount_point, <span class="literal">None</span>, ms_flags, <span class="literal">None</span>) &#123;</span><br><span class="line">        <span class="literal">Ok</span>(_) =&gt; <span class="literal">Ok</span>(()),</span><br><span class="line">        <span class="literal">Err</span>(e) =&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Some</span>(p) = path&#123;</span><br><span class="line">                log::error!(<span class="string">&quot;Cannot mount &#123;&#125; to &#123;&#125;: &#123;&#125;&quot;</span>,</span><br><span class="line">                    p.to_str().unwrap(), mount_point.to_str().unwrap(), e);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                log::error!(<span class="string">&quot;Cannot remount &#123;&#125;: &#123;&#125;&quot;</span>,</span><br><span class="line">                    mount_point.to_str().unwrap(), e);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="literal">Err</span>(Errcode::MountsError(<span class="number">3</span>))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们需要在<code>setmountpoint</code>函数中调用它:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">setmountpoint</span></span>(mount_dir: &amp;PathBuf) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    mount_directory(<span class="literal">None</span>, &amp;PathBuf::from(<span class="string">&quot;/&quot;</span>), <span class="built_in">vec!</span>[MsFlags::MS_REC, MsFlags::MS_PRIVATE])?;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="挂载新的根目录"><a href="#挂载新的根目录" class="headerlink" title="挂载新的根目录"></a>挂载新的根目录</h3><p>现在，让我们挂载用户提供的目录，以便稍后进行<code>pivot root</code>操作。我不会对每一行代码做详细解释，因为这只是简单地调用库函数。</p>
+<p>首先，我们创建一个<code>random_string</code>函数，它返回的，嗯，就是一个随机字符串。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Taken from https://rust-lang-nursery.github.io/rust-cookbook/algorithms/randomness.html</span></span><br><span class="line"><span class="keyword">use</span> rand::Rng;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">random_string</span></span>(n: <span class="built_in">usize</span>) -&gt; <span class="built_in">String</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> CHARSET: &amp;[<span class="built_in">u8</span>] = <span class="string">b&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ\</span></span><br><span class="line"><span class="string">                            abcdefghijklmnopqrstuvwxyz\</span></span><br><span class="line"><span class="string">                            0123456789&quot;</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut</span> rng = rand::thread_rng();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> name: <span class="built_in">String</span> = (<span class="number">0</span>..n)</span><br><span class="line">        .map(|_| &#123;</span><br><span class="line">            <span class="keyword">let</span> idx = rng.gen_range(<span class="number">0</span>..CHARSET.len());</span><br><span class="line">            CHARSET[idx] <span class="keyword">as</span> <span class="built_in">char</span></span><br><span class="line">        &#125;)</span><br><span class="line">        .collect();</span><br><span class="line"></span><br><span class="line">    name</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以通过这个函数简单的得到一个随机目录名称,在得到这个名称后我们可以创建这个目录:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::fs::create_dir_all;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">create_directory</span></span>(path: &amp;PathBuf) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    <span class="keyword">match</span> create_dir_all(path) &#123;</span><br><span class="line">        <span class="literal">Err</span>(e) =&gt; &#123;</span><br><span class="line">            log::error!(<span class="string">&quot;Cannot create directory &#123;&#125;: &#123;&#125;&quot;</span>, path.to_str().unwrap(), e);</span><br><span class="line">            <span class="literal">Err</span>(Errcode::MountsError(<span class="number">2</span>))</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="literal">Ok</span>(_) =&gt; <span class="literal">Ok</span>(())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后，在`setmountpoint·函数中将所有内容整合起来：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">setmountpoint</span></span>(mount_dir: &amp;PathBuf) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">let</span> new_root = PathBuf::from(<span class="built_in">format!</span>(<span class="string">&quot;/tmp/crabcan.&#123;&#125;&quot;</span>, random_string(<span class="number">12</span>)));</span><br><span class="line">    log::debug!(<span class="string">&quot;Mounting temp directory &#123;&#125;&quot;</span>, new_root.as_path().to_str().unwrap());</span><br><span class="line">    create_directory(&amp;new_root)?;</span><br><span class="line">    mount_directory(<span class="literal">Some</span>(&amp;mount_dir), &amp;new_root, <span class="built_in">vec!</span>[MsFlags::MS_BIND, MsFlags::MS_PRIVATE])?;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们将用户提供的<code>mount_dir</code>挂载到了挂载点<code>/tmp/crabcan.&lt;random_letters&gt;</code>，这将使我们能够在后面进行<code>pivot root</code>操作，并像使用系统真实的根目录一样使用<code>mount_dir</code>。</p>
+<h3 id="Pivot-the-root"><a href="#Pivot-the-root" class="headerlink" title="Pivot the root"></a>Pivot the root</h3><p>现在我们可以见识一下真正的魔术了！我们将<code>/tmp/crabcan.&lt;random_letters&gt;</code>设置为我们的新的<code>/</code>根文件系统，并将旧的<code>/</code>移动到新的目录 <code>/tmp/crabcan.&lt;random_letters&gt;/oldroot.&lt;random_letters&gt;</code>。<br>例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">容器外                                          容器内</span><br><span class="line">~/container_dir  == mount ==&gt; /tmp/crabcan.12345  == pivot ==&gt; /</span><br><span class="line">                              /                   == pivot ==&gt; /oldroot.54321</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>请参阅<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man2/pivot_root.2.html">Linux 手册</a>，以获取此过程的详细解释。<br>以下是代码实现：</p>
+</blockquote>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> nix::unistd::pivot_root;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">setmountpoint</span></span>(mount_dir: &amp;PathBuf) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    log::debug!(<span class="string">&quot;Pivoting root&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> old_root_tail = <span class="built_in">format!</span>(<span class="string">&quot;oldroot.&#123;&#125;&quot;</span>, random_string(<span class="number">6</span>));</span><br><span class="line">    <span class="keyword">let</span> put_old = new_root.join(PathBuf::from(old_root_tail.clone()));</span><br><span class="line">    create_directory(&amp;put_old)?;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(_) = pivot_root(&amp;new_root, &amp;put_old) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::MountsError(<span class="number">4</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="卸载旧根目录"><a href="#卸载旧根目录" class="headerlink" title="卸载旧根目录"></a>卸载旧根目录</h3><p>我们希望容器与主机系统实现隔离，所以必须卸载”旧的根目录”，这样被容器化的应用程序就无法访问整个文件系统。<br>为了实现这一点，我们创建了<code>unmount_path</code>和<code>delete_dir</code>函数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> nix::mount::&#123;umount2, MntFlags&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">unmount_path</span></span>(path: &amp;PathBuf) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    <span class="keyword">match</span> umount2(path, MntFlags::MNT_DETACH)&#123;</span><br><span class="line">        <span class="literal">Ok</span>(_) =&gt; <span class="literal">Ok</span>(()),</span><br><span class="line">        <span class="literal">Err</span>(e) =&gt; &#123;</span><br><span class="line">            log::error!(<span class="string">&quot;Unable to umount &#123;&#125;: &#123;&#125;&quot;</span>, path.to_str().unwrap(), e);</span><br><span class="line">            <span class="literal">Err</span>(Errcode::MountsError(<span class="number">0</span>))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> std::fs::remove_dir;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">delete_dir</span></span>(path: &amp;PathBuf) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    <span class="keyword">match</span> remove_dir(path.as_path())&#123;</span><br><span class="line">        <span class="literal">Ok</span>(_) =&gt; <span class="literal">Ok</span>(()),</span><br><span class="line">        <span class="literal">Err</span>(e) =&gt; &#123;</span><br><span class="line">            log::error!(<span class="string">&quot;Unable to delete directory &#123;&#125;: &#123;&#125;&quot;</span>, path.to_str().unwrap(), e);</span><br><span class="line">            <span class="literal">Err</span>(Errcode::MountsError(<span class="number">1</span>))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来简单的在<code>setmountpoint</code>函数的末尾调用它们：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> nix::unistd::chdir;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">setmountpoint</span></span>(mount_dir: &amp;PathBuf) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    log::debug!(<span class="string">&quot;Unmounting old root&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> old_root = PathBuf::from(<span class="built_in">format!</span>(<span class="string">&quot;/&#123;&#125;&quot;</span>, old_root_tail));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Ensure we are not inside the directory we want to umount</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(_) = chdir(&amp;PathBuf::from(<span class="string">&quot;/&quot;</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::MountsError(<span class="number">5</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    unmount_path(&amp;old_root)?;</span><br><span class="line">    delete_dir(&amp;old_root)?;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：我们卸载并删除了<code>/oldroot.&lt;random_letters&gt;</code>目录，因为它位于<code>/tmp/crabcan.&lt;random_letters&gt;</code>目录内，而后者已经成为了我们的新根目录。</p>
+</blockquote>
+<h4 id="空的清理函数"><a href="#空的清理函数" class="headerlink" title="空的清理函数"></a>空的清理函数</h4><p>你可能已经注意到，现在的<code>clean_mounts</code>函数完全没有用。主要的问题在于，父容器完全不知道用户提供的目录被挂载在哪里（因为它是一个随机生成的文件名）。<br>它现在造成的唯一真正问题是，所有创建的<code>/tmp/crabcan.&lt;random_letters&gt;</code>目录在执行后仍然存在，即使在被容器化的进程退出后它们是空的并已经被卸载。<br>为了简单期间（或者说懒）,我简单的保留了这些目录，但保留了一个清理函数的占位符，以防万一。</p>
+<h3 id="测试-1"><a href="#测试-1" class="headerlink" title="测试"></a>测试</h3><p>在测试时，我们可以看到一个位于<code>/tmp/crabcan.&lt;random_letters&gt;</code>的新的root目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[2022-01-04T06:50:25Z INFO  crabcan] Args &#123; debug: true, command: &quot;/bin/bash&quot;, uid: 0, mount_dir: &quot;./mountdir/&quot; &#125;</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::container] Linux release: 5.13.0-22-generic</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::container] Container sockets: (3, 4)</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::container] Creation finished</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::container] Container child PID: Some(Pid(324564))</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::container] Waiting for child (pid 324564) to finish</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::hostname] Container hostname is now blue-man-109</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::mounts] Setting mount points ...</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::mounts] Mounting temp directory /tmp/crabcan.wYGDJtGIKxZ4</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::mounts] Pivoting root</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::mounts] Unmounting old root</span><br><span class="line">[2022-01-04T06:50:25Z INFO  crabcan::child] Container set up successfully</span><br><span class="line">[2022-01-04T06:50:25Z INFO  crabcan::child] Starting container with command /bin/bash and args [&quot;/bin/bash&quot;]</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::container] Finished, cleaning &amp; exit</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::container] Cleaning container</span><br><span class="line">[2022-01-04T06:50:25Z DEBUG crabcan::errors] Exit without any error, returning 0</span><br></pre></td></tr></table></figure>
+
+<h4 id="Patch-for-this-step-1"><a href="#Patch-for-this-step-1" class="headerlink" title="Patch for this step"></a>Patch for this step</h4><p>这一步的代码可以在github <a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/tree/step10/">litchipi/crabcan branch “step10”</a>中找到.<br>前一步到这一步的原始补丁可以在<a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/compare/step9..step10.diff">此处</a>找到</p>
+
+            </div>
+            
+                <div class="kratos-copyright text-center clearfix">
+                    <h5>本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</h5>
+                </div>
+            
+            <footer class="kratos-entry-footer clearfix">
+                
+                    <div class="post-like-donate text-center clearfix" id="post-like-donate">
+                    
+                    
+                        <a class="share" href="javascript:;"><i class="fa fa-share-alt"></i> 分享</a>
+                        <div class="share-wrap" style="display: none;">
+    <div class="share-group">
+        <a href="javascript:;" class="share-plain qq" onclick="share('qq');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-qq"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain qzone" onclick="share('qzone');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-star"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weixin pop style-plain" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weixin"></i>
+            </div>
+            <div class="share-int">
+                <div class="qrcode" id="wechat-qr"></div>
+                <p>打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮</p>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weibo" onclick="share('weibo');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weibo"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain facebook style-plain" onclick="share('facebook');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-facebook"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain twitter style-plain" onclick="share('twitter');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-twitter"></i>
+            </div>
+        </a>
+    </div>
+    <script type="text/javascript">
+        $(()=>{
+            new QRCode("wechat-qr", {
+                text: "http://srcchen.github.io/2023/09/22/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A85/",
+                width: 150,
+                height: 150,
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+        function share(dest) {
+            const qqBase        = "https://connect.qq.com/widget/shareqq/index.html?";
+            const weiboBase     = "https://service.weibo.com/share/share.php?";
+            const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
+            const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
+            const twitterBase   = "https://twitter.com/intent/tweet?";
+            const hostUrl       = "http://srcchen.github.io/2023/09/22/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A85/";
+            const title         = "「【译】使用rust来写一个容器(五)」";
+            const excerpt       = `
+    注
+    
+        本文章为对 Litchi Pi的《Writing a container in Rust》的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转...`;
+            let _URL;
+            switch (dest) {
+                case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
+                case "weibo"    : _URL = weiboBase+"url="+hostUrl+"&title="+title+excerpt;                                 break;
+                case "qzone"    : _URL = qzoneBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";  break;
+                case "facebook" : _URL = facebookBase+"u="+hostUrl;                                                        break;
+                case "twitter"  : _URL = twitterBase+"text="+title+excerpt+"&url="+hostUrl;                                break;
+            }
+            window.open(_URL);
+        };
+    </script>
+</div>
+                    
+                    </div>
+                
+                <div class="footer-tag clearfix">
+                    <div class="pull-left">
+                    <i class="fa fa-tags"></i>
+                        <a class="tag-none-link" href="/tags/Docker/" rel="tag">Docker</a>, <a class="tag-none-link" href="/tags/rust/" rel="tag">rust</a>
+                    </div>
+                    <div class="pull-date">
+                    <span>最后编辑：2023-09-23</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+            <nav class="navigation post-navigation clearfix" role="navigation">
+                
+                <div class="nav-previous clearfix">
+                    <a title=" 【译】使用rust来写一个容器(四)" href="/2023/09/17/用rust写一个容器4/">&lt; 上一篇</a>
+                </div>
+                
+                
+            </nav>
+        
+        
+    </article>
+</section>
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/main.webp" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">半吊子经济学毕业生</p>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar"></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E5%AE%B9%E5%99%A8%E7%8E%AF%E5%A2%83"><span class="toc-text">定义容器环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%BB%E6%9C%BA%E5%90%8D%E7%A7%B0"><span class="toc-text">设置容器的主机名称</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E4%B8%BB%E6%9C%BA%E5%90%8D"><span class="toc-text">生成主机名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%91%E5%AE%B9%E5%99%A8%E7%9A%84%E9%85%8D%E7%BD%AE%E4%B8%AD%E6%B7%BB%E5%8A%A0%E4%BF%A1%E6%81%AF"><span class="toc-text">向容器的配置中添加信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%86%E9%85%8D%E7%BD%AE%E5%BA%94%E7%94%A8%E5%88%B0%E5%AD%90%E8%BF%9B%E7%A8%8B"><span class="toc-text">将配置应用到子进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step"><span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E5%AE%B9%E5%99%A8%E6%8C%82%E8%BD%BD%E7%82%B9"><span class="toc-text">修改容器挂载点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E5%AE%9E%E7%8E%B0"><span class="toc-text">准备实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E6%96%B0%E4%BB%A5private%E5%BD%A2%E5%BC%8F%E6%8C%82%E8%BD%BD%E6%A0%B9%E7%9B%AE%E5%BD%95"><span class="toc-text">重新以private形式挂载根目录&#x2F;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%82%E8%BD%BD%E6%96%B0%E7%9A%84%E6%A0%B9%E7%9B%AE%E5%BD%95"><span class="toc-text">挂载新的根目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pivot-the-root"><span class="toc-text">Pivot the root</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%B8%E8%BD%BD%E6%97%A7%E6%A0%B9%E7%9B%AE%E5%BD%95"><span class="toc-text">卸载旧根目录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E7%9A%84%E6%B8%85%E7%90%86%E5%87%BD%E6%95%B0"><span class="toc-text">空的清理函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95-1"><span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step-1"><span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+</aside>
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类目录</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/tags/DevOps/" style="font-size: 0.73em;">DevOps</a> <a href="/tags/Docker/" style="font-size: 0.7em;">Docker</a> <a href="/tags/FaaS/" style="font-size: 0.6em;">FaaS</a> <a href="/tags/Kubernetes/" style="font-size: 0.6em;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 0.63em;">Linux</a> <a href="/tags/ansible/" style="font-size: 0.6em;">ansible</a> <a href="/tags/docker/" style="font-size: 0.67em;">docker</a> <a href="/tags/envoy/" style="font-size: 0.6em;">envoy</a> <a href="/tags/harbor/" style="font-size: 0.6em;">harbor</a> <a href="/tags/helm/" style="font-size: 0.6em;">helm</a> <a href="/tags/ingress/" style="font-size: 0.6em;">ingress</a> <a href="/tags/kubernetes/" style="font-size: 0.8em;">kubernetes</a> <a href="/tags/prometheus/" style="font-size: 0.63em;">prometheus</a> <a href="/tags/pv/" style="font-size: 0.63em;">pv</a> <a href="/tags/pvc/" style="font-size: 0.63em;">pvc</a> <a href="/tags/rust/" style="font-size: 0.77em;">rust</a> <a href="/tags/storageclass/" style="font-size: 0.63em;">storageclass</a> <a href="/tags/tekton/" style="font-size: 0.6em;">tekton</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/22/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A85/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(五)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/17/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A84/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(四)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/10/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A83/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(三)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/02/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A82/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(二)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/08/31/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A81/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(一)</a>
+            
+          
+        
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  class="ap-lrc"  >
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        <li><a href="mailto:cg0616@hotmail.com"><i class="fa fa-envelope"></i></a></li>
+                        
+                        
+                        
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/SRCchen"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2023 SRCchen 版权所有.</li>
+                            <li>本站已运行<span id="span_dt">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>Theme <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a></li>
+                            <li>Site built with&nbsp;<i class="fa fa-heart throb" style="color:#d43f57"></i>&nbsp;by SRCchen.</li>
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="http://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
+<script>const notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));</script>
+
+<script async src="/js/candy.min.js"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+    <meting-js
+        server="netease"
+        type="playlist"
+        id="6600958231"
+        order="random"
+        fixed="true"
+    >
+    </meting-js>
+
+
+
+    <script defer src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+    <script defer src="/js/kr-dark.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>
