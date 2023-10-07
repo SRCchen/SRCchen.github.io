@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  <link rel="icon" href="">
+  <title>【译】使用rust来写一个容器(七) | Vanitas笔记</title>
+  <meta name="author" content="Vanitas" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="Docker, rust" />
+  
+  <meta name="description" content="注              本文章为对 Litchi Pi的《Writing a container in Rust》的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转载行为负责。一切权利均由原作者 Litchi Pi 保有。个人翻译能力有限，如有疑问可查看原文。             系统调用与资源限制系统调用限制什么是系统调用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【译】使用rust来写一个容器(七)">
+<meta property="og:url" content="http://srcchen.github.io/2023/10/07/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A87/index.html">
+<meta property="og:site_name" content="Vanitas笔记">
+<meta property="og:description" content="注              本文章为对 Litchi Pi的《Writing a container in Rust》的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转载行为负责。一切权利均由原作者 Litchi Pi 保有。个人翻译能力有限，如有疑问可查看原文。             系统调用与资源限制系统调用限制什么是系统调用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://srcchen.github.io/null">
+<meta property="article:published_time" content="2023-10-07T12:43:26.000Z">
+<meta property="article:modified_time" content="2023-10-07T16:03:51.115Z">
+<meta property="article:author" content="Vanitas">
+<meta property="article:tag" content="rust">
+<meta property="article:tag" content="Docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://srcchen.github.io/null">
+<meta name="twitter:site" content="@null">
+  
+  <!-- 站点验证相关 -->
+  
+    
+    
+    
+  
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kratosr.min.css" type="text/css" media="all">
+  
+    <link rel="stylesheet" id="highlight-css" href="/css/highlight/night-eighties.min.css" type="text/css" media="all">
+  
+  
+  <link rel="stylesheet" id="fontawe-css" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" type="text/css" media="all">
+  <link rel="stylesheet" id="nprogress-css" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" type="text/css" media="all">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+  
+  
+    <link rel="stylesheet" id="darkmode-css" href="/css/kr-dark.min.css" type="text/css" media="all">
+  
+  <!-- 不得不预先加载的一些JS文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/qrcode_js@1.0.0/qrcode.min.js"></script>
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    
+                                        <li><a href="/"><i class="fa fa-home"></i>首页</a></li>
+                                    
+                                
+                                    
+                                        <li><a href="/archives/"><i class="fa fa-file"></i>档案馆</a></li>
+                                    
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">Vanitas笔记</a></div>
+                    <div class="nav-toggle">
+                        <a class="kratos-nav-toggle js-kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>Vanitas笔记</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+                    
+
+        <section class="col-md-8">
+    <article>
+        <div class="kratos-hentry kratos-post-inner clearfix">
+            <header class="kratos-entry-header">
+                
+                    <h1 class="kratos-entry-title text-center">【译】使用rust来写一个容器(七)</h1>
+                
+                
+                <ul class="kratos-post-meta text-center">
+                    <li><i class="fa fa-calendar"></i> 2023-10-07</li>
+                    <li><i class="fa fa-user"></i> 作者 Vanitas</li>
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~20.35K
+                        
+                        字
+                    </li>
+                    
+                </ul>
+            </header>
+            <div class="kratos-post-content">
+                <div id="expire-alert" class="alert alert-warning hidden" role="alert">
+                    本文最后编辑于 <time datetime="1696694631115"></time> 前，其中的内容可能需要更新。
+                </div>
+                
+                    <div class="kratos-post-inner-toc">
+                        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%B8%8E%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">系统调用与资源限制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E9%99%90%E5%88%B6"><span class="toc-number">1.1.</span> <span class="toc-text">系统调用限制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-syscall-%EF%BC%9F"><span class="toc-number">1.1.1.</span> <span class="toc-text">什么是系统调用(syscall)？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Seccomp-%E5%92%8C%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E9%99%90%E5%88%B6"><span class="toc-number">1.1.2.</span> <span class="toc-text">Seccomp 和系统调用限制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A6%81%E5%AF%B9%E5%93%AA%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E8%BF%9B%E8%A1%8C%E9%99%90%E5%88%B6%EF%BC%9F"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">要对哪些系统调用进行限制？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E7%94%A8seccomp"><span class="toc-number">1.1.3.</span> <span class="toc-text">应用seccomp</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A0%E6%9D%A1%E4%BB%B6%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E9%99%90%E5%88%B6%EF%BC%88Unconditionnal-syscalls-restriction%EF%BC%89"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">无条件系统调用限制（Unconditionnal syscalls restriction）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E9%99%90%E5%88%B6-Conditionnal-syscalls-restriction"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">条件系统调用限制(Conditionnal syscalls restriction)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">1.1.4.</span> <span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step"><span class="toc-number">1.1.4.1.</span> <span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6"><span class="toc-number">1.2.</span> <span class="toc-text">资源限制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Cgroups"><span class="toc-number">1.2.1.</span> <span class="toc-text">Cgroups</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%99%90%E5%88%B6CPU%E4%BD%BF%E7%94%A8%E6%97%B6%E9%95%BF"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">限制CPU使用时长</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rlimit"><span class="toc-number">1.2.2.</span> <span class="toc-text">Rlimit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%90%E5%88%B6%E8%B5%84%E6%BA%90"><span class="toc-number">1.2.3.</span> <span class="toc-text">限制资源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%85%E9%99%A4%E9%99%90%E5%88%B6"><span class="toc-number">1.2.4.</span> <span class="toc-text">清除限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95-1"><span class="toc-number">1.2.5.</span> <span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step-1"><span class="toc-number">1.2.5.1.</span> <span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li></ol></li></ol>
+                    </div>
+                
+                <hr />
+                <div class="panel panel-info">
+    <div class="panel-title">注</div>
+    <div class="panel-body">
+        <p>本文章为对 <code>Litchi Pi</code>的<a target="_blank" rel="noopener" href="https://litchipi.site/">《Writing a container in Rust》</a>的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转载行为负责。一切权利均由原作者 Litchi Pi 保有。个人翻译能力有限，如有疑问可查看原文。</p>
+
+    </div>
+    </div>
+
+<h1 id="系统调用与资源限制"><a href="#系统调用与资源限制" class="headerlink" title="系统调用与资源限制"></a>系统调用与资源限制</h1><h2 id="系统调用限制"><a href="#系统调用限制" class="headerlink" title="系统调用限制"></a>系统调用限制</h2><h3 id="什么是系统调用-syscall-？"><a href="#什么是系统调用-syscall-？" class="headerlink" title="什么是系统调用(syscall)？"></a>什么是系统调用(syscall)？</h3><p>当应用程序因错误而崩溃时，必须以不影响底层操作系统的方式来解决问题。<br>想象一下，如果你的的俄罗斯方块游戏在保存高分时崩溃了。 由于它没有结束对磁盘的操作，因此可能会损坏磁盘，或者会对其他程序使用磁盘造成麻烦。</p>
+<blockquote>
+<p>这一原则的一个有趣的例子是通过非常著名的<a target="_blank" rel="noopener" href="https://youtu.be/yeUyxjLhAxU">Windows 98 现场失败</a>进行现场演示，这也是预录制视频取代现场演示的原因.</p>
+</blockquote>
+<p>为了避免这种情况，Linux 将软件分为两个“区域”：内核区域(Kernel-land)和用户区域(User-land)。</p>
+<p>内核区域(Kernel-land)具有特权，这意味着它可以完全掌控整个机器（除了一些例外情况，例如 <a target="_blank" rel="noopener" href="https://blog.quarkslab.com/introduction-to-trusted-execution-environment-arms-trustzone.html">Arm TrustZone</a> 的处理器级上下文分离），它可以读取和写入所有内存，并使用驱动程序与连接的外设进行交互。</p>
+<p>用户区域(User-land)是无特权的，这意味着即使root帐户也不能直接完全控制机器，但这种权限允许运行所有系统调用。</p>
+<p>系统调用(syscall)是用户区域(User-land)的应用程序执行需要内核来完成的操作的方式。</p>
+<blockquote>
+<p>syscalls是一种特殊的汇编机器代码，每个系统调用都有一个“索引”，这个索引被传递到一个寄存器中，当执行<code>syscall</code>命令时，它会切换到负责处理对应系统调用的内核代码。</p>
+</blockquote>
+<p>下面是使用<code>write</code>系统调用写入磁盘的应用程序的表示。</p>
+<blockquote>
+<p>当在Python等其他语言中使用<code>write</code>时，通常会调用C的<code>write</code>函数，因为该函数在编译时会直接翻译为相应的系统调用。</p>
+</blockquote>
+<p>驱动程序作为模块嵌入到内核中，并在内部管理其内部状态和操作。 通过这种形式，当发生错误并且另一个应用程序想要执行写入操作时，它可以重置其状态，处理底层物理设备所需的特殊操作（我正在看着你，<a target="_blank" rel="noopener" href="https://gist.github.com/StoneCypher/be7f117881915e7df7bbc96c5c0a84d5">eMMC</a>！）</p>
+<blockquote>
+<p>有关 Linux 内核驱动程序的更多信息，请参阅<a target="_blank" rel="noopener" href="http://www.haifux.org/lectures/86-sil/kernel-modules-drivers/kernel-modules-drivers.html">本文</a>（说真的，为了保护您的眼睛，请注意文章的颜色）。</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://linuxhint.com/list_of_linux_syscalls">此处</a>提供了可以使用 Linux 内核调用的所有系统调用的完整列表</p>
+<h3 id="Seccomp-和系统调用限制"><a href="#Seccomp-和系统调用限制" class="headerlink" title="Seccomp 和系统调用限制"></a>Seccomp 和系统调用限制</h3><p>由于系统调用允许用户控制系统，因此我们需要限制可能允许容器内的处理损害我们的底层操作系统的系统调用。</p>
+<p>让我们了解一下<strong>Seccomp</strong></p>
+<p>正如<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Seccomp">seccomp的维基百科页面</a>所给出的：</p>
+<blockquote>
+<p>seccomp（secure computing mode,即安全计算模式的缩写）是 Linux 内核中的计算机安全设施。<br>seccomp 允许进程单向转换到“安全”状态，在这种状态下，除了对已打开的文件描述符执行 exit()、sigreturn()、read() 和 write() 之外，它<em>不能进行任何系统调用</em>。 如果它尝试进行任何其他系统调用，内核将使用<strong>SIGKILL</strong>或<strong>SIGSYS</strong>终止该进程。 从这个意义上说，它并不是虚拟化系统的资源，而是将进程与系统资源完全隔离。</p>
+</blockquote>
+<blockquote>
+<p>通过 prctl(2)系统调用使用PR_SET_SECCOMP参数或者（自 Linux 内核 3.17 起）通过 seccomp(2) 系统调用可启用seccomp模式。</p>
+</blockquote>
+<div class="panel panel-info">
+    <div class="panel-title">译者注</div>
+    <div class="panel-body">
+        <p>prctl是基本的进程管理函数，最原始的沙箱规则就是通过prctl函数来实现的，它可以决定可调用的系统调用函数。当第一个参数是PR_SET_SECCOMP,第二个参数为1的时候(严格模式)，允许的系统调用只有read，write，exit和sigereturn。<br>在Linux 3.5内核版本中， 引入了seccomp第二种匹配模式：SECCOMP_MODE_FILTER。 该模式使用BPF程序做过滤规则匹配。</p>
+
+    </div>
+    </div>
+
+<p>我们很容易看出 seccomp 是 Docker 等容器的支柱之一，它将进程隔离到只能读取和写入文件系统或退出的状态。</p>
+<p>在默认情况下，这种安全计算模式具有很大的限制性，因为它拒绝了所有限制外的系统调用尝试。为了容器的良好功能，我们可能需要对其进行配置并添加例外。<br>为此，我们可以为 seccomp 设置一个定义了特殊规则、允许某些系统调用或触发特殊操作的配置文件。<br>对于我们的容器来说，我们要做的就是配置 seccomp 以默认允许所有系统调用，然后使用配置文件来拒绝某些系统调用。</p>
+<h4 id="要对哪些系统调用进行限制？"><a href="#要对哪些系统调用进行限制？" class="headerlink" title="要对哪些系统调用进行限制？"></a>要对哪些系统调用进行限制？</h4><p>在本教程中，我们不会仔细研究我们将拒绝/允许的每个系统调用，因为<a target="_blank" rel="noopener" href="https://blog.lizzie.io/linux-containers-in-500-loc.html#org8504d16">原始教程的“系统调用”部分</a>给出了一些利用示例的深入描述。<br>此外，正如原始教程中所指出的，你可以通过<a target="_blank" rel="noopener" href="https://github.com/docker/docker.github.io/blob/master/engine/security/seccomp.md">docker文档</a>和 <a target="_blank" rel="noopener" href="https://github.com/moby/moby/blob/b248de7e332b6e67b08a8981f68060e6ae629ccf/profiles/seccomp/default.json">moby 的 seccomp 配置文件</a>来获取系统调用限制相关的配置资源。</p>
+<p>以下是我们将在容器中拒绝的系统调用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// Kernel keyring</span><br><span class="line">keyctl</span><br><span class="line">add_key</span><br><span class="line">request_key</span><br><span class="line"></span><br><span class="line">// NUMA (memory management)</span><br><span class="line">mbind</span><br><span class="line">migrate_pages</span><br><span class="line">move_pages</span><br><span class="line">set_mempolicy</span><br><span class="line"></span><br><span class="line">// Allow userland to handle memory faults in the kernel</span><br><span class="line">userfaultfd</span><br><span class="line"></span><br><span class="line">// Trace / profile syscalls</span><br><span class="line">perf_event_open</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>有关我们限制的一些额外资源:<br><a target="_blank" rel="noopener" href="https://www.systutorials.com/docs/linux/man/7-keyrings">Kernel keyring</a><br>[NUMA](<a target="_blank" rel="noopener" href="https://www.kernel.org/doc/html/latest/vm/numa.html">https://www.kernel.org/doc/html/latest/vm/numa.html</a><br><a target="_blank" rel="noopener" href="https://www.kernel.org/doc/html/latest/admin-guide/mm/userfaultfd.html">Userland memory handling</a><br><a target="_blank" rel="noopener" href="https://www.kernel.org/doc/html/latest/trace/ftrace.html">Syscalls tracing</a></p>
+</blockquote>
+<h3 id="应用seccomp"><a href="#应用seccomp" class="headerlink" title="应用seccomp"></a>应用seccomp</h3><p>我们通过<code>syscallz</code>包来对子进程的seccomp进行限制，此外这个操作也依赖<code>libc</code>, 以下是<code>Cargo.toml</code>新增内容:</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">syscallz</span> = <span class="string">&quot;0.16.1&quot;</span></span><br><span class="line"><span class="attr">libc</span> = <span class="string">&quot;0.2.102&quot;</span></span><br></pre></td></tr></table></figure>
+<p>接下来我们新建一个<code>src/syscalls.rs</code>文件,像这样创建一个函数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> syscallz::&#123;Context, Action&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">setsyscalls</span></span>() -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    log::debug!(<span class="string">&quot;Refusing / Filtering unwanted syscalls&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Unconditionnal syscall deny</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Conditionnal syscall deny</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Initialize seccomp profile with all syscalls allowed by default</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Ok</span>(<span class="keyword">mut</span> ctx) = Context::init_with_action(Action::Allow) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Configure profile here</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(_) = ctx.load()&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::SyscallsError(<span class="number">0</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="literal">Ok</span>(())</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="literal">Err</span>(Errcode::SyscallsError(<span class="number">1</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来我们引入这个模块，然后在子配置函数中调用此函数。<br>修改<code>src/main.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">mod</span> syscalls;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>修改<code>src/errors.rs</code>:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">enum</span> <span class="title">Errcode</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    SyscallsError(<span class="built_in">u8</span>),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来是<code>src/child.rs</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::syscalls::setsyscalls;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">setup_container_configurations</span></span>(config: &amp;ContainerOpts) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    setsyscalls()?;</span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="无条件系统调用限制（Unconditionnal-syscalls-restriction）"><a href="#无条件系统调用限制（Unconditionnal-syscalls-restriction）" class="headerlink" title="无条件系统调用限制（Unconditionnal syscalls restriction）"></a>无条件系统调用限制（Unconditionnal syscalls restriction）</h4><p>让我们先来拒绝我们不希望子进程执行的系统调用。<br>为此，我们创建函数<code>refuse_syscall</code>来完全拒绝在子进程中调用该系统调用的任何尝试。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> EPERM: <span class="built_in">u16</span> = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">refuse_syscall</span></span>(ctx: &amp;<span class="keyword">mut</span> Context, sc: &amp;Syscall) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    <span class="keyword">match</span> ctx.set_action_for_syscall(Action::Errno(EPERM), *sc)&#123;</span><br><span class="line">        <span class="literal">Ok</span>(_) =&gt; <span class="literal">Ok</span>(()),</span><br><span class="line">        <span class="literal">Err</span>(_) =&gt; <span class="literal">Err</span>(Errcode::SyscallsError(<span class="number">2</span>)),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来，我们列出要拒绝的系统调用，并遍历它们以填充配置文件。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::syscallz::Syscall;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">setsyscalls</span></span>() -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Unconditionnal syscall deny</span></span><br><span class="line">    <span class="keyword">let</span> syscalls_refused = [</span><br><span class="line">        Syscall::keyctl,</span><br><span class="line">        Syscall::add_key,</span><br><span class="line">        Syscall::request_key,</span><br><span class="line">        Syscall::mbind,</span><br><span class="line">        Syscall::migrate_pages,</span><br><span class="line">        Syscall::move_pages,</span><br><span class="line">        Syscall::set_mempolicy,</span><br><span class="line">        Syscall::userfaultfd,</span><br><span class="line">        Syscall::perf_event_open,</span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Ok</span>(<span class="keyword">mut</span> ctx) = Context::init_with_action(Action::Allow)&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> sc <span class="keyword">in</span> syscalls_refused.iter() &#123;</span><br><span class="line">            refuse_syscall(&amp;<span class="keyword">mut</span> ctx, sc)?;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="条件系统调用限制-Conditionnal-syscalls-restriction"><a href="#条件系统调用限制-Conditionnal-syscalls-restriction" class="headerlink" title="条件系统调用限制(Conditionnal syscalls restriction)"></a>条件系统调用限制(Conditionnal syscalls restriction)</h4><p>当满足特定条件时，限制系统调用。<br>为此，我们创建一个规则，该规则接受一个值并返回是否应设置权限。 由于我们有此功能的基本用法，因此我们只需测试变量是否等于预期值。<br>让我们创建<code>refuse_if_comp</code>函数来实现这一点：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> syscallz::&#123;Comparator, Cmp&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">refuse_if_comp</span></span>(ctx: &amp;<span class="keyword">mut</span> Context, ind: <span class="built_in">u32</span>, sc: &amp;Syscall, biteq: <span class="built_in">u64</span>)-&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    <span class="keyword">match</span> ctx.set_rule_for_syscall(Action::Errno(EPERM), *sc,</span><br><span class="line">            &amp;[Comparator::new(ind, Cmp::MaskedEq, biteq, <span class="literal">Some</span>(biteq))])&#123;</span><br><span class="line">        <span class="literal">Ok</span>(_) =&gt; <span class="literal">Ok</span>(()),</span><br><span class="line">        <span class="literal">Err</span>(_) =&gt; <span class="literal">Err</span>(Errcode::SyscallsError(<span class="number">3</span>)),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个<code>Comparator</code>将获取传递给系统调用的参数号<strong>ind</strong>，并使用掩码<code>biteq</code>与值<code>biteq</code>进行比较。<br>这相当于测试<code>biteq</code>位是否已设置。<br>让我们添加要为系统调用设置的所有规则：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> libc::TIOCSTI;</span><br><span class="line"><span class="keyword">use</span> nix::sys::stat::Mode;</span><br><span class="line"><span class="keyword">use</span> nix::sched::CloneFlags;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">setsyscalls</span></span>() -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> s_isuid: <span class="built_in">u64</span> = Mode::S_ISUID.bits().into();</span><br><span class="line">    <span class="keyword">let</span> s_isgid: <span class="built_in">u64</span> = Mode::S_ISGID.bits().into();</span><br><span class="line">    <span class="keyword">let</span> clone_new_user: <span class="built_in">u64</span> = CloneFlags::CLONE_NEWUSER.bits() <span class="keyword">as</span> <span class="built_in">u64</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Conditionnal syscall deny</span></span><br><span class="line">    <span class="keyword">let</span> syscalls_refuse_ifcomp = [</span><br><span class="line">        (Syscall::chmod, <span class="number">1</span>, s_isuid),</span><br><span class="line">        (Syscall::chmod, <span class="number">1</span>, s_isgid),</span><br><span class="line"></span><br><span class="line">        (Syscall::fchmod, <span class="number">1</span>, s_isuid),</span><br><span class="line">        (Syscall::fchmod, <span class="number">1</span>, s_isgid),</span><br><span class="line"></span><br><span class="line">        (Syscall::fchmodat, <span class="number">2</span>, s_isuid),</span><br><span class="line">        (Syscall::fchmodat, <span class="number">2</span>, s_isgid),</span><br><span class="line"></span><br><span class="line">        (Syscall::unshare, <span class="number">0</span>, clone_new_user),</span><br><span class="line">        (Syscall::clone, <span class="number">0</span>, clone_new_user),</span><br><span class="line"></span><br><span class="line">        (Syscall::ioctl, <span class="number">1</span>, TIOCSTI),</span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Ok</span>(<span class="keyword">mut</span> ctx) = Context::init_with_action(Action::Allow)&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="keyword">for</span> (sc, ind, biteq) <span class="keyword">in</span> syscalls_refuse_ifcomp.iter()&#123;</span><br><span class="line">            refuse_if_comp(&amp;<span class="keyword">mut</span> ctx, *ind, sc, *biteq)?;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>现在一切准备就绪，让我们简单测试一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">[2022-03-09T09:08:27Z INFO  crabcan] Args &#123; debug: true, command: &quot;/bin/bash&quot;, uid: 0, mount_dir: &quot;./mountdir/&quot; &#125;</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::container] Linux release: 5.13.0-30-generic</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::container] Container sockets: (3, 4)</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::hostname] Container hostname is now soft-world-116</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::mounts] Setting mount points ...</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::mounts] Mounting temp directory /tmp/crabcan.Qo04pP4PBG9U</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::mounts] Pivoting root</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::mounts] Unmounting old root</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::namespaces] Setting up user namespace with UID 0</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::namespaces] Child UID/GID map done, sending signal to child to continue...</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::container] Creation finished</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::container] Container child PID: Some(Pid(130688))</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::container] Waiting for child (pid 130688) to finish</span><br><span class="line">[2022-03-09T09:08:27Z INFO  crabcan::namespaces] User namespaces set up</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::namespaces] Switching to uid 0 / gid 0...</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::capabilities] Clearing unwanted capabilities ...</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::syscalls] Refusing / Filtering unwanted syscalls</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=chmod comparators=[Comparator &#123; arg: 1, op: MaskedEq, datum_a: 2048, datum_b: 2048 &#125;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=chmod comparators=[Comparator &#123; arg: 1, op: MaskedEq, datum_a: 1024, datum_b: 1024 &#125;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=fchmod comparators=[Comparator &#123; arg: 1, op: MaskedEq, datum_a: 2048, datum_b: 2048 &#125;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=fchmod comparators=[Comparator &#123; arg: 1, op: MaskedEq, datum_a: 1024, datum_b: 1024 &#125;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=fchmodat comparators=[Comparator &#123; arg: 2, op: MaskedEq, datum_a: 2048, datum_b: 2048 &#125;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=fchmodat comparators=[Comparator &#123; arg: 2, op: MaskedEq, datum_a: 1024, datum_b: 1024 &#125;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=unshare comparators=[Comparator &#123; arg: 0, op: MaskedEq, datum_a: 268435456, datum_b: 268435456 &#125;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=clone comparators=[Comparator &#123; arg: 0, op: MaskedEq, datum_a: 268435456, datum_b: 268435456 &#125;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=ioctl comparators=[Comparator &#123; arg: 1, op: MaskedEq, datum_a: 21522, datum_b: 21522 &#125;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=keyctl</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=add_key</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=request_key</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=mbind</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=migrate_pages</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=move_pages</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=set_mempolicy</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=userfaultfd</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=perf_event_open</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG syscallz] seccomp: loading policy</span><br><span class="line">[2022-03-09T09:08:27Z INFO  crabcan::child] Container set up successfully</span><br><span class="line">[2022-03-09T09:08:27Z INFO  crabcan::child] Starting container with command /bin/bash and args [&quot;/bin/bash&quot;]</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::container] Finished, cleaning &amp; exit</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::container] Cleaning container</span><br><span class="line">[2022-03-09T09:08:27Z DEBUG crabcan::errors] Exit without any error, returning 0</span><br></pre></td></tr></table></figure>
+<p>它会生成一些日志记录，因为<code>syscallz</code>包和我们的我们的项目一样设置了<code>log</code>。<br>它很好地表明我们的系统调用现在已被过滤，我们可以进入下一步！</p>
+<h4 id="Patch-for-this-step"><a href="#Patch-for-this-step" class="headerlink" title="Patch for this step"></a>Patch for this step</h4><p>这一步的代码可以在github <a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/tree/step13/">litchipi/crabcan branch “step13”</a>中找到.<br>前一步到这一步的原始补丁可以在<a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/compare/step12..step13.diff">此处</a>找到</p>
+<h2 id="资源限制"><a href="#资源限制" class="headerlink" title="资源限制"></a>资源限制</h2><h3 id="Cgroups"><a href="#Cgroups" class="headerlink" title="Cgroups"></a>Cgroups</h3><p>Cgroups 是 Linux v2.6.4 中引入的一种机制，允许为一组进程“分配”资源。<br>对于给定的进程组，系统“看起来”只拥有 X 个给定资源。</p>
+<blockquote>
+<p>资源数量不能高于系统最初拥有的数量，它不是虚拟化功能，而是限制功能。</p>
+</blockquote>
+<p>在Linux系统中，您可以使用<code>/sys/fs/cgroup/</code>来设置进程限制，方法如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">     100 Mib</span></span><br><span class="line">echo 100000000 &gt; /sys/fs/cgroup/memory/&lt;groupname&gt;/memory.limit_in_bytes</span><br></pre></td></tr></table></figure>
+
+<p>由于此功能已被重新设计，因此两个版本在 Linux 内核中共存。<br>对于我们用户来说，主要区别在于<code>v2</code>将给定组的所有配置分组在同一目录下。</p>
+<p>有关它们的更多信息，您可以查看<a target="_blank" rel="noopener" href="https://lwn.net/Articles/604609/"> LWN 上的这一系列精彩文章</a>。</p>
+<p>此功能在同一服务器上的应用程序容器化中大量使用，并且能够向客户出售服务器上的一组特定性能，然后在客户购买性能提升时进行升级。</p>
+<p>此功能对于容器非常重要，以至于<a target="_blank" rel="noopener" href="https://thehackernews.com/2022/03/new-linux-kernel-cgroups-vulnerability.html">最近的一个漏洞</a>让攻击者可以逃逸出容器并直接感染主机系统。 您必须记住，当我们向所包含的应用<em>程序授予完全权限时</em>，如果该应用程序成功逃逸出沙盒环境，它可能会在主机系统上保留其权限。</p>
+<div class="panel panel-info">
+    <div class="panel-title">译者注</div>
+    <div class="panel-body">
+        <p>Cgroup与容器的关系可参考以下文章:<br><a target="_blank" rel="noopener" href="https://moelove.info/2021/11/17/%E4%B8%80%E7%AF%87%E6%90%9E%E6%87%82%E5%AE%B9%E5%99%A8%E6%8A%80%E6%9C%AF%E7%9A%84%E5%9F%BA%E7%9F%B3-cgroup/">一篇搞懂容器技术的基石： cgroup</a></p>
+
+    </div>
+    </div>
+
+<h4 id="限制CPU使用时长"><a href="#限制CPU使用时长" class="headerlink" title="限制CPU使用时长"></a>限制CPU使用时长</h4><p>为了限制CPU的使用，cgroup使用权重来确定进程将获得多少CPU使用时间。<br>默认情况下，cgroup 将授予进程权重 1024，但该权重可以从1到2^64的范围内进行调整。<br>与其他程序相比，权重越大，CPU份额就越多。</p>
+<blockquote>
+<p>如果 3 个进程的权重都为 25000，则它们的 CPU 时间与全部为 1024 时的 CPU 时间相同。较大的值范围允许对该值进行微调。</p>
+</blockquote>
+<p>更多关于CPU共享的信息可以查看<a target="_blank" rel="noopener" href="https://www.redhat.com/sysadmin/cgroups-part-two">redhat的这篇文章</a></p>
+<h3 id="Rlimit"><a href="#Rlimit" class="headerlink" title="Rlimit"></a>Rlimit</h3><p>Rlimit 是一个用于限制单个进程的系统。<br>它的重点更集中于该进程可以做什么，而不是它消耗的实时系统资源。</p>
+<p>有关 rlimit 的详细信息，您可以查看<a target="_blank" rel="noopener" href="https://0xax.gitbooks.io/linux-insides/content/SysCall/linux-syscall-6.html">这篇文章</a>，我从中提取了所有可用 rlimit 的列表：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">RLIMIT_CPU         <span class="comment">// CPU time limit given in seconds                                                   </span></span><br><span class="line">                   <span class="comment">// 最大允许的CPU使用时间，秒为单位。</span></span><br><span class="line">RLIMIT_FSIZE       <span class="comment">// the maximum size of files that a process may create                               </span></span><br><span class="line">                   <span class="comment">// 进程可建立的文件的最大长度。</span></span><br><span class="line">RLIMIT_DATA        <span class="comment">// the maximum size of the process&#x27;s data segment                                    </span></span><br><span class="line">                   <span class="comment">// 进程数据段的最大值。</span></span><br><span class="line">RLIMIT_STACK       <span class="comment">// the maximum size of the process stack in bytes                                    </span></span><br><span class="line">                   <span class="comment">// 最大的进程堆栈，以字节为单位</span></span><br><span class="line">RLIMIT_CORE        <span class="comment">// the maximum size of a core file.</span></span><br><span class="line">                   <span class="comment">// 内核转存文件的最大长度。</span></span><br><span class="line">RLIMIT_RSS         <span class="comment">// the number of bytes that can be allocated for a process in RAM</span></span><br><span class="line">                   <span class="comment">// 进程驻留内存的页数的大小限制</span></span><br><span class="line">RLIMIT_NPROC       <span class="comment">// the maximum number of processes that can be created by a user</span></span><br><span class="line">                   <span class="comment">// 当前进程所属的真实id对应的用户所能创建的最大进程数</span></span><br><span class="line">RLIMIT_NOFILE      <span class="comment">// the maximum number of a file descriptor that can be opened by a process</span></span><br><span class="line">                   <span class="comment">// 一个进程能打开文件个数的最大值</span></span><br><span class="line">RLIMIT_MEMLOCK     <span class="comment">// the maximum number of bytes of memory that may be locked into RAM by mlock.</span></span><br><span class="line">                   <span class="comment">// 进程可锁定在内存中的最大数据量，字节为单位。</span></span><br><span class="line">RLIMIT_AS          <span class="comment">// the maximum size of virtual memory in bytes.</span></span><br><span class="line">                   <span class="comment">// 进程的最大虚内存空间，字节为单位。</span></span><br><span class="line">RLIMIT_LOCKS       <span class="comment">// the maximum number flock and locking related fcntl calls</span></span><br><span class="line">                   <span class="comment">// 进程可建立的文件锁数量最大值。</span></span><br><span class="line">RLIMIT_SIGPENDING  <span class="comment">// maximum number of signals that may be queued for a user of the calling process</span></span><br><span class="line">                   <span class="comment">// 表示进程信号等待队列最大大小</span></span><br><span class="line">RLIMIT_MSGQUE      <span class="comment">// the number of bytes that can be allocated for POSIX message queues</span></span><br><span class="line">                   <span class="comment">// 进程可为POSIX消息队列分配的最大字节数</span></span><br><span class="line">RLIMIT_NICE        <span class="comment">// the maximum nice value that can be set by a process</span></span><br><span class="line">                   <span class="comment">// 进程可通过setpriority() 或 nice()调用设置的最大完美值。</span></span><br><span class="line">RLIMIT_RTPRIO      <span class="comment">// maximum real-time priority value</span></span><br><span class="line">                   <span class="comment">// 进程可通过sched_setscheduler 和 sched_setparam设置的最大实时优先级。</span></span><br><span class="line">RLIMIT_RTTIME      <span class="comment">// maximum number of microseconds that a process may be scheduled under real-time scheduling policy without making blocking system call</span></span><br><span class="line">                   <span class="comment">// 实时进程timer最大超时时间</span></span><br></pre></td></tr></table></figure>
+<p>我们将使用 rlimit 来限制进程可以打开的文件描述符的数量，因为，如<a target="_blank" rel="noopener" href="https://blog.lizzie.io/linux-containers-in-500-loc.html#org36fcb0f">原始教程</a>中所述：</p>
+<blockquote>
+<p>文件描述符数量与 pid 数量一样，是针对每个用户的，因此我们希望防止容器内进程占用所有文件描述符数量。</p>
+</blockquote>
+<p>所以我们需要设置<code>RLIMIT_NOFILE</code></p>
+<blockquote>
+<p>从理论上讲，rlimit 和 cgroups 的限制可能“重叠”（先达到上限的规则会成为实际限制），但实际上它们的应用领域不同，这种情况几乎不会发生。</p>
+</blockquote>
+<p>注意，由于rlimit使用系统调用，因此<strong>进程可以重新配置这些设置</strong>，这就是我们将<code>CAP_SYS_RESOURCE</code>添加到系统调用黑名单中的原因。</p>
+<h3 id="限制资源"><a href="#限制资源" class="headerlink" title="限制资源"></a>限制资源</h3><p>有一个叫做<code>cgroups_rs</code>的包可以简化与<code>cgroups</code>定义相关的所有内容，但请记住，由于Unix中<strong>一切皆文件</strong>（Linux 遵循 Unix 的哲学），即使我们没有这个包，我们要完成这项工作也只需要写入<strong>正确的文件</strong>。</p>
+<p>我们还将使用<a target="_blank" rel="noopener" href="https://crates.io/crates/rlimit">rlimit包</a>来包装对我们需要的系统调用的调用。</p>
+<p>在新文件<code>src/resources.rs</code>中，我们创建一个函数来限制容器内的资源。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> rlimit::&#123;setrlimit, Resource&#125;;</span><br><span class="line"><span class="keyword">use</span> cgroups_rs::cgroup_builder::CgroupBuilder;</span><br><span class="line"></span><br><span class="line"><span class="comment">//                       KiB    MiB    Gib</span></span><br><span class="line"><span class="keyword">const</span> KMEM_LIMIT: <span class="built_in">i64</span> = <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">1024</span>;</span><br><span class="line"><span class="keyword">const</span> MEM_LIMIT: <span class="built_in">i64</span> = KMEM_LIMIT;</span><br><span class="line"><span class="keyword">const</span> MAX_PID: MaxValue = MaxValue::Value(<span class="number">64</span>);</span><br><span class="line"><span class="keyword">const</span> NOFILE_RLIMIT: <span class="built_in">u64</span> = <span class="number">64</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">restrict_resources</span></span>(hostname: &amp;<span class="built_in">String</span>) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    log::debug!(<span class="string">&quot;Restricting resources for hostname &#123;&#125;&quot;</span>, hostname);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Cgroups</span></span><br><span class="line">    <span class="keyword">let</span> cgs = CgroupBuilder::new(hostname)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Allocate less CPU time than other processes</span></span><br><span class="line">        .cpu().shares(<span class="number">256</span>).done()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Limiting the memory usage to 1 GiB</span></span><br><span class="line">        <span class="comment">// The user can limit it to less than this, never increase above 1Gib</span></span><br><span class="line">        .memory().kernel_memory_limit(KMEM_LIMIT).memory_hard_limit(MEM_LIMIT).done()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// This process can only create a maximum of 64 child processes</span></span><br><span class="line">        .pid().maximum_number_of_processes(MAX_PID).done()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Give an access priority to block IO lower than the system</span></span><br><span class="line">        .blkio().weight(<span class="number">50</span>).done()</span><br><span class="line"></span><br><span class="line">        .build(<span class="built_in">Box</span>::new(V2::new()));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// We apply the cgroups rules to the child process we just created</span></span><br><span class="line">    <span class="keyword">let</span> pid : <span class="built_in">u64</span> = pid.as_raw().try_into().unwrap();</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(_) = cgs.add_task(CgroupPid::from(pid)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::ResourcesError(<span class="number">0</span>));</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Rlimit</span></span><br><span class="line">    <span class="comment">// Can create only 64 file descriptors</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(_) = setrlimit(Resource::NOFILE, NOFILE_RLIMIT, NOFILE_RLIMIT)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::ResourcesError(<span class="number">0</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以在容器的<code>create</code>函数中使用这个新函数，因为它只需要主机名来应用限制。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::resources::restrict_resources;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> Container &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">create</span></span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">        <span class="keyword">let</span> pid = generate_child_process(<span class="keyword">self</span>.config.clone())?;</span><br><span class="line">        restrict_resources(&amp;<span class="keyword">self</span>.config.hostname, pid)?;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来在<code>Cargo.toml</code>中添加依赖</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">cgroups-rs</span> = <span class="string">&quot;0.2.6&quot;</span></span><br><span class="line"><span class="attr">rlimit</span> = <span class="string">&quot;0.6.2&quot;</span></span><br></pre></td></tr></table></figure>
+<p>同样的，在<code>src/main.rs</code>中添加这个模块</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">mod</span> resources;</span><br></pre></td></tr></table></figure>
+<p>在<code>src/error.rs</code>中添加错误变体</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">enum</span> <span class="title">Errcode</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    ResourcesError(<span class="built_in">u8</span>),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="清除限制"><a href="#清除限制" class="headerlink" title="清除限制"></a>清除限制</h3><p>子进程退出后，我们需要清除所有添加的cgroup限制。<br>这非常简单，因为cgroups v2将所有内容集中在<code>/sys/fs/cgroup/&lt;groupname&gt;/</code>下的目录中，因此我们只需删除它即可。</p>
+<p>在<code>src/resources.rs</code>中:</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">clean_cgroups</span></span>(hostname: &amp;<span class="built_in">String</span>) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt;&#123;</span><br><span class="line">    log::debug!(<span class="string">&quot;Cleaning cgroups&quot;</span>);</span><br><span class="line">    <span class="keyword">match</span> canonicalize(<span class="built_in">format!</span>(<span class="string">&quot;/sys/fs/cgroup/&#123;&#125;/&quot;</span>, hostname))&#123;</span><br><span class="line">        <span class="literal">Ok</span>(d) =&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(_) = remove_dir(d) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::ResourcesError(<span class="number">2</span>));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="literal">Err</span>(e) =&gt; &#123;</span><br><span class="line">            log::error!(<span class="string">&quot;Error while canonicalize path: &#123;&#125;&quot;</span>, e);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">Err</span>(Errcode::ResourcesError(<span class="number">3</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="literal">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数将在文件<code>src/container.rs</code>的<code>clean_exit</code>函数中调用：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> crate::resources::clean_cgroups;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> Container &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">clean_exit</span></span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) -&gt; <span class="built_in">Result</span>&lt;(), Errcode&gt; &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> <span class="literal">Err</span>(e) = clean_cgroups(&amp;<span class="keyword">self</span>.config.hostname)&#123;</span><br><span class="line">            log::error!(<span class="string">&quot;Cgroups cleaning failed: &#123;&#125;&quot;</span>, e);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">Err</span>(e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="literal">Ok</span>(())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试-1"><a href="#测试-1" class="headerlink" title="测试"></a>测试</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[2022-03-09T13:58:37Z INFO  crabcan] Args &#123; debug: true, command: &quot;/bin/bash&quot;, uid: 0, mount_dir: &quot;./mountdir/&quot; &#125;</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::container] Linux release: 5.13.0-30-generic</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::container] Container sockets: (3, 4)</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::resources] Restricting resources for hostname small-girl-247</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::hostname] Container hostname is now small-girl-247</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::mounts] Setting mount points ...</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::mounts] Mounting temp directory /tmp/crabcan.LH9HSKzfsmN7</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::mounts] Pivoting root</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::mounts] Unmounting old root</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::namespaces] Setting up user namespace with UID 0</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::namespaces] Child UID/GID map done, sending signal to child to continue...</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::container] Creation finished</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::container] Container child PID: Some(Pid(162889))</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::container] Waiting for child (pid 162889) to finish</span><br><span class="line">[2022-03-09T13:58:37Z INFO  crabcan::namespaces] User namespaces set up</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::namespaces] Switching to uid 0 / gid 0...</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::capabilities] Clearing unwanted capabilities ...</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::syscalls] Refusing / Filtering unwanted syscalls</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG syscallz] seccomp: setting action=Errno(1) syscall=chmod comparators=[Comparator &#123; arg: 1, op: MaskedEq, datum_a: 2048, datum_b: 2048 &#125;]</span><br><span class="line">    ...</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG syscallz] seccomp: loading policy</span><br><span class="line">[2022-03-09T13:58:37Z INFO  crabcan::child] Container set up successfully</span><br><span class="line">[2022-03-09T13:58:37Z INFO  crabcan::child] Starting container with command /bin/bash and args [&quot;/bin/bash&quot;]</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::container] Finished, cleaning &amp; exit</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::container] Cleaning container</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::resources] Cleaning cgroups</span><br><span class="line">[2022-03-09T13:58:37Z DEBUG crabcan::errors] Exit without any error, returning 0</span><br></pre></td></tr></table></figure>
+<h4 id="Patch-for-this-step-1"><a href="#Patch-for-this-step-1" class="headerlink" title="Patch for this step"></a>Patch for this step</h4><p>这一步的代码可以在github <a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/tree/step14/">litchipi/crabcan branch “step14”</a>中找到.<br>前一步到这一步的原始补丁可以在<a target="_blank" rel="noopener" href="https://github.com/litchipi/crabcan/compare/step13..step14.diff">此处</a>找到</p>
+
+            </div>
+            
+                <div class="kratos-copyright text-center clearfix">
+                    <h5>本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</h5>
+                </div>
+            
+            <footer class="kratos-entry-footer clearfix">
+                
+                    <div class="post-like-donate text-center clearfix" id="post-like-donate">
+                    
+                    
+                        <a class="share" href="javascript:;"><i class="fa fa-share-alt"></i> 分享</a>
+                        <div class="share-wrap" style="display: none;">
+    <div class="share-group">
+        <a href="javascript:;" class="share-plain qq" onclick="share('qq');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-qq"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain qzone" onclick="share('qzone');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-star"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weixin pop style-plain" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weixin"></i>
+            </div>
+            <div class="share-int">
+                <div class="qrcode" id="wechat-qr"></div>
+                <p>打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮</p>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weibo" onclick="share('weibo');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weibo"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain facebook style-plain" onclick="share('facebook');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-facebook"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain twitter style-plain" onclick="share('twitter');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-twitter"></i>
+            </div>
+        </a>
+    </div>
+    <script type="text/javascript">
+        $(()=>{
+            new QRCode("wechat-qr", {
+                text: "http://srcchen.github.io/2023/10/07/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A87/",
+                width: 150,
+                height: 150,
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+        function share(dest) {
+            const qqBase        = "https://connect.qq.com/widget/shareqq/index.html?";
+            const weiboBase     = "https://service.weibo.com/share/share.php?";
+            const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
+            const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
+            const twitterBase   = "https://twitter.com/intent/tweet?";
+            const hostUrl       = "http://srcchen.github.io/2023/10/07/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A87/";
+            const title         = "「【译】使用rust来写一个容器(七)」";
+            const excerpt       = `
+    注
+    
+        本文章为对 Litchi Pi的《Writing a container in Rust》的翻译转载，不享受任何著作权利，不用于任何商业目的，不以任何许可证进行授权，不对任何转载行为尤其是商业转...`;
+            let _URL;
+            switch (dest) {
+                case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
+                case "weibo"    : _URL = weiboBase+"url="+hostUrl+"&title="+title+excerpt;                                 break;
+                case "qzone"    : _URL = qzoneBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";  break;
+                case "facebook" : _URL = facebookBase+"u="+hostUrl;                                                        break;
+                case "twitter"  : _URL = twitterBase+"text="+title+excerpt+"&url="+hostUrl;                                break;
+            }
+            window.open(_URL);
+        };
+    </script>
+</div>
+                    
+                    </div>
+                
+                <div class="footer-tag clearfix">
+                    <div class="pull-left">
+                    <i class="fa fa-tags"></i>
+                        <a class="tag-none-link" href="/tags/Docker/" rel="tag">Docker</a>, <a class="tag-none-link" href="/tags/rust/" rel="tag">rust</a>
+                    </div>
+                    <div class="pull-date">
+                    <span>最后编辑：2023-10-08</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+            <nav class="navigation post-navigation clearfix" role="navigation">
+                
+                <div class="nav-previous clearfix">
+                    <a title=" 【译】使用rust来写一个容器(六)" href="/2023/09/23/用rust写一个容器6/">&lt; 上一篇</a>
+                </div>
+                
+                
+            </nav>
+        
+        
+    </article>
+</section>
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/main.webp" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">让知识变成智慧</p>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar"></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%B8%8E%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6"><span class="toc-text">系统调用与资源限制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E9%99%90%E5%88%B6"><span class="toc-text">系统调用限制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8-syscall-%EF%BC%9F"><span class="toc-text">什么是系统调用(syscall)？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Seccomp-%E5%92%8C%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E9%99%90%E5%88%B6"><span class="toc-text">Seccomp 和系统调用限制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A6%81%E5%AF%B9%E5%93%AA%E4%BA%9B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E8%BF%9B%E8%A1%8C%E9%99%90%E5%88%B6%EF%BC%9F"><span class="toc-text">要对哪些系统调用进行限制？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E7%94%A8seccomp"><span class="toc-text">应用seccomp</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A0%E6%9D%A1%E4%BB%B6%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E9%99%90%E5%88%B6%EF%BC%88Unconditionnal-syscalls-restriction%EF%BC%89"><span class="toc-text">无条件系统调用限制（Unconditionnal syscalls restriction）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E9%99%90%E5%88%B6-Conditionnal-syscalls-restriction"><span class="toc-text">条件系统调用限制(Conditionnal syscalls restriction)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step"><span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E9%99%90%E5%88%B6"><span class="toc-text">资源限制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Cgroups"><span class="toc-text">Cgroups</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%99%90%E5%88%B6CPU%E4%BD%BF%E7%94%A8%E6%97%B6%E9%95%BF"><span class="toc-text">限制CPU使用时长</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rlimit"><span class="toc-text">Rlimit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%90%E5%88%B6%E8%B5%84%E6%BA%90"><span class="toc-text">限制资源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%85%E9%99%A4%E9%99%90%E5%88%B6"><span class="toc-text">清除限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95-1"><span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Patch-for-this-step-1"><span class="toc-text">Patch for this step</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+</aside>
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类目录</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/tags/DevOps/" style="font-size: 0.7em;">DevOps</a> <a href="/tags/Docker/" style="font-size: 0.73em;">Docker</a> <a href="/tags/FaaS/" style="font-size: 0.6em;">FaaS</a> <a href="/tags/Kubernetes/" style="font-size: 0.6em;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 0.63em;">Linux</a> <a href="/tags/ansible/" style="font-size: 0.6em;">ansible</a> <a href="/tags/docker/" style="font-size: 0.67em;">docker</a> <a href="/tags/envoy/" style="font-size: 0.6em;">envoy</a> <a href="/tags/harbor/" style="font-size: 0.6em;">harbor</a> <a href="/tags/helm/" style="font-size: 0.6em;">helm</a> <a href="/tags/ingress/" style="font-size: 0.6em;">ingress</a> <a href="/tags/kubernetes/" style="font-size: 0.8em;">kubernetes</a> <a href="/tags/prometheus/" style="font-size: 0.63em;">prometheus</a> <a href="/tags/pv/" style="font-size: 0.63em;">pv</a> <a href="/tags/pvc/" style="font-size: 0.63em;">pvc</a> <a href="/tags/rust/" style="font-size: 0.77em;">rust</a> <a href="/tags/storageclass/" style="font-size: 0.63em;">storageclass</a> <a href="/tags/tekton/" style="font-size: 0.6em;">tekton</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/2023/10/07/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A87/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(七)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/23/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A86/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(六)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/22/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A85/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(五)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/17/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A84/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(四)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/10/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A83/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(三)</a>
+            
+          
+        
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  class="ap-lrc"  >
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        <li><a href="mailto:cg0616@hotmail.com"><i class="fa fa-envelope"></i></a></li>
+                        
+                        
+                        
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/SRCchen"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2023 Vanitas笔记 版权所有.</li>
+                            <li>本站已运行<span id="span_dt">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>Theme <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a></li>
+                            <li>Site built with&nbsp;<i class="fa fa-heart throb" style="color:#d43f57"></i>&nbsp;by Vanitas.</li>
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="http://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
+<script>const notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));</script>
+
+<script async src="/js/candy.min.js"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+    <meting-js
+        server="netease"
+        type="playlist"
+        id="6600958231"
+        order="random"
+        fixed="true"
+    >
+    </meting-js>
+
+
+
+    <script defer src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+    <script defer src="/js/kr-dark.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>
