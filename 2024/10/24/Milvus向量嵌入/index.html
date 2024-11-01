@@ -24,7 +24,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
 <meta property="article:published_time" content="2024-10-24T10:53:44.307Z">
-<meta property="article:modified_time" content="2024-10-24T10:54:00.503Z">
+<meta property="article:modified_time" content="2024-11-01T23:53:07.074Z">
 <meta property="article:author" content="Vanitas">
 <meta property="article:tag" content="AI">
 <meta property="article:tag" content="Embedding">
@@ -130,7 +130,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~2.78K
+                            ~2.95K
                         
                         字
                     </li>
@@ -139,7 +139,7 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1729767240503"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1730505187074"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                     <div class="kratos-post-inner-toc">
@@ -155,7 +155,7 @@
 
 
 
-<h2 id="准备嵌入数据"><a href="#准备嵌入数据" class="headerlink" title="准备嵌入数据"></a>准备嵌入数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成嵌入的数据</span></span><br><span class="line">docs = [</span><br><span class="line">    <span class="string">&quot;Artificial intelligence was founded as an academic discipline in 1956.&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Alan Turing was the first person to conduct substantial research in AI.&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Born in Maida Vale, London, Turing was raised in southern England.&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 文本库向量</span></span><br><span class="line">embeddings = ef.encode_documents(docs)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询向量</span></span><br><span class="line">query_embedding = ef.encode_documents([<span class="string">&quot;where was Turing born?&quot;</span>])</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="准备嵌入数据"><a href="#准备嵌入数据" class="headerlink" title="准备嵌入数据"></a>准备嵌入数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成嵌入的数据</span></span><br><span class="line">docs = [</span><br><span class="line">    <span class="string">&quot;Artificial intelligence was founded as an academic discipline in 1956.&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Alan Turing was the first person to conduct substantial research in AI.&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Born in Maida Vale, London, Turing was raised in southern England.&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 文本库向量</span></span><br><span class="line">embeddings = ef.encode_documents(docs)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询向量</span></span><br><span class="line">query_embedding = ef.encode_documents([<span class="string">&quot;where was Turing born?&quot;</span>])</span><br><span class="line"></span><br><span class="line">entities = [&#123;<span class="string">&quot;id&quot;</span>: index_id, <span class="string">&quot;vector&quot;</span>: embeddings[index_id], <span class="string">&quot;source&quot;</span>: docs[index_id]&#125;</span><br><span class="line">            <span class="keyword">for</span> index_id <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(docs))]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 
 
@@ -181,7 +181,7 @@
 
 
 
-<h2 id="搜索数据"><a href="#搜索数据" class="headerlink" title="搜索数据"></a>搜索数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据向量搜索最接近的数据</span></span><br><span class="line">res = client.search(</span><br><span class="line">    collection_name=<span class="string">&quot;customized_setup&quot;</span>, <span class="comment"># 集合名称</span></span><br><span class="line">    data=query_embedding, <span class="comment"># 查询语句向量</span></span><br><span class="line">    limit=<span class="number">1</span>,              <span class="comment"># 返回数据限制</span></span><br><span class="line">    output_fields=[<span class="string">&quot;source&quot;</span>]  <span class="comment"># 输出字段</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> result <span class="keyword">in</span> res:</span><br><span class="line">    <span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+<h2 id="搜索数据"><a href="#搜索数据" class="headerlink" title="搜索数据"></a>搜索数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据向量搜索最接近的数据</span></span><br><span class="line">res = client.search(</span><br><span class="line">    collection_name=<span class="string">&quot;customized_setup&quot;</span>, <span class="comment"># 集合名称</span></span><br><span class="line">    data=query_embedding, <span class="comment"># 查询语句向量</span></span><br><span class="line">    limit=<span class="number">1</span>,              <span class="comment"># 返回数据限制</span></span><br><span class="line">    output_fields=[<span class="string">&quot;source&quot;</span>]  <span class="comment"># 输出字段</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> result <span class="keyword">in</span> res:</span><br><span class="line">    <span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
 
 
 
@@ -284,7 +284,7 @@
                         <a class="tag-none-link" href="/tags/AI/" rel="tag">AI</a>, <a class="tag-none-link" href="/tags/Embedding/" rel="tag">Embedding</a>
                     </div>
                     <div class="pull-date">
-                    <span>最后编辑：2024-10-24</span>
+                    <span>最后编辑：2024-11-02</span>
                     </div>
                 </div>
             </footer>
