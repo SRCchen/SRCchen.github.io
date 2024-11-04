@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  <link rel="icon" href="">
+  <title>部署gitlab企业版本 | Vanitas笔记</title>
+  <meta name="author" content="Vanitas" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="gitlab, infrastructure" />
+  
+  <meta name="description" content="环境说明**部署环境: **   机器说明: 阿里云ECS:   配置说明: 4核8G 系统盘40G 数据盘200G   系统环境: CentOS 7.9 部署说明环境初始化123456mkfs.ext4 &#x2F;dev&#x2F;vdb # 初始化数据盘mkdir -p &#x2F;var&#x2F;optmount &#x2F;dev&#x2F;vdb  &#x2F;var&#x2F;opt&#x2F;  挂载磁盘到gitlab 数据目录ls -l &#x2F;dev&#x2F;disk&#x2F;by-u">
+<meta property="og:type" content="article">
+<meta property="og:title" content="部署gitlab企业版本">
+<meta property="og:url" content="http://srcchen.github.io/2024/11/04/gitlab/index.html">
+<meta property="og:site_name" content="Vanitas笔记">
+<meta property="og:description" content="环境说明**部署环境: **   机器说明: 阿里云ECS:   配置说明: 4核8G 系统盘40G 数据盘200G   系统环境: CentOS 7.9 部署说明环境初始化123456mkfs.ext4 &#x2F;dev&#x2F;vdb # 初始化数据盘mkdir -p &#x2F;var&#x2F;optmount &#x2F;dev&#x2F;vdb  &#x2F;var&#x2F;opt&#x2F;  挂载磁盘到gitlab 数据目录ls -l &#x2F;dev&#x2F;disk&#x2F;by-u">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://srcchen.github.io/null">
+<meta property="article:published_time" content="2024-11-04T02:09:10.000Z">
+<meta property="article:modified_time" content="2024-11-04T02:19:08.402Z">
+<meta property="article:author" content="Vanitas">
+<meta property="article:tag" content="gitlab">
+<meta property="article:tag" content="infrastructure">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://srcchen.github.io/null">
+<meta name="twitter:site" content="@null">
+  
+  <!-- 站点验证相关 -->
+  
+    
+    
+    
+  
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kratosr.min.css" type="text/css" media="all">
+  
+    <link rel="stylesheet" id="highlight-css" href="/css/highlight/night-eighties.min.css" type="text/css" media="all">
+  
+  
+  <link rel="stylesheet" id="fontawe-css" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" type="text/css" media="all">
+  <link rel="stylesheet" id="nprogress-css" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" type="text/css" media="all">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+  
+  
+    <link rel="stylesheet" id="darkmode-css" href="/css/kr-dark.min.css" type="text/css" media="all">
+  
+  <!-- 不得不预先加载的一些JS文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/qrcode_js@1.0.0/qrcode.min.js"></script>
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    
+                                        <li><a href="/"><i class="fa fa-home"></i>首页</a></li>
+                                    
+                                
+                                    
+                                        <li><a href="/archives/"><i class="fa fa-file"></i>档案馆</a></li>
+                                    
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">Vanitas笔记</a></div>
+                    <div class="nav-toggle">
+                        <a class="kratos-nav-toggle js-kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>Vanitas笔记</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+                    
+
+        <section class="col-md-8">
+    <article>
+        <div class="kratos-hentry kratos-post-inner clearfix">
+            <header class="kratos-entry-header">
+                
+                    <h1 class="kratos-entry-title text-center">部署gitlab企业版本</h1>
+                
+                
+                <ul class="kratos-post-meta text-center">
+                    <li><i class="fa fa-calendar"></i> 2024-11-04</li>
+                    <li><i class="fa fa-user"></i> 作者 Vanitas</li>
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~6.17K
+                        
+                        字
+                    </li>
+                    
+                </ul>
+            </header>
+            <div class="kratos-post-content">
+                <div id="expire-alert" class="alert alert-warning hidden" role="alert">
+                    本文最后编辑于 <time datetime="1730686748402"></time> 前，其中的内容可能需要更新。
+                </div>
+                
+                    <div class="kratos-post-inner-toc">
+                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E8%AF%B4%E6%98%8E"><span class="toc-number">1.</span> <span class="toc-text">环境说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E"><span class="toc-number">2.</span> <span class="toc-text">部署说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">2.1.</span> <span class="toc-text">环境初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="toc-number">2.2.</span> <span class="toc-text">安装依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEpostfix"><span class="toc-number">2.3.</span> <span class="toc-text">安装配置postfix</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0gitlab-ee%E7%9A%84yum%E6%BA%90"><span class="toc-number">2.4.</span> <span class="toc-text">添加gitlab-ee的yum源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85gitlab-ee"><span class="toc-number">2.5.</span> <span class="toc-text">安装gitlab-ee</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE"><span class="toc-number">2.6.</span> <span class="toc-text">修改配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BAgitlab-ee-%E7%94%9F%E6%88%90%E8%AE%B8%E5%8F%AF%E8%AF%81"><span class="toc-number">2.7.</span> <span class="toc-text">为gitlab-ee 生成许可证</span></a></li></ol></li></ol>
+                    </div>
+                
+                <hr />
+                <h2 id="环境说明"><a href="#环境说明" class="headerlink" title="环境说明"></a>环境说明</h2><p>**部署环境: **</p>
+<p>  机器说明: 阿里云ECS:</p>
+<p>  配置说明: 4核8G 系统盘40G 数据盘200G</p>
+<p>  系统环境: CentOS 7.9</p>
+<h2 id="部署说明"><a href="#部署说明" class="headerlink" title="部署说明"></a>部署说明</h2><h3 id="环境初始化"><a href="#环境初始化" class="headerlink" title="环境初始化"></a>环境初始化</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mkfs.ext4 /dev/vdb # 初始化数据盘</span><br><span class="line">mkdir -p /var/opt</span><br><span class="line">mount /dev/vdb  /var/opt/  挂载磁盘到gitlab 数据目录</span><br><span class="line"></span><br><span class="line">ls -l /dev/disk/by-uuid/ # 查找/dev/vdb 的uuid</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p> 将挂载数据填入/etc/fstab</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UID=5a68f7dd-0bcc-49cb-b83d-1d0ef236acb9 /var/opt                ext4    defaults        0 0</span><br></pre></td></tr></table></figure>
+
+
+
+<p>gitlab-ee版本部署相对简单,参考<a target="_blank" rel="noopener" href="https://about.gitlab.com/install/#centos-7">此处文档</a>部署即可</p>
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y curl policycoreutils-python openssh-server perl</span><br><span class="line"><span class="meta">#</span><span class="bash"> Enable OpenSSH server daemon <span class="keyword">if</span> not enabled: sudo systemctl status sshd</span></span><br><span class="line"><span class="meta">#</span><span class="bash">sudo systemctl <span class="built_in">enable</span> sshd</span></span><br><span class="line"><span class="meta">#</span><span class="bash">sudo systemctl start sshd</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 开启sshd</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Check <span class="keyword">if</span> opening the firewall is needed with: sudo systemctl status firewalld</span></span><br><span class="line"><span class="meta">#</span><span class="bash">sudo firewall-cmd --permanent --add-service=http</span></span><br><span class="line"><span class="meta">#</span><span class="bash">sudo firewall-cmd --permanent --add-service=https</span></span><br><span class="line"><span class="meta">#</span><span class="bash">sudo systemctl reload firewalld</span>   </span><br><span class="line"><span class="meta">#</span><span class="bash"> 阿里云ECS默认关闭防火墙,无需开启</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="安装配置postfix"><a href="#安装配置postfix" class="headerlink" title="安装配置postfix"></a>安装配置postfix</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install postfix</span><br><span class="line">sudo systemctl enable postfix</span><br></pre></td></tr></table></figure>
+
+<p>修改posefix配置</p>
+<p>/etc/postfix/main.cf</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#inet_interfaces = $myhostname, localhost</span><br><span class="line">inet_interfaces = all</span><br><span class="line"></span><br><span class="line"># Enable IPv4, and IPv6 if supported</span><br><span class="line">inet_protocols = all</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start postfix</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加gitlab-ee的yum源"><a href="#添加gitlab-ee的yum源" class="headerlink" title="添加gitlab-ee的yum源"></a>添加gitlab-ee的yum源</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.rpm.sh | sudo bash</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装gitlab-ee"><a href="#安装gitlab-ee" class="headerlink" title="安装gitlab-ee"></a>安装gitlab-ee</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo EXTERNAL_URL=&quot;http://gitlab.shuli.com&quot; yum install -y gitlab-ee</span><br><span class="line"><span class="meta">#</span><span class="bash"> 因为是内网环境,所以我们关闭https,也可以选择自签证书</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="修改配置"><a href="#修改配置" class="headerlink" title="修改配置"></a>修改配置</h3><p>修改<code>gitlab.rb</code>:</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">external_url <span class="string">&#x27;http://YOUR_GITLAB_DOMAIN/&#x27;</span></span><br><span class="line"></span><br><span class="line">gitlab_rails[<span class="string">&#x27;time_zone&#x27;</span>] = <span class="string">&#x27;Asia/Shanghai&#x27;</span></span><br><span class="line"></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_enable&#x27;</span>] = <span class="literal">true</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_address&#x27;</span>] = <span class="string">&quot;SMTP_ADDRESS&quot;</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_port&#x27;</span>] = <span class="number">25</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_user_name&#x27;</span>] = <span class="string">&quot;SMTP_ACCOUNT&quot;</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_password&#x27;</span>] = <span class="string">&quot;SMTP_SECRET&quot;</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_domain&#x27;</span>] = <span class="string">&quot;SMTP_DOMAIN&quot;</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_authentication&#x27;</span>] = <span class="string">&quot;plain&quot;</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_tls&#x27;</span>] = <span class="literal">false</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_openssl_verify_mode&#x27;</span>] = <span class="string">&#x27;none&#x27;</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;smtp_enable_starttls_auto&#x27;</span>] = <span class="literal">false</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;gitlab_email_from&#x27;</span>] = <span class="string">&#x27;MAIL_ACCOUNT&#x27;</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;gitlab_email_reply_to&#x27;</span>] = <span class="string">&#x27;MAIL_ACCOUNT&#x27;</span></span><br><span class="line"></span><br><span class="line">gitlab_rails[<span class="string">&#x27;ldap_enabled&#x27;</span>] = <span class="literal">true</span></span><br><span class="line">gitlab_rails[<span class="string">&#x27;ldap_servers&#x27;</span>] = YAML.load <span class="string">&lt;&lt;-EOS</span></span><br><span class="line"><span class="string">main:</span></span><br><span class="line"><span class="string">  label: &#x27;LDAP&#x27;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  host: &#x27;&#x27;  # gitlab 使用的ldap host</span></span><br><span class="line"><span class="string">  port: 389</span></span><br><span class="line"><span class="string">  uid: &#x27;uid&#x27;</span></span><br><span class="line"><span class="string">  method: &#x27;plain&#x27;</span></span><br><span class="line"><span class="string">  bind_dn: &#x27;&#x27;  # 有权限的账户</span></span><br><span class="line"><span class="string">  password: &#x27;&#x27; # 密码</span></span><br><span class="line"><span class="string">  timeout: 10</span></span><br><span class="line"><span class="string">  base: &#x27;&#x27;     # 基础搜索entry</span></span><br><span class="line"><span class="string">  allow_username_or_email_login: true</span></span><br><span class="line"><span class="string">EOS</span></span><br><span class="line"></span><br><span class="line">gitlab_rails[<span class="string">&#x27;webhook_timeout&#x27;</span>] = <span class="number">30</span></span><br><span class="line"></span><br><span class="line">user[<span class="string">&#x27;git_user_email&#x27;</span>] = <span class="string">&quot;MAIL_ACCOUNT&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>替换后执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gitlab-ctl reconfigure</span><br><span class="line">gitlab-ctl restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="为gitlab-ee-生成许可证"><a href="#为gitlab-ee-生成许可证" class="headerlink" title="为gitlab-ee 生成许可证"></a>为gitlab-ee 生成许可证</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">yum install centos-release-scl-rh # 添加软件源</span><br><span class="line">yum -y install rh-ruby23 -y  # 安装较高版本的ruby,低版本ruby无法执行脚本</span><br><span class="line">scl enable rh-ruby23 bash</span><br><span class="line"></span><br><span class="line">gem install gitlab-license #安装依赖</span><br></pre></td></tr></table></figure>
+
+<p>gitlab-ee-license.rb</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">&quot;openssl&quot;</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">&quot;gitlab/license&quot;</span></span><br><span class="line"></span><br><span class="line">key_pair = OpenSSL::PKey::RSA.generate(<span class="number">2048</span>)</span><br><span class="line">File.open(<span class="string">&quot;license_key&quot;</span>, <span class="string">&quot;w&quot;</span>) &#123; <span class="params">|f|</span> f.write(key_pair.to_pem) &#125;</span><br><span class="line"></span><br><span class="line">public_key = key_pair.public_key</span><br><span class="line">File.open(<span class="string">&quot;license_key.pub&quot;</span>, <span class="string">&quot;w&quot;</span>) &#123; <span class="params">|f|</span> f.write(public_key.to_pem) &#125;</span><br><span class="line"></span><br><span class="line">private_key = OpenSSL::PKey::RSA.new File.read(<span class="string">&quot;license_key&quot;</span>)</span><br><span class="line">Gitlab::License.encryption_key = private_key</span><br><span class="line"></span><br><span class="line">license = Gitlab::License.new</span><br><span class="line">license.licensee = &#123;</span><br><span class="line">  <span class="string">&quot;Name&quot;</span> =&gt; <span class="string">&quot;gitlab&quot;</span>,</span><br><span class="line">  <span class="string">&quot;Company&quot;</span> =&gt; <span class="string">&quot;shulidata&quot;</span>,</span><br><span class="line">  <span class="string">&quot;Email&quot;</span> =&gt; <span class="string">&quot;MAIL_ACCOUNT&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line">license.starts_at = Date.new(<span class="number">2020</span>, <span class="number">1</span>, <span class="number">1</span>) <span class="comment"># 修改开始时间</span></span><br><span class="line">license.expires_at = Date.new(<span class="number">2099</span>, <span class="number">1</span>, <span class="number">1</span>) <span class="comment"># 修改结束时间</span></span><br><span class="line">license.notify_admins_at = Date.new(<span class="number">2099</span>, <span class="number">12</span>, <span class="number">1</span>)</span><br><span class="line">license.notify_users_at = Date.new(<span class="number">2099</span>, <span class="number">12</span>, <span class="number">1</span>)</span><br><span class="line">license.block_changes_at = Date.new(<span class="number">2100</span>, <span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">license.restrictions = &#123;</span><br><span class="line">  <span class="symbol">active_user_count:</span> <span class="number">10000</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">puts <span class="string">&quot;License:&quot;</span></span><br><span class="line">puts license</span><br><span class="line"></span><br><span class="line">data = license.export</span><br><span class="line">puts <span class="string">&quot;Exported license:&quot;</span></span><br><span class="line">puts data</span><br><span class="line">File.open(<span class="string">&quot;GitLabBV.gitlab-license&quot;</span>, <span class="string">&quot;w&quot;</span>) &#123; <span class="params">|f|</span> f.write(data) &#125;</span><br><span class="line"></span><br><span class="line">public_key = OpenSSL::PKey::RSA.new File.read(<span class="string">&quot;license_key.pub&quot;</span>)</span><br><span class="line">Gitlab::License.encryption_key = public_key</span><br><span class="line"></span><br><span class="line">data = File.read(<span class="string">&quot;GitLabBV.gitlab-license&quot;</span>)</span><br><span class="line"><span class="variable">$license</span> = Gitlab::License.import(data)</span><br><span class="line"></span><br><span class="line">puts <span class="string">&quot;Imported license:&quot;</span></span><br><span class="line">puts <span class="variable">$license</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">unless</span> <span class="variable">$license</span></span><br><span class="line">  raise <span class="string">&quot;The license is invalid.&quot;</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="variable">$license</span>.restricted?(<span class="symbol">:active_user_count</span>)</span><br><span class="line">  active_user_count = <span class="number">10000</span>  <span class="comment"># 修改活跃人数</span></span><br><span class="line">  <span class="keyword">if</span> active_user_count &gt; <span class="variable">$license</span>.restrictions[<span class="symbol">:active_user_count</span>]</span><br><span class="line">    raise <span class="string">&quot;The active user count exceeds the allowed amount!&quot;</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="variable">$license</span>.notify_admins?</span><br><span class="line">  puts <span class="string">&quot;The license is due to expire on <span class="subst">#&#123;<span class="variable">$license</span>.expires_at&#125;</span>.&quot;</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="variable">$license</span>.notify_users?</span><br><span class="line">  puts <span class="string">&quot;The license is due to expire on <span class="subst">#&#123;<span class="variable">$license</span>.expires_at&#125;</span>.&quot;</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">module</span> <span class="title">Gitlab</span></span></span><br><span class="line">  <span class="class"><span class="keyword">class</span> <span class="title">GitAccess</span></span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">check</span><span class="params">(cmd, changes = <span class="literal">nil</span>)</span></span></span><br><span class="line">      <span class="keyword">if</span> <span class="variable">$license</span>.block_changes?</span><br><span class="line">        <span class="keyword">return</span> build_status_object(<span class="literal">false</span>, <span class="string">&quot;License expired&quot;</span>)</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">puts <span class="string">&quot;This instance of GitLab Enterprise Edition is licensed to:&quot;</span></span><br><span class="line"><span class="variable">$license</span>.licensee.each <span class="keyword">do</span> <span class="params">|key, value|</span></span><br><span class="line">  puts <span class="string">&quot;<span class="subst">#&#123;key&#125;</span>: <span class="subst">#&#123;value&#125;</span>&quot;</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="variable">$license</span>.expired?</span><br><span class="line">  puts <span class="string">&quot;The license expired on <span class="subst">#&#123;<span class="variable">$license</span>.expires_at&#125;</span>&quot;</span></span><br><span class="line"><span class="keyword">elsif</span> <span class="variable">$license</span>.will_expire?</span><br><span class="line">  puts <span class="string">&quot;The license will expire on <span class="subst">#&#123;<span class="variable">$license</span>.expires_at&#125;</span>&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  puts <span class="string">&quot;The license will never expire.&quot;</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ruby gitlab-ee-license.rb</span><br><span class="line">ls</span><br><span class="line">GitLabBV.gitlab-license  gitlab-ee-license.rb  gitlab.rb  license_key</span><br><span class="line"><span class="meta">#</span><span class="bash"> GitLabBV.gitlab-license 为许可证秘钥</span></span><br><span class="line">\mv license_key.pub  /opt/gitlab/embedded/service/gitlab-rails/.license_encryption_key.pub</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>修改/opt/gitlab/embedded/service/gitlab-rails/ee/app/models/license.rb</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">plan</span></span></span><br><span class="line">  restricted_attr(<span class="symbol">:plan</span>).presence <span class="params">||</span> ULTIMATE_PLAN <span class="comment">#修改plan</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">edition</span></span></span><br><span class="line">  <span class="keyword">case</span> restricted_attr(<span class="symbol">:plan</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gitlab-ctl reconfigure </span><br><span class="line">gitlab-ctl restart </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>重启gitlab后使用root用户登录导入许可证即可</p>
+
+            </div>
+            
+                <div class="kratos-copyright text-center clearfix">
+                    <h5>本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</h5>
+                </div>
+            
+            <footer class="kratos-entry-footer clearfix">
+                
+                    <div class="post-like-donate text-center clearfix" id="post-like-donate">
+                    
+                    
+                        <a class="share" href="javascript:;"><i class="fa fa-share-alt"></i> 分享</a>
+                        <div class="share-wrap" style="display: none;">
+    <div class="share-group">
+        <a href="javascript:;" class="share-plain qq" onclick="share('qq');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-qq"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain qzone" onclick="share('qzone');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-star"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weixin pop style-plain" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weixin"></i>
+            </div>
+            <div class="share-int">
+                <div class="qrcode" id="wechat-qr"></div>
+                <p>打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮</p>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weibo" onclick="share('weibo');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weibo"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain facebook style-plain" onclick="share('facebook');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-facebook"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain twitter style-plain" onclick="share('twitter');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-twitter"></i>
+            </div>
+        </a>
+    </div>
+    <script type="text/javascript">
+        $(()=>{
+            new QRCode("wechat-qr", {
+                text: "http://srcchen.github.io/2024/11/04/gitlab/",
+                width: 150,
+                height: 150,
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+        function share(dest) {
+            const qqBase        = "https://connect.qq.com/widget/shareqq/index.html?";
+            const weiboBase     = "https://service.weibo.com/share/share.php?";
+            const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
+            const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
+            const twitterBase   = "https://twitter.com/intent/tweet?";
+            const hostUrl       = "http://srcchen.github.io/2024/11/04/gitlab/";
+            const title         = "「部署gitlab企业版本」";
+            const excerpt       = `环境说明**部署环境: **
+  机器说明: 阿里云ECS:
+  配置说明: 4核8G 系统盘40G 数据盘200G
+  系统环境: CentOS 7.9
+部署说明环境初始化123456mkfs.ext4 /dev/vdb # 初始化...`;
+            let _URL;
+            switch (dest) {
+                case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
+                case "weibo"    : _URL = weiboBase+"url="+hostUrl+"&title="+title+excerpt;                                 break;
+                case "qzone"    : _URL = qzoneBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";  break;
+                case "facebook" : _URL = facebookBase+"u="+hostUrl;                                                        break;
+                case "twitter"  : _URL = twitterBase+"text="+title+excerpt+"&url="+hostUrl;                                break;
+            }
+            window.open(_URL);
+        };
+    </script>
+</div>
+                    
+                    </div>
+                
+                <div class="footer-tag clearfix">
+                    <div class="pull-left">
+                    <i class="fa fa-tags"></i>
+                        <a class="tag-none-link" href="/tags/gitlab/" rel="tag">gitlab</a>, <a class="tag-none-link" href="/tags/infrastructure/" rel="tag">infrastructure</a>
+                    </div>
+                    <div class="pull-date">
+                    <span>最后编辑：2024-11-04</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+            <nav class="navigation post-navigation clearfix" role="navigation">
+                
+                <div class="nav-previous clearfix">
+                    <a title=" Milvus 基本使用" href="/2024/10/24/Milvus向量嵌入/">&lt; 上一篇</a>
+                </div>
+                
+                
+            </nav>
+        
+        
+    </article>
+</section>
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/main.webp" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">向着高处挣扎本身足以填满一个人的心灵</p>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar"></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E8%AF%B4%E6%98%8E"><span class="toc-text">环境说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E"><span class="toc-text">部署说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">环境初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="toc-text">安装依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEpostfix"><span class="toc-text">安装配置postfix</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0gitlab-ee%E7%9A%84yum%E6%BA%90"><span class="toc-text">添加gitlab-ee的yum源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85gitlab-ee"><span class="toc-text">安装gitlab-ee</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE"><span class="toc-text">修改配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BAgitlab-ee-%E7%94%9F%E6%88%90%E8%AE%B8%E5%8F%AF%E8%AF%81"><span class="toc-text">为gitlab-ee 生成许可证</span></a></li></ol></li></ol>
+    </div>
+</aside>
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类目录</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/tags/AI/" style="font-size: 0.6em;">AI</a> <a href="/tags/DevOps/" style="font-size: 0.72em;">DevOps</a> <a href="/tags/Docker/" style="font-size: 0.76em;">Docker</a> <a href="/tags/Embedding/" style="font-size: 0.6em;">Embedding</a> <a href="/tags/FaaS/" style="font-size: 0.6em;">FaaS</a> <a href="/tags/Kubernetes/" style="font-size: 0.6em;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 0.64em;">Linux</a> <a href="/tags/ansible/" style="font-size: 0.6em;">ansible</a> <a href="/tags/docker/" style="font-size: 0.68em;">docker</a> <a href="/tags/envoy/" style="font-size: 0.6em;">envoy</a> <a href="/tags/gitlab/" style="font-size: 0.6em;">gitlab</a> <a href="/tags/harbor/" style="font-size: 0.6em;">harbor</a> <a href="/tags/helm/" style="font-size: 0.6em;">helm</a> <a href="/tags/infrastructure/" style="font-size: 0.6em;">infrastructure</a> <a href="/tags/ingress/" style="font-size: 0.6em;">ingress</a> <a href="/tags/kubernetes/" style="font-size: 0.8em;">kubernetes</a> <a href="/tags/prometheus/" style="font-size: 0.64em;">prometheus</a> <a href="/tags/pv/" style="font-size: 0.64em;">pv</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/2024/11/04/gitlab/"><i class="fa  fa-book"></i> 部署gitlab企业版本</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2024/10/24/Milvus%E5%90%91%E9%87%8F%E5%B5%8C%E5%85%A5/"><i class="fa  fa-book"></i> Milvus 基本使用</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/10/14/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A88/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(八)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/10/07/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A87/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(七)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/09/23/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A86/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(六)</a>
+            
+          
+        
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  class="ap-lrc"  >
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        <li><a href="mailto:cg0616@hotmail.com"><i class="fa fa-envelope"></i></a></li>
+                        
+                        
+                        
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/SRCchen"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2024 Vanitas笔记 版权所有.</li>
+                            <li>本站已运行<span id="span_dt">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>Theme <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a></li>
+                            <li>Site built with&nbsp;<i class="fa fa-heart throb" style="color:#d43f57"></i>&nbsp;by Vanitas.</li>
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="http://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
+<script>const notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));</script>
+
+<script async src="/js/candy.min.js"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+    <meting-js
+        server="netease"
+        type="playlist"
+        id="6600958231"
+        order="random"
+        fixed="true"
+    >
+    </meting-js>
+
+
+
+    <script defer src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+    <script defer src="/js/kr-dark.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>
