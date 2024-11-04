@@ -4,7 +4,7 @@
   <!-- 元数据 -->
   <meta charset="utf-8">
   <link rel="icon" href="">
-  <title>rust学习笔记(泛型) | Vanitas笔记</title>
+  <title>使用autossh做端口转发 | Vanitas笔记</title>
   <meta name="author" content="Vanitas" />
   <meta http-equiv="Cache-Control" content="no-transform" />
   <meta http-equiv="Cache-Control" content="no-siteapp" />
@@ -13,20 +13,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <meta name="format-detection" content="telphone=no, email=no" />
   
-    <meta name="keywords" content="rust" />
+    <meta name="keywords" content="Linux" />
   
-  <meta name="description" content="学习内容来自B站：原子之音   泛型结构体12345678910111213141516171819#[derive(Debug)]struct Rectangle&lt;T,V&gt; &amp;#123;    width: T,    height: V&amp;#125;fn main() &amp;#123;    let res &#x3D; Rectangle &amp;#123;        width: 7.9f64,">
+  <meta name="description" content="有时我们会遇上需要代理端口的情况, 此时我们可以通过ssh工具来代理端口 如:  1ssh -C -f -N -g -L 3306:10.1.12.126:3306 root@10.1.12.126  这个命令会把到本机的3306端口的请求转发到10.1.12.126,但是随着时间的推移,在长时间没有新消息时,ssh的通道会断开,为了解决这个问题, 我们可以使用autossh工具 首先安装auto">
 <meta property="og:type" content="article">
-<meta property="og:title" content="rust学习笔记(泛型)">
-<meta property="og:url" content="http://srcchen.github.io/2021/06/14/rust%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E6%B3%9B%E5%9E%8B)/index.html">
+<meta property="og:title" content="使用autossh做端口转发">
+<meta property="og:url" content="http://srcchen.github.io/2024/11/03/autossh/index.html">
 <meta property="og:site_name" content="Vanitas笔记">
-<meta property="og:description" content="学习内容来自B站：原子之音   泛型结构体12345678910111213141516171819#[derive(Debug)]struct Rectangle&lt;T,V&gt; &amp;#123;    width: T,    height: V&amp;#125;fn main() &amp;#123;    let res &#x3D; Rectangle &amp;#123;        width: 7.9f64,">
+<meta property="og:description" content="有时我们会遇上需要代理端口的情况, 此时我们可以通过ssh工具来代理端口 如:  1ssh -C -f -N -g -L 3306:10.1.12.126:3306 root@10.1.12.126  这个命令会把到本机的3306端口的请求转发到10.1.12.126,但是随着时间的推移,在长时间没有新消息时,ssh的通道会断开,为了解决这个问题, 我们可以使用autossh工具 首先安装auto">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
-<meta property="article:published_time" content="2021-06-14T06:46:44.743Z">
-<meta property="article:modified_time" content="2021-06-24T15:51:00.646Z">
+<meta property="article:published_time" content="2024-11-03T03:07:08.000Z">
+<meta property="article:modified_time" content="2024-11-04T03:08:04.360Z">
 <meta property="article:author" content="Vanitas">
-<meta property="article:tag" content="rust">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://srcchen.github.io/null">
 <meta name="twitter:site" content="@null">
@@ -119,17 +119,17 @@
         <div class="kratos-hentry kratos-post-inner clearfix">
             <header class="kratos-entry-header">
                 
-                    <h1 class="kratos-entry-title text-center">rust学习笔记(泛型)</h1>
+                    <h1 class="kratos-entry-title text-center">使用autossh做端口转发</h1>
                 
                 
                 <ul class="kratos-post-meta text-center">
-                    <li><i class="fa fa-calendar"></i> 2021-06-14</li>
+                    <li><i class="fa fa-calendar"></i> 2024-11-03</li>
                     <li><i class="fa fa-user"></i> 作者 Vanitas</li>
                     <li>
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~2.25K
+                            ~2.58K
                         
                         字
                     </li>
@@ -138,32 +138,32 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1624549860646"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1730689684360"></time> 前，其中的内容可能需要更新。
                 </div>
                 
-                    <div class="kratos-post-inner-toc">
-                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%9B%E5%9E%8B%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-number">1.</span> <span class="toc-text">泛型结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E6%96%B9%E6%B3%95%E4%B8%AD%E7%9A%84%E6%B3%9B%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">结构体方法中的泛型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E6%B3%9B%E5%9E%8B%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%AD%E7%89%B9%E5%AE%9A%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">为泛型结构体中特定的类型实现方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%9B%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">泛型方法</span></a></li></ol>
-                    </div>
-                
                 <hr />
-                <div class="alert alert-info"><p>学习内容来自B站：原子之音</p>
-</div>
+                <p>有时我们会遇上需要代理端口的情况, 此时我们可以通过ssh工具来代理端口 如: </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -C -f -N -g -L 3306:10.1.12.126:3306 root@10.1.12.126</span><br></pre></td></tr></table></figure>
 
-<h2 id="泛型结构体"><a href="#泛型结构体" class="headerlink" title="泛型结构体"></a>泛型结构体</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Rectangle</span></span>&lt;T,V&gt; &#123;</span><br><span class="line">    width: T,</span><br><span class="line">    height: V</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> res = Rectangle &#123;</span><br><span class="line">        width: <span class="number">7.9f64</span>,</span><br><span class="line">        height: <span class="number">6.7f64</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,res);</span><br><span class="line">    <span class="keyword">let</span> res1 = Rectangle &#123;</span><br><span class="line">        width: <span class="number">7u64</span>,</span><br><span class="line">        height: <span class="number">6i64</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>,res1)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这个命令会把到本机的<code>3306</code>端口的请求转发到10.1.12.126,但是随着时间的推移,在长时间没有新消息时,ssh的通道会断开,为了解决这个问题, 我们可以使用<code>autossh</code>工具</p>
+<p>首先安装autossh</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget http://www.harding.motd.ca/autossh/autossh-1.4e.tgz --no-check-certificate</span><br><span class="line">tar -xf autossh-1.4e.tgz</span><br><span class="line">cd autossh-1.4e/</span><br><span class="line">./configure</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.00s</span><br><span class="line">     Running `target\debug\exercise.exe`</span><br><span class="line">Rectangle &#123; width: 7.9, height: 6.7 &#125;</span><br><span class="line">Rectangle &#123; width: 7, height: 6 &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>执行完以上命令后, 我们会得到<code>autossh</code>的二进制文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv autossh  /usr/bin/autossh</span><br></pre></td></tr></table></figure>
 
-<h2 id="结构体方法中的泛型"><a href="#结构体方法中的泛型" class="headerlink" title="结构体方法中的泛型"></a>结构体方法中的泛型</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Rectangle</span></span>&lt;T,V&gt; &#123;</span><br><span class="line">    width: T,</span><br><span class="line">    height: V</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">impl</span> &lt;T,V&gt; Rectangle&lt;T,V&gt; &#123;</span><br><span class="line">    <span class="comment">// 两个位置都需要标明泛型</span></span><br><span class="line">    <span class="function"><span class="keyword">fn</span> <span class="title">get_w</span></span>(&amp;<span class="keyword">self</span>) -&gt; &amp;T &#123;</span><br><span class="line">        &amp;<span class="keyword">self</span>.width</span><br><span class="line">        <span class="comment">// 注意引用</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> res = Rectangle &#123;</span><br><span class="line">        width: <span class="number">7u64</span>,</span><br><span class="line">        height: <span class="number">6.7f64</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,res.get_w())</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这个工具使用方式与ssh 类似:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">usage: autossh [-V] [-M monitor_port[:echo_port]] [-f] [SSH_OPTIONS]</span><br><span class="line"></span><br><span class="line">    -M specifies monitor port. May be overridden by environment</span><br><span class="line">       variable AUTOSSH_PORT. 0 turns monitoring loop off.</span><br><span class="line">       Alternatively, a port for an echo service on the remote</span><br><span class="line">       machine may be specified. (Normally port 7.)</span><br><span class="line">    -f run in background (autossh handles this, and does not</span><br><span class="line">       pass it to ssh.)</span><br><span class="line">    -V print autossh version and exit.</span><br><span class="line"></span><br><span class="line">Environment variables are:</span><br><span class="line">    AUTOSSH_GATETIME    - how long must an ssh session be established</span><br><span class="line">                          before we decide it really was established</span><br><span class="line">                          (in seconds). Default is 30 seconds; use of -f</span><br><span class="line">                          flag sets this to 0.</span><br><span class="line">    AUTOSSH_LOGFILE     - file to log to (default is to use the syslog</span><br><span class="line">                          facility)</span><br><span class="line">    AUTOSSH_LOGLEVEL    - level of log verbosity</span><br><span class="line">    AUTOSSH_MAXLIFETIME - set the maximum time to live (seconds)</span><br><span class="line">    AUTOSSH_MAXSTART    - max times to restart (default is no limit)</span><br><span class="line">    AUTOSSH_MESSAGE     - message to append to echo string (max 64 bytes)</span><br><span class="line">    AUTOSSH_PATH        - path to ssh if not default</span><br><span class="line">    AUTOSSH_PIDFILE     - write pid to this file</span><br><span class="line">    AUTOSSH_POLL        - how often to check the connection (seconds)</span><br><span class="line">    AUTOSSH_FIRST_POLL  - time before first connection check (seconds)</span><br><span class="line">    AUTOSSH_PORT        - port to use for monitor connection</span><br><span class="line">    AUTOSSH_DEBUG       - turn logging to maximum verbosity and log to</span><br><span class="line">                          stderr</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br><span class="line">   Compiling exercise v0.1.0 (F:\mypro\exercise)</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.32s</span><br><span class="line">     Running `target\debug\exercise.exe`</span><br><span class="line">7</span><br></pre></td></tr></table></figure>
+<p>上面的需求我们可以通过<code>autossh</code> 用如下命令来实现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">autossh -M 0 -o &quot;ServerAliveInterval 10&quot; -o &quot;ServerAliveCountMax 1&quot; -NgL 3306:10.1.12.126:3306 root@10.1.12.126</span><br></pre></td></tr></table></figure>
 
-<h2 id="为泛型结构体中特定的类型实现方法"><a href="#为泛型结构体中特定的类型实现方法" class="headerlink" title="为泛型结构体中特定的类型实现方法"></a>为泛型结构体中特定的类型实现方法</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Rectangle</span></span>&lt;T,V&gt; &#123;</span><br><span class="line">    width: T,</span><br><span class="line">    height: V</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">impl</span>  Rectangle&lt;<span class="built_in">u16</span>,<span class="built_in">u16</span>&gt; &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fn</span> <span class="title">perimeter</span></span>(&amp;<span class="keyword">self</span>) -&gt; <span class="built_in">u16</span> &#123;</span><br><span class="line">        <span class="number">2</span>*<span class="keyword">self</span>.width + <span class="number">2</span>*<span class="keyword">self</span>.height</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> res = Rectangle &#123;</span><br><span class="line">        width: <span class="number">7u16</span>,</span><br><span class="line">        height: <span class="number">6u16</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,res.perimeter())</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>进一步调整,使用systemd来进行管理这个代理</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">cat &gt;/usr/lib/systemd/system/autossh.service &lt;&lt;EOF</span><br><span class="line">[Unit]</span><br><span class="line">Description=AutoSSH tunnel service for vnc-server</span><br><span class="line">After=network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Environment=&quot;AUTOSSH_GATETIME=0&quot;</span><br><span class="line">ExecStart=/usr/bin/autossh -M 0 -o &quot;ServerAliveInterval 10&quot; \</span><br><span class="line">-o &quot;ServerAliveCountMax 1&quot; -NgL 3306:10.1.12.126:3306 root@10.1.12.126</span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl enable autossh --now</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br><span class="line">   Compiling exercise v0.1.0 (F:\mypro\exercise)</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.29s</span><br><span class="line">     Running `target\debug\exercise.exe`</span><br><span class="line">26</span><br></pre></td></tr></table></figure>
 
-<h2 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">get_max</span></span>&lt;T: <span class="built_in">PartialOrd</span>&gt;(a:T,b:T) -&gt; T &#123;</span><br><span class="line">    <span class="comment">//此处函数内有比较，故泛型需实现PartialOrd(比较)特质</span></span><br><span class="line">    <span class="keyword">if</span> a &gt;b &#123;</span><br><span class="line">        a</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        b</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>,get_max(<span class="number">12</span>,<span class="number">20</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cargo run</span><br><span class="line">   Compiling exercise v0.1.0 (F:\mypro\exercise)</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.31s</span><br><span class="line">     Running `target\debug\exercise.exe`</span><br><span class="line">20</span><br></pre></td></tr></table></figure>
+
 
 
             </div>
@@ -218,7 +218,7 @@
     <script type="text/javascript">
         $(()=>{
             new QRCode("wechat-qr", {
-                text: "http://srcchen.github.io/2021/06/14/rust%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E6%B3%9B%E5%9E%8B)/",
+                text: "http://srcchen.github.io/2024/11/03/autossh/",
                 width: 150,
                 height: 150,
                 correctLevel : QRCode.CorrectLevel.H
@@ -230,12 +230,12 @@
             const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
             const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
             const twitterBase   = "https://twitter.com/intent/tweet?";
-            const hostUrl       = "http://srcchen.github.io/2021/06/14/rust%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E6%B3%9B%E5%9E%8B)/";
-            const title         = "「rust学习笔记(泛型)」";
-            const excerpt       = `学习内容来自B站：原子之音
+            const hostUrl       = "http://srcchen.github.io/2024/11/03/autossh/";
+            const title         = "「使用autossh做端口转发」";
+            const excerpt       = `有时我们会遇上需要代理端口的情况, 此时我们可以通过ssh工具来代理端口 如: 
+1ssh -C -f -N -g -L 3306:10.1.12.126:3306 root@10.1.12.126
 
-
-泛型结构体12345678910111213141516171819#[derive(Debug)]struct Rectangle&lt;T,V&gt; &#123;    width: T,    ...`;
+这个命令会把到本机的3306端口...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
@@ -254,10 +254,10 @@
                 <div class="footer-tag clearfix">
                     <div class="pull-left">
                     <i class="fa fa-tags"></i>
-                        <a class="tag-none-link" href="/tags/rust/" rel="tag">rust</a>
+                        <a class="tag-none-link" href="/tags/Linux/" rel="tag">Linux</a>
                     </div>
                     <div class="pull-date">
-                    <span>最后编辑：2021-06-24</span>
+                    <span>最后编辑：2024-11-04</span>
                     </div>
                 </div>
             </footer>
@@ -266,12 +266,12 @@
             <nav class="navigation post-navigation clearfix" role="navigation">
                 
                 <div class="nav-previous clearfix">
-                    <a title=" kubernetes学习笔记（ingress）" href="/2021/06/09/k8s 部署记录（2） ingress/">&lt; 上一篇</a>
+                    <a title=" Milvus 基本使用" href="/2024/10/24/Milvus向量嵌入/">&lt; 上一篇</a>
                 </div>
                 
                 
                 <div class="nav-next clearfix">
-                    <a title=" 通过例子学rust(端口嗅探器)" href="/2021/06/19/rust学习-笔记——通过例子学rust(端口嗅探器)/">下一篇 &gt;</a>
+                    <a title=" 部署gitlab企业版本" href="/2024/11/04/gitlab/">下一篇 &gt;</a>
                 </div>
                 
             </nav>
@@ -300,18 +300,6 @@
 </aside>
             
                     <div class="sticky-area">
-                
-                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
-    <div class="photo-background"></div>
-    <h4 class="widget-title no-after">
-        <i class="fa fa-compass"></i>
-        文章目录
-        <span class="toc-progress-bar"></span>
-    </h4>
-    <div class="textwidget">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%9B%E5%9E%8B%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-text">泛型结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E6%96%B9%E6%B3%95%E4%B8%AD%E7%9A%84%E6%B3%9B%E5%9E%8B"><span class="toc-text">结构体方法中的泛型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E6%B3%9B%E5%9E%8B%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%AD%E7%89%B9%E5%AE%9A%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95"><span class="toc-text">为泛型结构体中特定的类型实现方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%9B%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="toc-text">泛型方法</span></a></li></ol>
-    </div>
-</aside>
                 
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
