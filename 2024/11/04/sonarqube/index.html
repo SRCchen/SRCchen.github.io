@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  <link rel="icon" href="">
+  <title>使用sonarQube做代码质量检测 | Vanitas笔记</title>
+  <meta name="author" content="Vanitas" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="infrastructure, sonarqube" />
+  
+  <meta name="description" content="创建sonarqube服务可以使用官方的sonarqube:lts-community长期支持版, 也可以自己写Dockerfile,此处我们用自己的dockerfile 12345678910111213141516171819202122232425262728293031323334FROM eclipse-temurin:17-alpineENV SONAR_VERSION&#x3D;9.9.1.6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用sonarQube做代码质量检测">
+<meta property="og:url" content="http://srcchen.github.io/2024/11/04/sonarqube/index.html">
+<meta property="og:site_name" content="Vanitas笔记">
+<meta property="og:description" content="创建sonarqube服务可以使用官方的sonarqube:lts-community长期支持版, 也可以自己写Dockerfile,此处我们用自己的dockerfile 12345678910111213141516171819202122232425262728293031323334FROM eclipse-temurin:17-alpineENV SONAR_VERSION&#x3D;9.9.1.6">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://srcchen.github.io/null">
+<meta property="article:published_time" content="2024-11-04T02:26:06.000Z">
+<meta property="article:modified_time" content="2024-11-04T02:42:56.648Z">
+<meta property="article:author" content="Vanitas">
+<meta property="article:tag" content="infrastructure">
+<meta property="article:tag" content="sonarqube">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://srcchen.github.io/null">
+<meta name="twitter:site" content="@null">
+  
+  <!-- 站点验证相关 -->
+  
+    
+    
+    
+  
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kratosr.min.css" type="text/css" media="all">
+  
+    <link rel="stylesheet" id="highlight-css" href="/css/highlight/night-eighties.min.css" type="text/css" media="all">
+  
+  
+  <link rel="stylesheet" id="fontawe-css" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" type="text/css" media="all">
+  <link rel="stylesheet" id="nprogress-css" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" type="text/css" media="all">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
+  
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
+  
+  
+    <link rel="stylesheet" id="darkmode-css" href="/css/kr-dark.min.css" type="text/css" media="all">
+  
+  <!-- 不得不预先加载的一些JS文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+    <script src="https://cdn.jsdelivr.net/npm/qrcode_js@1.0.0/qrcode.min.js"></script>
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    
+                                        <li><a href="/"><i class="fa fa-home"></i>首页</a></li>
+                                    
+                                
+                                    
+                                        <li><a href="/archives/"><i class="fa fa-file"></i>档案馆</a></li>
+                                    
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">Vanitas笔记</a></div>
+                    <div class="nav-toggle">
+                        <a class="kratos-nav-toggle js-kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>Vanitas笔记</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+                    
+
+        <section class="col-md-8">
+    <article>
+        <div class="kratos-hentry kratos-post-inner clearfix">
+            <header class="kratos-entry-header">
+                
+                    <h1 class="kratos-entry-title text-center">使用sonarQube做代码质量检测</h1>
+                
+                
+                <ul class="kratos-post-meta text-center">
+                    <li><i class="fa fa-calendar"></i> 2024-11-04</li>
+                    <li><i class="fa fa-user"></i> 作者 Vanitas</li>
+                    <li>
+                        <i class="fa fa-edit"></i> 
+                        
+                        
+                            ~8.09K
+                        
+                        字
+                    </li>
+                    
+                </ul>
+            </header>
+            <div class="kratos-post-content">
+                <div id="expire-alert" class="alert alert-warning hidden" role="alert">
+                    本文最后编辑于 <time datetime="1730688176648"></time> 前，其中的内容可能需要更新。
+                </div>
+                
+                    <div class="kratos-post-inner-toc">
+                        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAsonarqube%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.</span> <span class="toc-text">创建sonarqube服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89%E6%B1%89%E5%8C%96%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.</span> <span class="toc-text">（可选）汉化配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89LDAP%E9%85%8D%E7%BD%AE"><span class="toc-number">1.2.</span> <span class="toc-text">（可选）LDAP配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sonar-scanner%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">sonar-scanner的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A%E8%AF%B4%E6%98%8E"><span class="toc-number">2.1.</span> <span class="toc-text">特殊说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%AE%98%E6%96%B9%E7%9A%84sonar-scanner-cli%E5%AE%B9%E5%99%A8"><span class="toc-number">2.2.</span> <span class="toc-text">使用官方的sonar-scanner-cli容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8jenkins%E6%9D%A5%E8%87%AA%E5%8A%A8%E5%8C%96%E4%BB%A3%E7%A0%81%E6%89%AB%E6%8F%8F"><span class="toc-number">2.3.</span> <span class="toc-text">使用jenkins来自动化代码扫描</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96sonar%E7%9A%84token"><span class="toc-number">2.3.1.</span> <span class="toc-text">获取sonar的token</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="toc-number">3.</span> <span class="toc-text">参考文档</span></a></li></ol>
+                    </div>
+                
+                <hr />
+                <h2 id="创建sonarqube服务"><a href="#创建sonarqube服务" class="headerlink" title="创建sonarqube服务"></a>创建sonarqube服务</h2><p>可以使用官方的<code>sonarqube:lts-community</code>长期支持版, 也可以自己写Dockerfile,此处我们用自己的dockerfile</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> eclipse-temurin:<span class="number">17</span>-alpine</span><br><span class="line"><span class="keyword">ENV</span> SONAR_VERSION=<span class="number">9.9</span>.<span class="number">1.69595</span>\</span><br><span class="line">    SONARQUBE_HOME=/opt/sonarqube \</span><br><span class="line">    <span class="comment"># Database configuration</span></span><br><span class="line">    <span class="comment"># Defaults to using H2</span></span><br><span class="line">    SONARQUBE_JDBC_USERNAME=sonar \</span><br><span class="line">    SONARQUBE_JDBC_PASSWORD=sonar \</span><br><span class="line">    SONARQUBE_JDBC_URL=</span><br><span class="line"><span class="comment"># Http port</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">9000</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> addgroup -S sonarqube &amp;&amp; adduser -S -G sonarqube sonarqube</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash">  sed -i <span class="string">&#x27;s/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g&#x27;</span> /etc/apk/repositories</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">set</span> -x \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apk add --no-cache  unzip \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apk add --no-cache su-exec  wget \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apk add --no-cache bash </span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mkdir -p /opt \</span></span><br><span class="line"><span class="bash">    &amp;&amp; <span class="built_in">cd</span> /opt \</span></span><br><span class="line"><span class="bash">    &amp;&amp; wget -O sonarqube.zip --no-verbose <span class="string">&quot;https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-<span class="variable">$&#123;SONAR_VERSION&#125;</span>.zip \ </span></span></span><br><span class="line">    &amp;&amp; unzip sonarqube.zip \</span><br><span class="line">    &amp;&amp; mv sonarqube-$SONAR_VERSION sonarqube \</span><br><span class="line">    &amp;&amp; chown -R sonarqube:sonarqube sonarqube \</span><br><span class="line">    &amp;&amp; rm sonarqube.zip* \</span><br><span class="line">    &amp;&amp; rm -rf $SONARQUBE_HOME/bin/*</span><br><span class="line"></span><br><span class="line"><span class="keyword">VOLUME</span><span class="bash"><span class="string"> &quot;</span><span class="variable">$SONARQUBE_HOME</span>/data<span class="string">&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"><span class="string"> <span class="variable">$SONARQUBE_HOME</span></span></span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"><span class="string"> run.sh <span class="variable">$SONARQUBE_HOME</span>/bin/</span></span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"><span class="string">  chmod +x <span class="variable">$SONARQUBE_HOME</span>/bin/run.sh</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"><span class="string"> [&quot;</span>./bin/run.sh<span class="string">&quot;]</span></span></span><br></pre></td></tr></table></figure>
+
+<p>对应的<code>run.sh</code>（在github官方镜像可获取）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> https://raw.githubusercontent.com/SonarSource/docker-sonarqube/4d76dfe9fb4c5d41ba1852cd5072dbff15ca5a20/7.1-alpine/run.sh</span></span><br><span class="line"></span><br><span class="line">set -e</span><br><span class="line"></span><br><span class="line">if [ &quot;$&#123;1:0:1&#125;&quot; != &#x27;-&#x27; ]; then</span><br><span class="line">  exec &quot;$@&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">chown -R sonarqube:sonarqube $SONARQUBE_HOME</span><br><span class="line">exec su-exec sonarqube \</span><br><span class="line">  java -jar lib/sonar-application-$SONAR_VERSION.jar \</span><br><span class="line">  -Dsonar.log.console=true \</span><br><span class="line">  -Dsonar.jdbc.username=&quot;$SONARQUBE_JDBC_USERNAME&quot; \</span><br><span class="line">  -Dsonar.jdbc.password=&quot;$SONARQUBE_JDBC_PASSWORD&quot; \</span><br><span class="line">  -Dsonar.jdbc.url=&quot;$SONARQUBE_JDBC_URL&quot; \</span><br><span class="line">  -Dsonar.web.javaAdditionalOpts=&quot;$SONARQUBE_WEB_JVM_OPTS -Djava.security.egd=file:/dev/./urandom&quot; \</span><br><span class="line">  &quot;$@&quot;</span><br></pre></td></tr></table></figure>
+
+<p>build镜像完成后, 通过可以通过docker或者kubernetes 启动该容器, 此处采用docker-compose的方式:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">sonarqube:</span></span><br><span class="line">    <span class="comment"># 可使用我们自己的镜像 </span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">sonarqube:lts-community</span> </span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">9000</span><span class="string">:9000</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">9001</span><span class="string">:9001</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">9002</span><span class="string">:9092</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">    <span class="comment">#  配置pg连接地址</span></span><br><span class="line">      <span class="attr">SONARQUBE_JDBC_USERNAME:</span> <span class="string">sonar</span></span><br><span class="line">      <span class="attr">SONARQUBE_JDBC_PASSWORD:</span> <span class="string">sonar</span></span><br><span class="line">      <span class="attr">SONARQUBE_JDBC_URL:</span> <span class="string">&#x27;jdbc:postgresql://db:5432/sonar&#x27;</span></span><br><span class="line">      <span class="attr">JAVA_OPTS:</span> <span class="string">&#x27;-Duser.timezone=Asia/Shanghai&#x27;</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">db</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./data/conf:/opt/sonarqube/conf</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./data/data:/opt/sonarqube/data</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./data/extensions:/opt/sonarqube/extensions</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./data/bundled-plugins:/opt/sonarqube/lib/bundled-plugins</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sonar-net</span></span><br><span class="line">  <span class="attr">db:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">postgres:10.4-alpine</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">5432</span><span class="string">:5432</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">POSTGRES_USER=sonar</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">POSTGRES_PASSWORD=sonar</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./data/postgresql:/var/lib/postgresql</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./data/postgresql_data:/var/lib/postgresql/data</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">sonar-net</span></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">sonar-net:</span></span><br></pre></td></tr></table></figure>
+
+<p>sonarqube的服务端口为<code>9000</code>, 我们通过docker-compose启动后可以通过9000端口访问。 </p>
+<p> sonarqube的默认管理员用户名密码为<code>admin/admin</code></p>
+<h3 id="（可选）汉化配置"><a href="#（可选）汉化配置" class="headerlink" title="（可选）汉化配置"></a>（可选）汉化配置</h3><p>点击进入配置 –&gt; 应用市场, 在插件上方的提示点击确认风险后，在搜索框中搜索chinese,可安装汉化插件, 安装完成后点击重启sonar即可汉化完成。</p>
+<img src="/2024/11/04/sonarqube/sonar.png" class="" title="sonar">
+
+<h3 id="（可选）LDAP配置"><a href="#（可选）LDAP配置" class="headerlink" title="（可选）LDAP配置"></a>（可选）LDAP配置</h3><p>在较高版本的sonarqube中, 已经不需要通过LDAP插件来实现LDAP功能,</p>
+<p>我们在<code>docker-compose.yml</code>所在文件夹下的<code>data/conf</code>下,新建<code>sonar.properties&lt;/font&gt;</code>文件(已有文件在原有基础上添加配置)</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">sonar.security.realm</span>=<span class="string">LDAP</span></span><br><span class="line"><span class="meta">ldap.url</span>=<span class="string">ldap://YOUR_LDAP_ADDRESS:389 </span></span><br><span class="line"><span class="comment">  </span></span><br><span class="line"><span class="comment"># User Configuration</span></span><br><span class="line"><span class="meta">ldap.user.baseDn</span>=<span class="string">LDAP_BASE_DN</span></span><br><span class="line"><span class="meta">ldap.user.request</span>=<span class="string">(&amp;(objectClass=inetOrgPerson)(uid=&#123;login&#125;))</span></span><br><span class="line"><span class="meta">ldap.user.realNameAttribute</span>=<span class="string">cn</span></span><br><span class="line"><span class="meta">ldap.user.emailAttribute</span>=<span class="string">mail</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"># Group Configuration</span></span><br><span class="line"><span class="meta">ldap.group.baseDn</span>=<span class="string">LDAP_BASE_DN</span></span><br><span class="line"><span class="meta">ldap.group.request</span>=<span class="string">(&amp;(objectClass=posixGroup)(memberUid=&#123;uid&#125;))</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="sonar-scanner的使用"><a href="#sonar-scanner的使用" class="headerlink" title="sonar-scanner的使用"></a>sonar-scanner的使用</h2><h3 id="特殊说明"><a href="#特殊说明" class="headerlink" title="特殊说明"></a>特殊说明</h3><p>我们当前的java版本是8, 而sonar上传插件支持的版本需要更高的java版本(目前为11 or 17),也可在通过<code>maven</code>运行扫描命令时指定对应的java版本, 考虑到目前插件通常在ide中运行,建议下载<code>sonar-scanner</code></p>
+<h3 id="使用官方的sonar-scanner-cli容器"><a href="#使用官方的sonar-scanner-cli容器" class="headerlink" title="使用官方的sonar-scanner-cli容器"></a>使用官方的sonar-scanner-cli容器</h3><p>官方提供了<code>sonarsource/sonar-scanner-cli</code>的容器镜像, 使用起来也很方便:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm \</span><br><span class="line">-e SONAR_HOST_URL=&quot;$&#123;SONARQUBE_URL&#125;&quot; \</span><br><span class="line">-e SONAR_SCANNER_OPTS=&quot;-Dsonar.projectKey=$&#123;PROJECTNAME&#125; -Dsonar.scm.provider=git -Dsonar.java.binaries=target -Dsonar.verbose=true&quot;   \</span><br><span class="line">-e SONAR_TOKEN=&quot;$&#123;TOKEN&#125;&quot;  \</span><br><span class="line">-v $&#123;GITDIR&#125;:/usr/src  \</span><br><span class="line">sonarsource/sonar-scanner-cli</span><br></pre></td></tr></table></figure>
+
+<p>按照官方给的示例,填入对应参数即可</p>
+<p>特别说明：</p>
+<p>如果代码未经过maven编译,在不加<code>-Dsonar.java.binaries=target</code>这一项配置时会报错,提取部分内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Your project contains .java files, please provide compiled classes with sonar.java.binaries property, or exclude them from the analysis with sonar.exclusions property.</span><br></pre></td></tr></table></figure>
+
+<p>如果不需要动态检查代码, 只需要静态扫描的话, 只需要新建一个空文件夹<code>target</code>（名字随意）,并添加<code>-Dsonar.java.binaries=target</code>让扫描器扫描空文件夹即可。</p>
+<h3 id="使用jenkins来自动化代码扫描"><a href="#使用jenkins来自动化代码扫描" class="headerlink" title="使用jenkins来自动化代码扫描"></a>使用jenkins来自动化代码扫描</h3><p>直接上流水线代码</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Library</span>(<span class="string">&#x27;sharable-libraries&#x27;</span>) _</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> ApplicationMetadataAPI( GitUrl ) &#123;</span><br><span class="line">    GitUrlName = GitUrl</span><br><span class="line">    <span class="comment">// 接口地址,此处使用了根据gitlab地址获取应用名称的一个接口,也可使用gitlab项目名称 不使用此接口</span></span><br><span class="line">    ApplicationMetadataURL = <span class="string">&quot;http://xxxx/xxx&quot;</span></span><br><span class="line">    response = httpRequest <span class="attr">contentType:</span> <span class="string">&#x27;APPLICATION_JSON&#x27;</span>,</span><br><span class="line">        <span class="symbol">httpMode:</span> <span class="string">&quot;GET&quot;</span>,</span><br><span class="line">        <span class="symbol">requestBody:</span> <span class="string">&quot;&quot;</span>,</span><br><span class="line">        <span class="symbol">url:</span> <span class="string">&quot;$&#123;ApplicationMetadataURL&#125;?gitRepo=$&#123;GitUrlName&#125;&quot;</span></span><br><span class="line"></span><br><span class="line">    responseJson = readJSON <span class="attr">text:</span> response.content</span><br><span class="line">    <span class="keyword">return</span> responseJson</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义使用特定节点运行 pipeline</span></span><br><span class="line"><span class="comment">// 需要从清单中获取构建参数, 从而确定</span></span><br><span class="line"><span class="comment">// 构建 agent 的 label</span></span><br><span class="line"><span class="keyword">def</span> SlaveLabel() &#123;</span><br><span class="line">    <span class="comment">// slave label 前缀</span></span><br><span class="line">    SlaveLabelPerfix = <span class="string">&quot;jenkins-agent&quot;</span></span><br><span class="line">    <span class="comment">// 提前获取触发分支</span></span><br><span class="line">    GitSourceRepoURL = <span class="string">&quot;$&#123;gitlabSourceRepoURL&#125;&quot;</span></span><br><span class="line">    <span class="comment">// 调用函数, 根据 GitSourceRepoURL 获取其他元数据信息</span></span><br><span class="line">    ApplicationMetadataAPI = ApplicationMetadataAPI(GitSourceRepoURL)</span><br><span class="line">    script &#123;</span><br><span class="line">        BuildSpec = <span class="string">&quot;hfc6-xlarge&quot;</span></span><br><span class="line">        AppName = <span class="string">&quot;$&#123;ApplicationMetadataAPI.data.name&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    SlaveLabelString = <span class="string">&quot;k8s-jenkins-agent-sonar-scanner-ecs-hfc6-xlarge-4c8g&quot;</span></span><br><span class="line">    <span class="comment">// 变量打印, 方便后续排查问题</span></span><br><span class="line">    echo <span class="string">&quot;SlaveLabelString: $&#123;SlaveLabelString&#125;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> SlaveLabelString</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">pipeline &#123;</span><br><span class="line">    agent &#123;</span><br><span class="line">        <span class="comment">// 使用 kubernetes 关键字</span></span><br><span class="line">        kubernetes &#123;</span><br><span class="line">            <span class="comment">// 指定标签</span></span><br><span class="line">            inheritFrom SlaveLabel()</span><br><span class="line">            <span class="comment">// 指定该 pipeline 的 stages 在哪个容器中执行</span></span><br><span class="line">            defaultContainer <span class="string">&#x27;scanner&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// pipeline 配置参数, 和在jenkins job 配置有相同效果</span></span><br><span class="line">    options &#123;</span><br><span class="line">        <span class="comment">// 表示保留 500 次构建历史</span></span><br><span class="line">        <span class="comment">// 保证后期排查</span></span><br><span class="line">        buildDiscarder(logRotator(<span class="attr">numToKeepStr:</span> <span class="string">&#x27;5000&#x27;</span>))</span><br><span class="line">        <span class="comment">// 不允许同时执行流水线, 被用来防止同时访问共享资源等</span></span><br><span class="line">        <span class="comment">// disableConcurrentBuilds()</span></span><br><span class="line">        <span class="comment">// 设置流水线运行的超时时间, 在此之后, Jenkins将中止流水线</span></span><br><span class="line">        timeout(<span class="attr">time:</span> <span class="number">30</span>, <span class="attr">unit:</span> <span class="string">&#x27;MINUTES&#x27;</span>)</span><br><span class="line">        <span class="comment">// 重试次数</span></span><br><span class="line">        retry(<span class="number">1</span>)</span><br><span class="line">        <span class="comment">// 生成的所有控制台输出时间</span></span><br><span class="line">        timestamps()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 执行阶段</span></span><br><span class="line">    stages &#123;</span><br><span class="line"> stage(<span class="string">&#x27;Pull Repo for Application&#x27;</span>) &#123;</span><br><span class="line">                    steps &#123;</span><br><span class="line">                        git <span class="attr">branch:</span> <span class="string">&quot;$&#123;gitlabTargetBranch&#125;&quot;</span>, <span class="attr">credentialsId:</span> <span class="string">&quot;004&quot;</span>, <span class="attr">url:</span> <span class="string">&quot;$&#123;GitSourceRepoURL&#125;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">        stage(<span class="string">&#x27;Scan Backend Project Code&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    sh <span class="string">&quot;&quot;&quot;#!/bin/bash</span></span><br><span class="line"><span class="string">                    mkdir -p target</span></span><br><span class="line"><span class="string">                    export SONAR_HOST_URL=&quot;http://SONAR_URL&quot;</span></span><br><span class="line"><span class="string">                    export SONAR_SCANNER_OPTS=&quot;-Dsonar.projectKey=$&#123;AppName&#125; -Dsonar.scm.provider=git -Dsonar.language=java -Dsonar.java.binaries=target -Dsonar.verbose=true&quot;</span></span><br><span class="line"><span class="string">                    export SONAR_TOKEN=&quot;xxxxxxxx&quot;</span></span><br><span class="line"><span class="string">                    /usr/bin/entrypoint.sh</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="获取sonar的token"><a href="#获取sonar的token" class="headerlink" title="获取sonar的token"></a>获取sonar的token</h4><p>为了让所有项目都能用同一个token,我们在sonarqube上生成一个永久的全局token, 用于上传扫描代码. 点击头像选中”我的账号”,点击”安全”</p>
+<p>输入对应令牌名称， 类型选择全局,过期时间选择永久, 生成token后妥善保存。</p>
+<img src="/2024/11/04/sonarqube/token.png" class="" title="token">
+
+
+
+<p>随后我们只需要在gitlab中配置jenkins的webhook即可自动进行代码扫描</p>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a target="_blank" rel="noopener" href="https://docs.sonarsource.com/sonarqube/9.9/">https://docs.sonarsource.com/sonarqube/9.9/</a></p>
+
+            </div>
+            
+                <div class="kratos-copyright text-center clearfix">
+                    <h5>本作品采用 <a rel="license nofollow" target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享署名-相同方式共享 4.0 国际许可协议</a> 进行许可</h5>
+                </div>
+            
+            <footer class="kratos-entry-footer clearfix">
+                
+                    <div class="post-like-donate text-center clearfix" id="post-like-donate">
+                    
+                    
+                        <a class="share" href="javascript:;"><i class="fa fa-share-alt"></i> 分享</a>
+                        <div class="share-wrap" style="display: none;">
+    <div class="share-group">
+        <a href="javascript:;" class="share-plain qq" onclick="share('qq');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-qq"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain qzone" onclick="share('qzone');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-star"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weixin pop style-plain" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weixin"></i>
+            </div>
+            <div class="share-int">
+                <div class="qrcode" id="wechat-qr"></div>
+                <p>打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮</p>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain weibo" onclick="share('weibo');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-weibo"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain facebook style-plain" onclick="share('facebook');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-facebook"></i>
+            </div>
+        </a>
+        <a href="javascript:;" class="share-plain twitter style-plain" onclick="share('twitter');" rel="nofollow">
+            <div class="icon-wrap">
+                <i class="fa fa-twitter"></i>
+            </div>
+        </a>
+    </div>
+    <script type="text/javascript">
+        $(()=>{
+            new QRCode("wechat-qr", {
+                text: "http://srcchen.github.io/2024/11/04/sonarqube/",
+                width: 150,
+                height: 150,
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+        function share(dest) {
+            const qqBase        = "https://connect.qq.com/widget/shareqq/index.html?";
+            const weiboBase     = "https://service.weibo.com/share/share.php?";
+            const qzoneBase     = "https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?";
+            const facebookBase  = "https://www.facebook.com/sharer/sharer.php?";
+            const twitterBase   = "https://twitter.com/intent/tweet?";
+            const hostUrl       = "http://srcchen.github.io/2024/11/04/sonarqube/";
+            const title         = "「使用sonarQube做代码质量检测」";
+            const excerpt       = `创建sonarqube服务可以使用官方的sonarqube:lts-community长期支持版, 也可以自己写Dockerfile,此处我们用自己的dockerfile
+1234567891011121314151617181920...`;
+            let _URL;
+            switch (dest) {
+                case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
+                case "weibo"    : _URL = weiboBase+"url="+hostUrl+"&title="+title+excerpt;                                 break;
+                case "qzone"    : _URL = qzoneBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";  break;
+                case "facebook" : _URL = facebookBase+"u="+hostUrl;                                                        break;
+                case "twitter"  : _URL = twitterBase+"text="+title+excerpt+"&url="+hostUrl;                                break;
+            }
+            window.open(_URL);
+        };
+    </script>
+</div>
+                    
+                    </div>
+                
+                <div class="footer-tag clearfix">
+                    <div class="pull-left">
+                    <i class="fa fa-tags"></i>
+                        <a class="tag-none-link" href="/tags/infrastructure/" rel="tag">infrastructure</a>, <a class="tag-none-link" href="/tags/sonarqube/" rel="tag">sonarqube</a>
+                    </div>
+                    <div class="pull-date">
+                    <span>最后编辑：2024-11-04</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+            <nav class="navigation post-navigation clearfix" role="navigation">
+                
+                <div class="nav-previous clearfix">
+                    <a title=" 部署gitlab企业版本" href="/2024/11/04/gitlab/">&lt; 上一篇</a>
+                </div>
+                
+                
+            </nav>
+        
+        
+    </article>
+</section>
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/main.webp" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">向着高处挣扎本身足以填满一个人的心灵</p>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix">
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        文章目录
+        <span class="toc-progress-bar"></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAsonarqube%E6%9C%8D%E5%8A%A1"><span class="toc-text">创建sonarqube服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89%E6%B1%89%E5%8C%96%E9%85%8D%E7%BD%AE"><span class="toc-text">（可选）汉化配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89LDAP%E9%85%8D%E7%BD%AE"><span class="toc-text">（可选）LDAP配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sonar-scanner%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">sonar-scanner的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E6%AE%8A%E8%AF%B4%E6%98%8E"><span class="toc-text">特殊说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%AE%98%E6%96%B9%E7%9A%84sonar-scanner-cli%E5%AE%B9%E5%99%A8"><span class="toc-text">使用官方的sonar-scanner-cli容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8jenkins%E6%9D%A5%E8%87%AA%E5%8A%A8%E5%8C%96%E4%BB%A3%E7%A0%81%E6%89%AB%E6%8F%8F"><span class="toc-text">使用jenkins来自动化代码扫描</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96sonar%E7%9A%84token"><span class="toc-text">获取sonar的token</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="toc-text">参考文档</span></a></li></ol>
+    </div>
+</aside>
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类目录</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/tags/AI/" style="font-size: 0.6em;">AI</a> <a href="/tags/DevOps/" style="font-size: 0.72em;">DevOps</a> <a href="/tags/Docker/" style="font-size: 0.76em;">Docker</a> <a href="/tags/Embedding/" style="font-size: 0.6em;">Embedding</a> <a href="/tags/FaaS/" style="font-size: 0.6em;">FaaS</a> <a href="/tags/Kubernetes/" style="font-size: 0.6em;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 0.64em;">Linux</a> <a href="/tags/ansible/" style="font-size: 0.6em;">ansible</a> <a href="/tags/docker/" style="font-size: 0.68em;">docker</a> <a href="/tags/envoy/" style="font-size: 0.6em;">envoy</a> <a href="/tags/gitlab/" style="font-size: 0.6em;">gitlab</a> <a href="/tags/harbor/" style="font-size: 0.6em;">harbor</a> <a href="/tags/helm/" style="font-size: 0.6em;">helm</a> <a href="/tags/infrastructure/" style="font-size: 0.64em;">infrastructure</a> <a href="/tags/ingress/" style="font-size: 0.6em;">ingress</a> <a href="/tags/kubernetes/" style="font-size: 0.8em;">kubernetes</a> <a href="/tags/prometheus/" style="font-size: 0.64em;">prometheus</a> <a href="/tags/pv/" style="font-size: 0.64em;">pv</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/2024/11/04/sonarqube/"><i class="fa  fa-book"></i> 使用sonarQube做代码质量检测</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2024/11/04/gitlab/"><i class="fa  fa-book"></i> 部署gitlab企业版本</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2024/10/24/Milvus%E5%90%91%E9%87%8F%E5%B5%8C%E5%85%A5/"><i class="fa  fa-book"></i> Milvus 基本使用</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/10/14/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A88/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(八)</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2023/10/07/%E7%94%A8rust%E5%86%99%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A87/"><i class="fa  fa-book"></i> 【译】使用rust来写一个容器(七)</a>
+            
+          
+        
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  class="ap-lrc"  >
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        <li><a href="mailto:cg0616@hotmail.com"><i class="fa fa-envelope"></i></a></li>
+                        
+                        
+                        
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/SRCchen"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2024 Vanitas笔记 版权所有.</li>
+                            <li>本站已运行<span id="span_dt">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>Theme <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a></li>
+                            <li>Site built with&nbsp;<i class="fa fa-heart throb" style="color:#d43f57"></i>&nbsp;by Vanitas.</li>
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="http://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
+<script>const notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));</script>
+
+<script async src="/js/candy.min.js"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+    <meting-js
+        server="netease"
+        type="playlist"
+        id="6600958231"
+        order="random"
+        fixed="true"
+    >
+    </meting-js>
+
+
+
+    <script defer src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+    <script defer src="/js/kr-dark.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>
