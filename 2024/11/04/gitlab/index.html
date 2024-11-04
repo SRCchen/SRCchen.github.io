@@ -15,16 +15,16 @@
   
     <meta name="keywords" content="gitlab, infrastructure" />
   
-  <meta name="description" content="环境说明**部署环境: **   机器说明: 阿里云ECS:   配置说明: 4核8G 系统盘40G 数据盘200G   系统环境: CentOS 7.9 部署说明环境初始化123456mkfs.ext4 &#x2F;dev&#x2F;vdb # 初始化数据盘mkdir -p &#x2F;var&#x2F;optmount &#x2F;dev&#x2F;vdb  &#x2F;var&#x2F;opt&#x2F;  挂载磁盘到gitlab 数据目录ls -l &#x2F;dev&#x2F;disk&#x2F;by-u">
+  <meta name="description" content="环境说明  机器说明: 阿里云ECS:   配置说明: 4核8G 系统盘40G 数据盘200G   系统环境: CentOS 7.9 部署说明环境初始化123456mkfs.ext4 &#x2F;dev&#x2F;vdb # 初始化数据盘mkdir -p &#x2F;var&#x2F;optmount &#x2F;dev&#x2F;vdb  &#x2F;var&#x2F;opt&#x2F;  挂载磁盘到gitlab 数据目录ls -l &#x2F;dev&#x2F;disk&#x2F;by-uuid&#x2F; # 查找&#x2F;d">
 <meta property="og:type" content="article">
 <meta property="og:title" content="部署gitlab企业版本">
 <meta property="og:url" content="http://srcchen.github.io/2024/11/04/gitlab/index.html">
 <meta property="og:site_name" content="Vanitas笔记">
-<meta property="og:description" content="环境说明**部署环境: **   机器说明: 阿里云ECS:   配置说明: 4核8G 系统盘40G 数据盘200G   系统环境: CentOS 7.9 部署说明环境初始化123456mkfs.ext4 &#x2F;dev&#x2F;vdb # 初始化数据盘mkdir -p &#x2F;var&#x2F;optmount &#x2F;dev&#x2F;vdb  &#x2F;var&#x2F;opt&#x2F;  挂载磁盘到gitlab 数据目录ls -l &#x2F;dev&#x2F;disk&#x2F;by-u">
+<meta property="og:description" content="环境说明  机器说明: 阿里云ECS:   配置说明: 4核8G 系统盘40G 数据盘200G   系统环境: CentOS 7.9 部署说明环境初始化123456mkfs.ext4 &#x2F;dev&#x2F;vdb # 初始化数据盘mkdir -p &#x2F;var&#x2F;optmount &#x2F;dev&#x2F;vdb  &#x2F;var&#x2F;opt&#x2F;  挂载磁盘到gitlab 数据目录ls -l &#x2F;dev&#x2F;disk&#x2F;by-uuid&#x2F; # 查找&#x2F;d">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://srcchen.github.io/null">
 <meta property="article:published_time" content="2024-11-04T02:09:10.000Z">
-<meta property="article:modified_time" content="2024-11-04T02:19:08.402Z">
+<meta property="article:modified_time" content="2024-11-04T02:21:28.255Z">
 <meta property="article:author" content="Vanitas">
 <meta property="article:tag" content="gitlab">
 <meta property="article:tag" content="infrastructure">
@@ -130,7 +130,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            ~6.17K
+                            ~6.15K
                         
                         字
                     </li>
@@ -139,7 +139,7 @@
             </header>
             <div class="kratos-post-content">
                 <div id="expire-alert" class="alert alert-warning hidden" role="alert">
-                    本文最后编辑于 <time datetime="1730686748402"></time> 前，其中的内容可能需要更新。
+                    本文最后编辑于 <time datetime="1730686888255"></time> 前，其中的内容可能需要更新。
                 </div>
                 
                     <div class="kratos-post-inner-toc">
@@ -147,8 +147,7 @@
                     </div>
                 
                 <hr />
-                <h2 id="环境说明"><a href="#环境说明" class="headerlink" title="环境说明"></a>环境说明</h2><p>**部署环境: **</p>
-<p>  机器说明: 阿里云ECS:</p>
+                <h2 id="环境说明"><a href="#环境说明" class="headerlink" title="环境说明"></a>环境说明</h2><p>  机器说明: 阿里云ECS:</p>
 <p>  配置说明: 4核8G 系统盘40G 数据盘200G</p>
 <p>  系统环境: CentOS 7.9</p>
 <h2 id="部署说明"><a href="#部署说明" class="headerlink" title="部署说明"></a>部署说明</h2><h3 id="环境初始化"><a href="#环境初始化" class="headerlink" title="环境初始化"></a>环境初始化</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mkfs.ext4 /dev/vdb # 初始化数据盘</span><br><span class="line">mkdir -p /var/opt</span><br><span class="line">mount /dev/vdb  /var/opt/  挂载磁盘到gitlab 数据目录</span><br><span class="line"></span><br><span class="line">ls -l /dev/disk/by-uuid/ # 查找/dev/vdb 的uuid</span><br><span class="line"></span><br></pre></td></tr></table></figure>
@@ -263,11 +262,10 @@
             const twitterBase   = "https://twitter.com/intent/tweet?";
             const hostUrl       = "http://srcchen.github.io/2024/11/04/gitlab/";
             const title         = "「部署gitlab企业版本」";
-            const excerpt       = `环境说明**部署环境: **
-  机器说明: 阿里云ECS:
+            const excerpt       = `环境说明  机器说明: 阿里云ECS:
   配置说明: 4核8G 系统盘40G 数据盘200G
   系统环境: CentOS 7.9
-部署说明环境初始化123456mkfs.ext4 /dev/vdb # 初始化...`;
+部署说明环境初始化123456mkfs.ext4 /dev/vdb # 初始化数据盘mkdir -p...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
