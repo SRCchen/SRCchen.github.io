@@ -18,7 +18,7 @@
   <meta name="description" content="向着高处挣扎本身足以填满一个人的心灵">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Vanitas笔记">
-<meta property="og:url" content="http://srcchen.github.io/categories/kubernetes/index.html">
+<meta property="og:url" content="http://srcchen.github.io/categories/Kubernetes/index.html">
 <meta property="og:site_name" content="Vanitas笔记">
 <meta property="og:description" content="向着高处挣扎本身足以填满一个人的心灵">
 <meta property="og:locale" content="zh_CN">
@@ -119,7 +119,7 @@
                 <div class="kratos-entry-border-new clearfix">
                     
                     <div class="kratos-entry-thumb-new">
-                        <a href="/2024/11/04/hpa/">
+                        <a href="/2024/11/04/client-go/">
                             
                                 <img class="kratos-entry-thumb-new-img">
                             
@@ -127,14 +127,13 @@
                     </div>
                     <div class="kratos-post-inner-new">
                         <header class="kratos-entry-header-new">
-                                <a class="label-link" href="/categories/kubernetes/">kubernetes</a>
-                            <h2 class="kratos-entry-title-new"><a href="/2024/11/04/hpa/">对阿里云环境下ACK做扩缩容指标优化</a>
+                                <a class="label-link" href="/categories/Kubernetes/">Kubernetes</a>
+                            <h2 class="kratos-entry-title-new"><a href="/2024/11/04/client-go/">使用client-go 创建应用</a>
                         </header>
                         <div class="kratos-entry-content-new">
                             <p>
                                 
-                                    背景Kubernetes的应用扩缩指标仅有CPU,通过这种单一指标来指导单一应用进行扩缩相对比较低效而且滞后。
-在部分场景(大促营销/奖品开奖/定时秒杀)下,应用常态负载不高，出现扩容的情况多数为请求量激增导致的CPU使用率上升。而C...
+                                    About client-goclient-go是调用kubernetes集群资源对象API的客户端,kubernetes官方抽取出部分核心代码作为提供的client。利用client-go可以对kubernetes集群中的各种对象进...
                                 
                             </p>
                         </div>
@@ -148,7 +147,7 @@
                             <a>
                                 
                                     <i class="fa fa-tags"></i>
-                                    <a class="tag-none-link" href="/tags/HPA/" rel="tag">HPA</a>, <a class="tag-none-link" href="/tags/KEDA/" rel="tag">KEDA</a>, <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
+                                    <a class="tag-none-link" href="/tags/Deployment/" rel="tag">Deployment</a>, <a class="tag-none-link" href="/tags/Kubernetes/" rel="tag">Kubernetes</a>
                                 
                             </a>
                             
@@ -161,203 +160,277 @@
                             
                         </span>
                         <span class="pull-right">
-                            <a class="read-more" href="/2024/11/04/hpa/" title="阅读全文">阅读全文<i class="fa fa-chevron-circle-right"></i></a>
+                            <a class="read-more" href="/2024/11/04/client-go/" title="阅读全文">阅读全文<i class="fa fa-chevron-circle-right"></i></a>
                         </span>
                     </footer>
                 </div>
             </article>
         
     
-        
-        
-            <article class="kratos-hentry clearfix">
-                <div class="kratos-entry-border-new clearfix">
-                    
-                    <div class="kratos-entry-thumb-new">
-                        <a href="/2022/05/21/kubevela/">
-                            
-                                <img class="kratos-entry-thumb-new-img">
-                            
-                        </a>
-                    </div>
-                    <div class="kratos-post-inner-new">
-                        <header class="kratos-entry-header-new">
-                                <a class="label-link" href="/categories/kubernetes/">kubernetes</a>
-                            <h2 class="kratos-entry-title-new"><a href="/2022/05/21/kubevela/">在kind中部署kubevela目前最新版本(v1.3.0)</a>
-                        </header>
-                        <div class="kratos-entry-content-new">
-                            <p>
-                                
-                                    准备集群下载kind123curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.12.0/kind-linux-amd64chmod +x ./kindmv ./kind /usr/local/...
-                                
-                            </p>
-                        </div>
-                    </div>
-                    <footer class="kratos-post-meta-new">
-                        <span class="pull-left">
-                            <a>
-                                <i class="fa fa-calendar"></i>
-                                2022-05-21
-                            </a>
-                            <a>
-                                
-                                    <i class="fa fa-tags"></i>
-                                    <a class="tag-none-link" href="/tags/DevOps/" rel="tag">DevOps</a>, <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
-                                
-                            </a>
-                            
-                                <!-- 当前仅支持valine/waline自带的统计功能 -->
-                                
-                            
-                            
-                                <!-- 当前仅支持waline自带的统计功能 -->
-                                
-                            
-                        </span>
-                        <span class="pull-right">
-                            <a class="read-more" href="/2022/05/21/kubevela/" title="阅读全文">阅读全文<i class="fa fa-chevron-circle-right"></i></a>
-                        </span>
-                    </footer>
-                </div>
-            </article>
-        
     
-        
-        
-            <article class="kratos-hentry clearfix">
-                <div class="kratos-entry-border-new clearfix">
-                    
-                    <div class="kratos-entry-thumb-new">
-                        <a href="/2021/11/14/%E6%9D%A5%E8%87%AADeis%E5%B7%A5%E4%BD%9C%E5%AE%A4%E7%9A%84%E6%96%B0%E7%8E%A9%E5%85%B7-Krustlet/">
-                            
-                                <img class="kratos-entry-thumb-new-img">
-                            
-                        </a>
-                    </div>
-                    <div class="kratos-post-inner-new">
-                        <header class="kratos-entry-header-new">
-                                <a class="label-link" href="/categories/kubernetes/">kubernetes</a>
-                            <h2 class="kratos-entry-title-new"><a href="/2021/11/14/%E6%9D%A5%E8%87%AADeis%E5%B7%A5%E4%BD%9C%E5%AE%A4%E7%9A%84%E6%96%B0%E7%8E%A9%E5%85%B7-Krustlet/">来自Deis工作室的新玩具-Krustlet</a>
-                        </header>
-                        <div class="kratos-entry-content-new">
-                            <p>
-                                
-                                    简单介绍大家都知道,Kubernetes 正在成为一个统一的调度器,只要符合kubernetes的标准,那么就可以通过它来进行调度,比如说kubevirt(调度虚拟机),当然我们今天不是为了调度虚拟机来的,我们需要调度的是WASM。
-...
-                                
-                            </p>
-                        </div>
-                    </div>
-                    <footer class="kratos-post-meta-new">
-                        <span class="pull-left">
-                            <a>
-                                <i class="fa fa-calendar"></i>
-                                2021-11-14
-                            </a>
-                            <a>
-                                
-                                    <i class="fa fa-tags"></i>
-                                    <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>
-                                
-                            </a>
-                            
-                                <!-- 当前仅支持valine/waline自带的统计功能 -->
-                                
-                            
-                            
-                                <!-- 当前仅支持waline自带的统计功能 -->
-                                
-                            
-                        </span>
-                        <span class="pull-right">
-                            <a class="read-more" href="/2021/11/14/%E6%9D%A5%E8%87%AADeis%E5%B7%A5%E4%BD%9C%E5%AE%A4%E7%9A%84%E6%96%B0%E7%8E%A9%E5%85%B7-Krustlet/" title="阅读全文">阅读全文<i class="fa fa-chevron-circle-right"></i></a>
-                        </span>
-                    </footer>
-                </div>
-            </article>
-        
     
-        
-        
-            <article class="kratos-hentry clearfix">
-                <div class="kratos-entry-border-new clearfix">
-                    
-                    <div class="kratos-entry-thumb-new">
-                        <a href="/2021/10/26/Promethues/">
-                            
-                                <img class="kratos-entry-thumb-new-img">
-                            
-                        </a>
-                    </div>
-                    <div class="kratos-post-inner-new">
-                        <header class="kratos-entry-header-new">
-                                <a class="label-link" href="/categories/kubernetes/">kubernetes</a>
-                            <h2 class="kratos-entry-title-new"><a href="/2021/10/26/Promethues/">部署一个比较靠谱的prometheus监控</a>
-                        </header>
-                        <div class="kratos-entry-content-new">
-                            <p>
-                                
-                                    部署方案以及组件当前helm版本:3.6.3
-Prometheus charts 版本: 14.11.0
-grafana charts 版本：6.17.2
-此处采用helm部署,helm提供的组件如下:
+</section>
 
-alertmanager: ...
-                                
-                            </p>
-                        </div>
-                    </div>
-                    <footer class="kratos-post-meta-new">
-                        <span class="pull-left">
-                            <a>
-                                <i class="fa fa-calendar"></i>
-                                2021-10-26
-                            </a>
-                            <a>
-                                
-                                    <i class="fa fa-tags"></i>
-                                    <a class="tag-none-link" href="/tags/kubernetes/" rel="tag">kubernetes</a>, <a class="tag-none-link" href="/tags/prometheus/" rel="tag">prometheus</a>
-                                
-                            </a>
-                            
-                                <!-- 当前仅支持valine/waline自带的统计功能 -->
-                                
-                            
-                            
-                                <!-- 当前仅支持waline自带的统计功能 -->
-                                
-                            
-                        </span>
-                        <span class="pull-right">
-                            <a class="read-more" href="/2021/10/26/Promethues/" title="阅读全文">阅读全文<i class="fa fa-chevron-circle-right"></i></a>
-                        </span>
-                    </footer>
-                </div>
-            </article>
+
+    <div class="hidden">
+        <!-- 加载文章阅读对应的统计功能，评论自带的那种 -->
         
+    </div>
+
+
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
     
+        <div class="sticky-area">
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/main.webp" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">向着高处挣扎本身足以填满一个人的心灵</p>
+    </div>
+</aside>
+            
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>分类目录</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kubernetes/">Kubernetes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
+      <div class="tag-clouds">
+        <a href="/tags/AI/" style="font-size: 0.6em;">AI</a> <a href="/tags/Deployment/" style="font-size: 0.6em;">Deployment</a> <a href="/tags/DevOps/" style="font-size: 0.75em;">DevOps</a> <a href="/tags/Docker/" style="font-size: 0.8em;">Docker</a> <a href="/tags/Embedding/" style="font-size: 0.6em;">Embedding</a> <a href="/tags/FaaS/" style="font-size: 0.6em;">FaaS</a> <a href="/tags/HPA/" style="font-size: 0.6em;">HPA</a> <a href="/tags/KEDA/" style="font-size: 0.6em;">KEDA</a> <a href="/tags/Kubernetes/" style="font-size: 0.65em;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 0.7em;">Linux</a> <a href="/tags/ansible/" style="font-size: 0.6em;">ansible</a> <a href="/tags/docker/" style="font-size: 0.7em;">docker</a> <a href="/tags/envoy/" style="font-size: 0.6em;">envoy</a> <a href="/tags/gitlab/" style="font-size: 0.6em;">gitlab</a> <a href="/tags/harbor/" style="font-size: 0.6em;">harbor</a> <a href="/tags/helm/" style="font-size: 0.6em;">helm</a> <a href="/tags/infrastructure/" style="font-size: 0.65em;">infrastructure</a> <a href="/tags/ingress/" style="font-size: 0.6em;">ingress</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>最新文章</h4>
+  <div class="tab-content">
+      <ul class="list-group">
         
         
-            <article class="kratos-hentry clearfix">
-                <div class="kratos-entry-border-new clearfix">
-                    
-                    <div class="kratos-entry-thumb-new">
-                        <a href="/2021/10/20/nas/">
-                            
-                                <img class="kratos-entry-thumb-new-img">
-                            
+          
+          
+            <a class="list-group-item" href="/2024/11/04/client-go/"><i class="fa  fa-book"></i> 使用client-go 创建应用</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2024/11/04/hpa/"><i class="fa  fa-book"></i> 对阿里云环境下ACK做扩缩容指标优化</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2024/11/04/sonarqube/"><i class="fa  fa-book"></i> 使用sonarQube做代码质量检测</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2024/11/04/gitlab/"><i class="fa  fa-book"></i> 部署gitlab企业版本</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2024/11/03/autossh/"><i class="fa  fa-book"></i> 使用autossh做端口转发</a>
+            
+          
+        
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  class="ap-lrc"  >
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
                         </a>
                     </div>
-                    <div class="kratos-post-inner-new">
-                        <header class="kratos-entry-header-new">
-                                <a class="label-link" href="/categories/kubernetes/">kubernetes</a>
-                            <h2 class="kratos-entry-title-new"><a href="/2021/10/20/nas/">在私有云部署阿里云NAS存储</a>
-                        </header>
-                        <div class="kratos-entry-content-new">
-                            <p>
-                                
-                                    前提条件私有云内网与阿里云的VPC互通
-配置文件下载首先下载阿里云提供的alibaba-cloud-csi-driver
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        <li><a href="mailto:cg0616@hotmail.com"><i class="fa fa-envelope"></i></a></li>
+                        
+                        
+                        
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/SRCchen"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+                        <div>
+                            <li>&copy; 2024 Vanitas笔记 版权所有.</li>
+                            <li>本站已运行<span id="span_dt">Loading...</span></li>
+                        </div>
+                        <div>
+                            <li>Theme <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos:Rebirth</a></li>
+                            <li>Site built with&nbsp;<i class="fa fa-heart throb" style="color:#d43f57"></i>&nbsp;by Vanitas.</li>
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="http://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
+<script>const notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));</script>
+
+<script async src="/js/candy.min.js"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+    <meting-js
+        server="netease"
+        type="playlist"
+        id="6600958231"
+        order="random"
+        fixed="true"
+    >
+    </meting-js>
+
+
+
+    <script defer src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+    <script defer src="/js/kr-dark.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>��提供的alibaba-cloud-csi-driver
 在deploy文件夹下,找到rbac.yaml,这个文件用于配置csi插件的rbac权限,
 找到deploy/n...
                                 
@@ -725,7 +798,7 @@ TaskRun：创建了一个TaskRun以后，每个TaskRun就会单独控制一个Po
                 
   <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
     <h4 class="widget-title"><i class="fa fa-folder"></i>分类目录</h4>
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/AI/">AI</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/FaaS/">FaaS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kubernetes/">Kubernetes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/gateway/">gateway</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/rust/">rust</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a><span class="category-list-count">1</span></li></ul>
   </aside>
 
 
@@ -734,7 +807,7 @@ TaskRun：创建了一个TaskRun以后，每个TaskRun就会单独控制一个Po
   <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
     <h4 class="widget-title"><i class="fa fa-tags"></i>标签聚合</h4>
       <div class="tag-clouds">
-        <a href="/tags/AI/" style="font-size: 0.6em;">AI</a> <a href="/tags/DevOps/" style="font-size: 0.72em;">DevOps</a> <a href="/tags/Docker/" style="font-size: 0.76em;">Docker</a> <a href="/tags/Embedding/" style="font-size: 0.6em;">Embedding</a> <a href="/tags/FaaS/" style="font-size: 0.6em;">FaaS</a> <a href="/tags/HPA/" style="font-size: 0.6em;">HPA</a> <a href="/tags/KEDA/" style="font-size: 0.6em;">KEDA</a> <a href="/tags/Kubernetes/" style="font-size: 0.6em;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 0.68em;">Linux</a> <a href="/tags/ansible/" style="font-size: 0.6em;">ansible</a> <a href="/tags/docker/" style="font-size: 0.68em;">docker</a> <a href="/tags/envoy/" style="font-size: 0.6em;">envoy</a> <a href="/tags/gitlab/" style="font-size: 0.6em;">gitlab</a> <a href="/tags/harbor/" style="font-size: 0.6em;">harbor</a> <a href="/tags/helm/" style="font-size: 0.6em;">helm</a> <a href="/tags/infrastructure/" style="font-size: 0.64em;">infrastructure</a> <a href="/tags/ingress/" style="font-size: 0.6em;">ingress</a> <a href="/tags/kubernetes/" style="font-size: 0.8em;">kubernetes</a>
+        <a href="/tags/AI/" style="font-size: 0.6em;">AI</a> <a href="/tags/Deployment/" style="font-size: 0.6em;">Deployment</a> <a href="/tags/DevOps/" style="font-size: 0.75em;">DevOps</a> <a href="/tags/Docker/" style="font-size: 0.8em;">Docker</a> <a href="/tags/Embedding/" style="font-size: 0.6em;">Embedding</a> <a href="/tags/FaaS/" style="font-size: 0.6em;">FaaS</a> <a href="/tags/HPA/" style="font-size: 0.6em;">HPA</a> <a href="/tags/KEDA/" style="font-size: 0.6em;">KEDA</a> <a href="/tags/Kubernetes/" style="font-size: 0.65em;">Kubernetes</a> <a href="/tags/Linux/" style="font-size: 0.7em;">Linux</a> <a href="/tags/ansible/" style="font-size: 0.6em;">ansible</a> <a href="/tags/docker/" style="font-size: 0.7em;">docker</a> <a href="/tags/envoy/" style="font-size: 0.6em;">envoy</a> <a href="/tags/gitlab/" style="font-size: 0.6em;">gitlab</a> <a href="/tags/harbor/" style="font-size: 0.6em;">harbor</a> <a href="/tags/helm/" style="font-size: 0.6em;">helm</a> <a href="/tags/infrastructure/" style="font-size: 0.65em;">infrastructure</a> <a href="/tags/ingress/" style="font-size: 0.6em;">ingress</a>
       </div>
   </aside>
 
@@ -745,6 +818,12 @@ TaskRun：创建了一个TaskRun以后，每个TaskRun就会单独控制一个Po
   <div class="tab-content">
       <ul class="list-group">
         
+        
+          
+          
+            <a class="list-group-item" href="/2024/11/04/client-go/"><i class="fa  fa-book"></i> 使用client-go 创建应用</a>
+            
+          
         
           
           
@@ -771,11 +850,7 @@ TaskRun：创建了一个TaskRun以后，每个TaskRun就会单独控制一个Po
           
         
           
-          
-            <a class="list-group-item" href="/2024/10/24/Milvus%E5%90%91%E9%87%8F%E5%B5%8C%E5%85%A5/"><i class="fa  fa-book"></i> Milvus 基本使用</a>
             
-          
-        
           
             
           
